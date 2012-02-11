@@ -1,0 +1,13 @@
+/CarParkMonitor/Debug/
+/CarParkMonitor/ipch/
+/CarParkMonitor/x64/
+/CarParkMonitor/CarParkMonitor/Debug/
+/CarParkMonitor/CarParkMonitor/Content/
+/CarParkMonitor/CarParkMonitor/x64/
+*.dll
+*.exe
+*.obj
+*.ipch
+*.pdb
+*.pgm
+*.tlog
