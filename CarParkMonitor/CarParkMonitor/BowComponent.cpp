@@ -129,8 +129,6 @@ Mat_<float> BowComponent::extractBow( Mat image )
 	Mat_<float> bag;
 
 	detector->detect(image, keypoints);
-	assert(keypoints.size() > 0);
-
 	bowDE->compute(image, keypoints, bag);
 	
 	return bag;	
@@ -236,7 +234,7 @@ void BowComponent::loadBows()
 	f.release();
 }
 
-void BowComponent::drawKeypoints( Mat image )
+void BowComponent::drawKeypoints(Mat image, char* windowName)
 {
 	if(!vocabularyLoaded)
 	{
@@ -245,14 +243,14 @@ void BowComponent::drawKeypoints( Mat image )
 
 	vector<KeyPoint> keypoints;
 	detector->detect(image, keypoints);	
-
+	Mat output = image.clone();
 	cv::drawKeypoints(image, // original image
 		keypoints, // vector of keypoints
-		image, // the resulting image
+		output, // the resulting image
 		cv::Scalar(255,0,0), // color of the points
-		cv::DrawMatchesFlags::DEFAULT //flag	
+		cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS //flag	
 	); 
 
-	imshow("keypoints", image);
+	imshow(windowName, output);
 }
 

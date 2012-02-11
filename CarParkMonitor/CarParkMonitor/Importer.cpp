@@ -59,7 +59,9 @@ cv::Mat Importer::loadTestSample( int nr )
 	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
 }
 
-cv::Mat Importer::loadGrayImage( char* path )
+cv::Mat Importer::loadGrayImage( char* fileName )
 {
+	char* path = new char[100];
+	sprintf(path, "./Content/Images/%s", fileName);
 	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
 }

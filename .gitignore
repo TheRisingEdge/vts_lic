@@ -4,6 +4,7 @@
 /CarParkMonitor/CarParkMonitor/Debug/
 /CarParkMonitor/CarParkMonitor/Content/
 /CarParkMonitor/CarParkMonitor/x64/
+/OpenCVDemos/
 *.dll
 *.exe
 *.obj
