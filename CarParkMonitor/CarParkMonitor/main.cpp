@@ -21,18 +21,19 @@ int main(int argc, char** argv)
 	if(training)
 	{		
 		importer.loadTrainingImages();		
-		bowComponent.extractBows(true, true, true);		
+		bowComponent.extractBows(false, false, false);		
 		svm.train(bowComponent.positiveBows, bowComponent.negativeBows);
 		svm.save();
 
 	}else{
 		svm.load();			
-		
+		vector<Mat>* imgs = new vector<Mat>(); 
+		imgs->push_back(importer.loadGrayImage("test01.pgm"));
+
 		Tester tester(&bowComponent, &svm);
-		//tester.testPositives();	
+		//tester.testPositives(NULL);	
 		tester.testNegatives();
 	}
-	getch();
 	waitKey();
 	return 0;
 }

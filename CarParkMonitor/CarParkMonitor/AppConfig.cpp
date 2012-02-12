@@ -41,14 +41,14 @@ DescriptorMatcher* configureDescriptorMatcher()
 
 void AppConfig::load()
 {
-	AppConfig::carSampleCount		= 500;
-	AppConfig::nonCarSampleCount	= 400;	
+	AppConfig::carSampleCount		= 550;
+	AppConfig::nonCarSampleCount	= 450;	
 	AppConfig::clusterCount			= 600;
 
 	AppConfig::svmParams.svm_type    = SVM::C_SVC;
-	AppConfig::svmParams.C           = 30;
+	AppConfig::svmParams.C           = 80;
 	AppConfig::svmParams.kernel_type = SVM::RBF;
-	AppConfig::svmParams.term_crit   = TermCriteria(CV_TERMCRIT_ITER, 10000, 1e-6);
+	AppConfig::svmParams.term_crit   = TermCriteria(CV_TERMCRIT_ITER, 100000, 1e-6);
 
 
 	AppConfig::bowProperties.detector  = configureFeatureDetector();

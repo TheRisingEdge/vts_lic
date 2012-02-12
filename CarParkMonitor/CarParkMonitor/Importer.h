@@ -19,12 +19,12 @@ class Importer
 		Importer(void);
 		~Importer(void);
 			
-		 char* videoPath(int nr);
-		 Mat loadTestImage(int nr);
-		 Mat loadCarImage(int nr);
-		 Mat loadNonCarSample(int nr);
-		 void loadTrainingImages();
-		 Mat loadGrayImage(char* path);
-		 vector<Mat> loadCarImages();
-		 vector<Mat> loadNonCarImages();
+		char* videoPath(int nr);
+		Mat loadTestImage(int nr);
+		Mat loadCarImage(int nr);
+		Mat loadNonCarSample(int nr);
+		void loadTrainingImages();
+		Mat loadGrayImage(char* path);
+		vector<Mat> loadCarImages();
+		vector<Mat> loadNonCarImages();
 };

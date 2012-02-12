@@ -1,6 +1,41 @@
 #include "Tester.h"
 #include <conio.h>
 
+typedef struct testResult
+{
+	char* message;
+	int totalTested;
+	int missclassified;
+	float errorRate;
+
+	void computeErrorRate()
+	{
+		this->errorRate = (float)(missclassified*100)/(float)totalTested;
+	}
+
+}TestResult;
+
+void printToConsole(TestResult result)
+{
+	cout << result.message << "\n";
+	cout << "total tested: " << result.totalTested << "\n";
+	cout << "missclassified: " << result.missclassified << "\n";
+	cout << "error rate: " << result.errorRate << "\n";
+}
+
+void printToFile(TestResult result)
+{
+	FileStorage f = FileStorage(Content::ymlFile("testResults"), FileStorage::APPEND);
+	
+	f << "message" << result.message;
+	f << "total tested" << result.totalTested;
+	f << "missclassified" << result.missclassified;
+	f << "error rate" << result.errorRate;
+
+	f.release();
+}
+
+
 Tester::Tester(BowComponent* bowComponent, SvmComponent* svm)
 {
 	assert(svm != NULL);
@@ -17,27 +52,38 @@ Tester::~Tester(void)
 {
 }
 
-void Tester::testPositives()
-{
-	vector<Mat> images = importer->loadCarImages();
-	int size = images.size();
 
+void Tester::testPositives(vector<Mat>* images)
+{
+	vector<Mat> imgs;
+	if(images == NULL)
+	{
+		imgs = importer->loadCarImages();
+		images = &imgs;	
+	}
+	
+	int size = images->size();
 	int wrongs = 0;
 
 	for(int i = 0; i < size; i++)
 	{
-		Mat image = images[i];
+		Mat image = images->at(i);
 		Mat bow = bowComponent->extractBow(image);
 		float prediction = svm->predict(bow);
 
 		if(prediction < 0)
 			wrongs++;
-
 	}
 
-	cout << wrongs << " car images classified wrong" << "\n";
-	float error = (float)(wrongs * 100)/(float)AppConfig::carSampleCount;
-	cout << "error rate: " << error;
+	TestResult r;
+	r.totalTested = size;
+	r.missclassified = wrongs;
+	r.computeErrorRate();
+	r.message = "positive images test";
+
+	printToConsole(r);
+	printToFile(r);
+
 	getch();
 }
 
@@ -56,12 +102,18 @@ void Tester::testNegatives()
 
 		if(prediction > 0)
 			wrongs++;
-
 	}
 
-	cout << wrongs << " NON car images classified wrong" << "\n";
-	float error = (float)(wrongs * 100)/(float)AppConfig::carSampleCount;
-	cout << "error rate: " << error;
-	getch();
+	TestResult r;
+	r.totalTested = size;
+	r.missclassified = wrongs;
+	r.computeErrorRate();
+	r.message = "negative images test";
 
+	printToConsole(r);
+	printToFile(r);
+
+	getch();
 }
+
+

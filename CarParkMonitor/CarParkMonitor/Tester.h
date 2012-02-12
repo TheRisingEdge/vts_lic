@@ -14,7 +14,7 @@ public:
 	Tester(BowComponent* bowComponent, SvmComponent* svm);
 	~Tester(void);
 
-	void testPositives();
+	void testPositives(vector<Mat>* images = NULL);
 	void testNegatives();
 };
 
