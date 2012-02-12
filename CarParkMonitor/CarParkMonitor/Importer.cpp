@@ -1,59 +1,80 @@
 #include "Importer.h"
 
-vector<Mat> Importer::carSamples;
-vector<Mat> Importer::nonCarSamples;
-
 Importer::~Importer(void)
 {
-
 }
 
 Importer::Importer( void )
 {
-
+	nonCarsLoaded = false;
+	carsLoaded = false;
 }
 
-void  Importer::loadSamples()
-{					
-	int carCount			=  AppConfig::carSampleCount;
-	int nonCarSampleCount	=  AppConfig::nonCarSampleCount;
-
-	for(int i = 0 ; i < carCount; i++)
-	{							
-		Mat image = loadCarSample(i);
-		Importer::carSamples.push_back(image);		
-	}					
-
-	for(int i = 0; i < nonCarSampleCount; i++)
-	{							
-		Mat image = loadNonCarSample(i);
-		Importer::nonCarSamples.push_back(image);
+void loadImagesWithIndexPath(char* indexPath, int count, vector<Mat>* output)
+{
+	for(int i = 1; i < count; i++)
+	{
+		char* path = Content::pathTo(indexPath, i);	
+		Mat image = imread(path, CV_LOAD_IMAGE_GRAYSCALE);
+		output->push_back(image);
 	}
 }
 
-vector<Mat> Importer::getNonCarSamples()
+vector<Mat> Importer::loadCarImages()
 {
-	return Importer::nonCarSamples;
+	if(!carsLoaded)
+	{
+		int carCount	=  AppConfig::carSampleCount;	
+		loadImagesWithIndexPath("./Content/TrainImages/pos-%d.pgm", carCount, &carSamples);		
+		carsLoaded = true;
+	}
+	
+	return carSamples;
 }
 
-vector<Mat> Importer::getCarSamples()
+vector<Mat> Importer::loadNonCarImages()
 {
-	return Importer::carSamples;
+	if(!nonCarsLoaded)
+	{
+		int nonCarCount	=  AppConfig::nonCarSampleCount;
+		loadImagesWithIndexPath("./Content/TrainImages/neg-%d.pgm", nonCarCount, &nonCarSamples);	
+		nonCarsLoaded = true;
+	}
+
+	return nonCarSamples;
+}
+
+void  Importer::loadTrainingImages()
+{						
+	loadCarImages();	
+	loadNonCarImages();
 }
 
 cv::Mat Importer::loadNonCarSample( int nr )
 {
-	char* path = Content::pathTo("./Content/TrainImages/neg-%d.pgm", nr);	
-	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
+	if(!nonCarsLoaded)
+	{
+		char* path = Content::pathTo("./Content/TrainImages/neg-%d.pgm", nr);	
+		return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
+
+	}else{
+		return nonCarSamples[nr-1];
+	}	
 }
 
-cv::Mat Importer::loadCarSample( int nr )
+cv::Mat Importer::loadCarImage( int nr )
 {
-	char* path = Content::pathTo("./Content/TrainImages/pos-%d.pgm", nr);	
-	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
+	if(!carsLoaded)
+	{
+		char* path = Content::pathTo("./Content/TrainImages/pos-%d.pgm", nr);	
+		return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
+
+	}else{
+		return carSamples[nr-1];
+	}	
 }
 
-cv::Mat Importer::loadTestSample( int nr )
+cv::Mat Importer::loadTestImage( int nr )
 {
 	char* path = Content::pathTo("./Content/TestImages/test-%d.pgm",nr);
 	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
@@ -65,3 +86,13 @@ cv::Mat Importer::loadGrayImage( char* fileName )
 	sprintf(path, "./Content/Images/%s", fileName);
 	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
 }
+
+char* Importer::videoPath( int nr )
+{
+	return Content::pathTo("./Content/Videos/video-%d.avi", nr);
+}
+
+
+
+
+

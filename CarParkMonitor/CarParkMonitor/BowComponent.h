@@ -7,7 +7,7 @@ using namespace cv;
 class BowComponent
 {
 private:	
-
+	
 	Ptr<FeatureDetector>		detector;
 	Ptr<DescriptorExtractor>	extractor;
 	Ptr<DescriptorMatcher>		matcher;
@@ -24,7 +24,8 @@ private:
 	Mat_<float> negativeDescriptors;
 
 public:
-	BowComponent( void );
+	Importer* importer;
+	BowComponent(Importer* importer);	
 	~BowComponent(void);
 	
 	Mat vocabulary;

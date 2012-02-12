@@ -10,22 +10,21 @@ using namespace std;
 class Importer
 {
 	private:		
-		static vector<Mat> carSamples;
-		static vector<Mat> nonCarSamples;
+		 vector<Mat> carSamples;
+		 vector<Mat> nonCarSamples;
+		 bool carsLoaded;
+		 bool nonCarsLoaded;
 
 	public:
 		Importer(void);
 		~Importer(void);
 			
-		static char* videoPath(int nr)
-		{
-			return Content::pathTo("./Content/Videos/video-%d.avi", nr);					
-		}
-		static Mat loadTestSample(int nr);
-		static Mat loadCarSample(int nr);
-		static Mat loadNonCarSample(int nr);
-		static void loadSamples();
-		static vector<Mat> getCarSamples();
-		static vector<Mat> getNonCarSamples();
-		static Mat loadGrayImage(char* path);
+		 char* videoPath(int nr);
+		 Mat loadTestImage(int nr);
+		 Mat loadCarImage(int nr);
+		 Mat loadNonCarSample(int nr);
+		 void loadTrainingImages();
+		 Mat loadGrayImage(char* path);
+		 vector<Mat> loadCarImages();
+		 vector<Mat> loadNonCarImages();
 };

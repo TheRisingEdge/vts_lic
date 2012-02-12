@@ -1,10 +1,12 @@
 #include "BowComponent.h"
 #include <assert.h>
 
+BowComponent::BowComponent( Importer* importer )
+{
+	assert(importer != NULL);
 
+	this->importer = importer;
 
-BowComponent::BowComponent(void)
-{						
 	this->detector		= Ptr<FeatureDetector>(AppConfig::bowProperties.detector); 			
 	this->extractor		= Ptr<DescriptorExtractor>(AppConfig::bowProperties.extractor);
 	this->matcher		= Ptr<DescriptorMatcher>(AppConfig::bowProperties.matcher);
@@ -92,28 +94,28 @@ cv::Mat BowComponent::computeKeypointsAndDescriptors( vector<Mat> images,vector<
 
 cv::Mat BowComponent::getCarDescriptors()
 {			
-	vector<Mat> carSamples = Importer::getCarSamples();					
+	vector<Mat> carSamples = importer->loadCarImages();					
 	Mat allDescriptors = computeKeypointsAndDescriptors(carSamples, &carKeypoints, &carDescriptors);
 	return allDescriptors;
 }
 
 cv::Mat BowComponent::getNonCarDescriptors()
 {		
-	vector<Mat> nonCarSamples = Importer::getNonCarSamples();		
+	vector<Mat> nonCarSamples = importer->loadNonCarImages();		
 	Mat allDescriptors = computeKeypointsAndDescriptors(nonCarSamples, &nonCarKeypoints, &nonCarDescriptors);
 	return allDescriptors;
 }
 
 cv::Mat BowComponent::computeCarBows()
 {
-	vector<Mat> images = Importer::getCarSamples();
+	vector<Mat> images = importer->loadCarImages();
 	Mat bows = computeBows(images, carKeypoints);
 	return bows;
 }
 
 cv::Mat BowComponent::computerNonCarBows()
 {
-	vector<Mat> images = Importer::getNonCarSamples();
+	vector<Mat> images = importer->loadNonCarImages();
 	Mat bows = computeBows(images, nonCarKeypoints);
 	return bows;
 }
