@@ -29,6 +29,9 @@ public:
 	/* Samples */	
 	static int carSampleCount;
 	static int nonCarSampleCount;
+	static int partitionCount;
+	static int partitionTestIndex;
+	static int partitionSize;
 
 	/* BOW Params */		
 	static int clusterCount;

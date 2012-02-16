@@ -250,9 +250,19 @@ void BowComponent::drawKeypoints(Mat image, char* windowName)
 		keypoints, // vector of keypoints
 		output, // the resulting image
 		cv::Scalar(255,0,0), // color of the points
-		cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS //flag	
+		cv::DrawMatchesFlags::DEFAULT //flag	
 	); 
 
 	imshow(windowName, output);
+}
+
+void BowComponent::drawKeypointsOverCars()
+{
+	vector<Mat> images = importer->loadCarImages();
+	for(int i = 0; i < images.size(); i++)
+	{
+		drawKeypoints(images[i], "keypoints");
+		waitKey();
+	}
 }
 

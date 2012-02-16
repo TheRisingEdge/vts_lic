@@ -14,26 +14,23 @@ int main(int argc, char** argv)
 	AppConfig::load();	
 	Importer importer;
 
-	bool training = false;
+	bool training = true;
 	SvmComponent svm;
 	BowComponent bowComponent(&importer);	
 	
 	if(training)
 	{		
 		importer.loadTrainingImages();		
-		bowComponent.extractBows(false, false, false);		
+		bowComponent.extractBows(true, true, true);		
 		svm.train(bowComponent.positiveBows, bowComponent.negativeBows);
 		svm.save();
 
 	}else{
 		svm.load();			
-		vector<Mat>* imgs = new vector<Mat>(); 
-		imgs->push_back(importer.loadGrayImage("test01.pgm"));
 
-		Tester tester(&bowComponent, &svm);
-		//tester.testPositives(NULL);	
-		tester.testNegatives();
+		Tester tester(&bowComponent, &svm);		
+		tester.test();		
 	}
-	waitKey();
+	getch();
 	return 0;
 }

@@ -48,6 +48,7 @@ public:
 	void writeKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>> carKeypoints );
 	void readKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>>* carKeypoints );
 	void drawKeypoints(Mat image, char* windowName = "keypoints");
+	void drawKeypointsOverCars();
 	void saveBows();
 	void loadBows();
 };

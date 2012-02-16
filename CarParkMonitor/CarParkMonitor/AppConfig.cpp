@@ -3,6 +3,9 @@
 int AppConfig::carSampleCount;
 int AppConfig::nonCarSampleCount;
 int AppConfig::clusterCount;
+int AppConfig::partitionTestIndex;
+int AppConfig::partitionCount;
+int AppConfig::partitionSize;
 
 BowProperties AppConfig::bowProperties;
 CvSVMParams AppConfig::svmParams;
@@ -19,14 +22,12 @@ AppConfig::~AppConfig(void)
 
 FeatureDetector* configureFeatureDetector()
 {
-	//return new GoodFeaturesToTrackDetector(50, 0.1, 0.5);
-	//return new GoodFeaturesToTrackDetector(100,0.1,0.2,3, true, 0.004);
-	//void goodFeaturesToTrack(InputArray image, OutputArray corners, int maxCorners, double qualityLevel, double minDistance, InputArray mask=noArray(), int blockSize=3, bool useHarrisDetector=false, double k=0.04 )¶
-	return new cv::GoodFeaturesToTrackDetector(
-		50, // maximum number of corners to be returned
-		0.1, // quality level
-		5); // minimum allowed distance between points
-	
+	//return new cv::GoodFeaturesToTrackDetector(
+	//	50, // maximum number of corners to be returned
+	//	0.1, // quality level
+	//	5); // minimum allowed distance between points
+
+	 return new cv::SiftFeatureDetector(0.1,20);	
 }
 
 DescriptorExtractor* configureDescriptorExtractor()
@@ -50,6 +51,10 @@ void AppConfig::load()
 	AppConfig::svmParams.kernel_type = SVM::RBF;
 	AppConfig::svmParams.term_crit   = TermCriteria(CV_TERMCRIT_ITER, 100000, 1e-6);
 
+	AppConfig::partitionCount = 5;
+	AppConfig::partitionTestIndex = 4;
+	AppConfig::partitionSize = AppConfig::carSampleCount/AppConfig::partitionCount;
+
 
 	AppConfig::bowProperties.detector  = configureFeatureDetector();
 	AppConfig::bowProperties.extractor = configureDescriptorExtractor();
@@ -60,5 +65,4 @@ void AppConfig::loadFromYml()
 {
 
 }
-
 
