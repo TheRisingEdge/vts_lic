@@ -80,6 +80,7 @@
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlsaComponent.cpp" />
     <ClCompile Include="SvmComponent.cpp" />
     <ClCompile Include="Tester.cpp" />
   </ItemGroup>
@@ -88,6 +89,7 @@
     <ClInclude Include="BowComponent.h" />
     <ClInclude Include="Content.h" />
     <ClInclude Include="Importer.h" />
+    <ClInclude Include="PlsaComponent.h" />
     <ClInclude Include="SvmComponent.h" />
     <ClInclude Include="Tester.h" />
   </ItemGroup>
