@@ -7,9 +7,6 @@ using namespace cv;
 class BowComponent
 {
 private:	
-	
-	Ptr<FeatureDetector>		detector;
-	Ptr<DescriptorExtractor>	extractor;
 	Ptr<DescriptorMatcher>		matcher;
 	BOWImgDescriptorExtractor*	bowDE; 
 	BOWKMeansTrainer*			bowTrainer;
@@ -23,7 +20,21 @@ private:
 	Mat_<float> positiveDescriptors;
 	Mat_<float> negativeDescriptors;
 
+	void saveBows();
+	
+
+	void saveKeypointsAndDescriptors();
+	void loadKeypointsAndDescriptors();
+
+	void writeDescriptorsVec( FileStorage f, const char*  sizeKey, const char* baseKey, vector<Mat> carDescriptors );
+	void readDescriptorsVec( FileStorage f, const char*  sizeKey, const char* baseKey, vector<Mat>* carDescriptors );
+	void writeKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>> carKeypoints );
+	void readKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>>* carKeypoints );
+
 public:
+	Ptr<FeatureDetector>		detector;
+	Ptr<DescriptorExtractor>	extractor;
+
 	Importer* importer;
 	BowComponent(Importer* importer);	
 	~BowComponent(void);
@@ -43,13 +54,13 @@ public:
 	Mat_<float> extractBow(Mat image);
 	void saveVocabulary();
 	void loadVocabulary();
-	void saveKeypointsAndDescriptors();
-	void loadKeypointsAndDescriptors();
-	void writeKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>> carKeypoints );
-	void readKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>>* carKeypoints );
-	void drawKeypoints(Mat image, char* windowName = "keypoints");
-	void drawKeypointsOverCars();
-	void saveBows();
 	void loadBows();
+	
+	Mat getVocabulary();
+	vector<Mat> getImagesDescriptors();
+	vector<vector<KeyPoint>> getImagesKeypoints();	
+
+	void drawKeypoints(int imageIndex);
+	
 };
 

@@ -5,16 +5,51 @@
 #include <math.h>
 #include <time.h>
 #include <memory.h>
+#include "Helper.h"
+
+#include "opencv2/opencv.hpp"
+
+using namespace cv;
+
+typedef struct plsaParam
+{
+	float** data;
+	int documentCount;
+	int wordCount;
+	int topicCount;
+
+	int documentTopicRows;
+	int topicWordRows;
+	int topicWordCols;
+
+	int maxIterations;
+	int keptFeatureCount;
+
+	static struct plsaParam FromCvMat(Mat_<float> m, int topics, int maxIterations = 1000)
+	{
+		struct plsaParam param;
+
+		param.data = Helper::MatToFloats(m);
+		param.wordCount = m.cols;
+		param.documentCount = m.rows;
+		param.topicCount = topics;
+		param.maxIterations = maxIterations;
+
+		return param;
+	}
+
+}PlsaParam;
 
 class PlsaComponent
 {
-private:
-	int numberOfCategories;
-	int numberOfRows;
-	int numberOfColumns;
+private:		
 	float** data;
 	float** documentTopicMat;
-	float** wordTopicMat;
+	float** topicWordMat;
+	int maxIterations;
+
+	int* relevantIndexes;
+	int relevantIndexesCount;
 
 	void printVector(char* title, float* Vector, int n);
 
@@ -39,13 +74,27 @@ private:
 
 	bool makeApproximationStepPLSA(float** D1, float** D2, float** W1, float** W2, float** N, float* Z, int nRows, int nCols, int nCats);
 
+	void performPlsa();
+
 public:
+	int numberOfRows;
+	int numberOfColumns;
+	int numberOfTopics;
+
+	PlsaParam param;
+	PlsaComponent();
 	PlsaComponent(float** data, int rows, int cols, int topics);;
 	~PlsaComponent(void);
 
 	float** getDocumentTopicMatrix();
 
-	float** getWordTopicMatrix();
+	float** getTopicWordMatrix();
 
-	void performPLSA();
+	void testPLSA();
+
+	void performPlsa(PlsaParam param);
+	int* computeRelevantFeatures(PlsaParam param);
+
+	void save();
+	void load();
 };

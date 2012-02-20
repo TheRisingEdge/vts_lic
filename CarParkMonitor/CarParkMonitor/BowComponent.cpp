@@ -1,5 +1,6 @@
 #include "BowComponent.h"
 #include <assert.h>
+#include "Helper.h"
 
 BowComponent::BowComponent( Importer* importer )
 {
@@ -136,89 +137,22 @@ Mat_<float> BowComponent::extractBow( Mat image )
 	return bag;	
 }
 
-void BowComponent::saveVocabulary()
+cv::Mat BowComponent::getVocabulary()
 {
-	FileStorage f = FileStorage(Content::ymlFile("bowConfig"), FileStorage::WRITE);
-	f << "vocabulary" << vocabulary;
-	f.release();
+	return this->vocabulary;
 }
 
-void BowComponent::loadVocabulary()
+vector<Mat> BowComponent::getImagesDescriptors()
 {
-	assert(bowDE != NULL);
-
-	FileStorage f = FileStorage(Content::ymlFile("bowConfig"), FileStorage::READ);
-	f["vocabulary"] >> vocabulary;
-	f.release();
-
-	vocabularyLoaded = true;
-	bowDE->setVocabulary(vocabulary);
-	
-	assert(vocabulary.rows > 0);
-	assert(vocabulary.cols > 0);
+	return this->carDescriptors;
 }
 
-void BowComponent::saveKeypointsAndDescriptors()
+vector<vector<KeyPoint>> BowComponent::getImagesKeypoints()
 {
-	FileStorage f = FileStorage(Content::ymlFile("kpds"), FileStorage::WRITE);
-	f << "positiveDescriptors" << positiveDescriptors;
-	f << "negativeDescriptors" << negativeDescriptors;
-	writeKeypointsVec(f, "psize", "pks", carKeypoints);
-	writeKeypointsVec(f, "nsize", "nks", nonCarKeypoints);
-	f.release();
+	return carKeypoints;		
 }
 
-void BowComponent::loadKeypointsAndDescriptors()
-{
-	FileStorage f = FileStorage(Content::ymlFile("kpds"), FileStorage::READ);
-	
-	f["positiveDescriptors"] >> positiveDescriptors;
-	f["negativeDescriptors"] >> negativeDescriptors;
-	readKeypointsVec(f, "psize", "pks", &carKeypoints);
-	readKeypointsVec(f, "nsize", "nks", &nonCarKeypoints);
-	
-	f.release();
-
-	assert(positiveDescriptors.rows > 0);
-	assert(negativeDescriptors.rows > 0);
-	assert(carKeypoints.size() > 0);
-	assert(nonCarKeypoints.size() > 0);
-}
-
-void BowComponent::writeKeypointsVec( FileStorage f, const char* sizeKey,const char* baseKey, vector<vector<KeyPoint>>  keypointsVec)
-{
-	int size = keypointsVec.size();
-	
-	f << sizeKey << size;
-
-	for(int i = 0; i < size;i++)
-	{
-		vector<KeyPoint> keypoints = keypointsVec[i];
-		
-		char* key = new char[50];
-		sprintf(key, "%s%d", baseKey,i);
-		
-		write(f, key, keypoints);	
-	}	
-}
-
-void BowComponent::readKeypointsVec( FileStorage f,const char* sizeKey, const char* keyName, vector<vector<KeyPoint>>* keypointsVec )
-{
-	int size = 0;
-	f[sizeKey] >> size;
-
-	vector<KeyPoint> keypoints;
-	for(int i = 0; i < size;i++)
-	{		
-		char* key = new char[20];
-		sprintf(key, "%s%d", keyName, i);
-				
-		read(f[key], keypoints);
-		keypointsVec->push_back(keypoints);
-	}	
-
-	assert(keypointsVec->size() > 0);
-}
+#pragma region storage
 
 void BowComponent::saveBows()
 {
@@ -236,33 +170,70 @@ void BowComponent::loadBows()
 	f.release();
 }
 
-void BowComponent::drawKeypoints(Mat image, char* windowName)
+void BowComponent::saveVocabulary()
 {
-	if(!vocabularyLoaded)
-	{
-		loadVocabulary();		
-	}
-
-	vector<KeyPoint> keypoints;
-	detector->detect(image, keypoints);	
-	Mat output = image.clone();
-	cv::drawKeypoints(image, // original image
-		keypoints, // vector of keypoints
-		output, // the resulting image
-		cv::Scalar(255,0,0), // color of the points
-		cv::DrawMatchesFlags::DEFAULT //flag	
-	); 
-
-	imshow(windowName, output);
+	FileStorage f = FileStorage(Content::ymlFile("bowConfig"), FileStorage::WRITE);
+	f << "vocabulary" << vocabulary;
+	f.release();
 }
 
-void BowComponent::drawKeypointsOverCars()
+void BowComponent::loadVocabulary()
 {
-	vector<Mat> images = importer->loadCarImages();
-	for(int i = 0; i < images.size(); i++)
-	{
-		drawKeypoints(images[i], "keypoints");
-		waitKey();
-	}
+	assert(bowDE != NULL);
+
+	FileStorage f = FileStorage(Content::ymlFile("bowConfig"), FileStorage::READ);
+	f["vocabulary"] >> vocabulary;
+	f.release();
+
+	vocabularyLoaded = true;
+	bowDE->setVocabulary(vocabulary);
+
+	assert(vocabulary.rows > 0);
+	assert(vocabulary.cols > 0);
 }
 
+void BowComponent::saveKeypointsAndDescriptors()
+{
+	FileStorage f = FileStorage(Content::ymlFile("kpds"), FileStorage::WRITE);
+
+	f << "positiveDescriptors" << positiveDescriptors;
+	f << "negativeDescriptors" << negativeDescriptors;
+
+	Helper::writeKeypointCollectionVec(f, "psize", "pks", carKeypoints);
+	Helper::writeKeypointCollectionVec(f, "nsize", "nks", nonCarKeypoints);
+	Helper::writeMatVec(f, "cdesc", carDescriptors);
+
+	f.release();
+}
+
+void BowComponent::loadKeypointsAndDescriptors()
+{
+	FileStorage f = FileStorage(Content::ymlFile("kpds"), FileStorage::READ);
+
+	f["positiveDescriptors"] >> positiveDescriptors;
+	f["negativeDescriptors"] >> negativeDescriptors;
+
+	Helper::readKeypointCollectionVec(f,"psize", "pks", &carKeypoints);
+	Helper::readKeypointCollectionVec(f, "nsize", "nks", &nonCarKeypoints);
+	Helper::readMatVec(f, "cdesc", &carDescriptors);
+
+	f.release();
+
+	assert(positiveDescriptors.rows > 0);
+	assert(negativeDescriptors.rows > 0);
+	assert(carKeypoints.size() > 0);
+	assert(nonCarKeypoints.size() > 0);
+}
+
+void BowComponent::drawKeypoints( int imageIndex )
+{
+	Mat image = importer->loadCarImages()[imageIndex];
+	vector<KeyPoint> keypoints = carKeypoints[0];
+
+	Mat img_keypoint;
+	cv::drawKeypoints( image, keypoints, img_keypoint, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
+
+	imshow("bow test", img_keypoint);
+}
+
+#pragma endregion storage

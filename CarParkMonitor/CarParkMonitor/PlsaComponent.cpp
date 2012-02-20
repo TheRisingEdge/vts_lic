@@ -1,6 +1,9 @@
 #include "PlsaComponent.h"
+#include "Helper.h"
+#include "opencv2/opencv.hpp"
+#include "Content.h"
 
-
+using namespace cv;
 
 PlsaComponent::~PlsaComponent(void)
 {
@@ -196,15 +199,21 @@ bool PlsaComponent::makeApproximationStepPLSA( float** D1, float** D2, float** W
 	}
 	difference /= (float)(nCats);
 	difference /= (float)(nCats);
-	if (difference < 0.001) return true;
+	#pragma region decideStopConstant
+
+	//0.001
+	if (difference < 0.008) return true;
 	return false;
+
+	#pragma endregion decideStopConstant
+	
 }
 
-void PlsaComponent::performPLSA()
+void PlsaComponent::performPlsa()
 {
 	int nRows = numberOfRows;
 	int nCols = numberOfColumns;
-	int nCats = numberOfCategories;
+	int nCats = numberOfTopics;
 
 	//Allocate memory
 	float** D1 = (float**)malloc(nRows * sizeof(float*));
@@ -237,27 +246,31 @@ void PlsaComponent::performPLSA()
 
 	/////////////////////////////Start pLSA/////////////////////////////
 	printf("Start PLSA\n");
+
 	initializeMatrix(D1, nRows, nCats);
 	initializeMatrix(W1, nCats, nCols);
+
 	normalizeMatrix(D1, nRows, nCats);
 	normalizeMatrix(W1, nCats, nCols);
+
 	initializeZ(Z, nCats);
 	int nCounter = 0;
 	while (!makeApproximationStepPLSA(D1, D2, W1, W2, N, Z, nRows, nCols, nCats)) {
 		float currentLikelihood = computeLikelihood(D2, W2, nRows, nCols, nCats);
 		printf("current likelihood %f\n", currentLikelihood);
 		++nCounter;
-		if (nCounter >= 1000) break;
+		if (nCounter >= this->maxIterations) break;
 	}
 	printf("\n\n");
 	normalizeMatrix(D2, nRows, nCats);
 	normalizeMatrix(W2, nCats, nCols);
-	printMatrix("Document-category", D2, nRows, nCats);
-	printMatrix("Word-category", W2, nCats, nCols);
+
+	printMatrix("Document-category", D2, numberOfRows, nCats);
+	printMatrix("Word-category", W2, nCats, numberOfColumns);
 	printf("End PLSA\n\n");	
 
 	documentTopicMat = D2;
-	wordTopicMat = W2;
+	topicWordMat = W2;
 
 	if (Z) free(Z);
 
@@ -288,15 +301,165 @@ float** PlsaComponent::getDocumentTopicMatrix()
 	return documentTopicMat;
 }
 
-float** PlsaComponent::getWordTopicMatrix()
+float** PlsaComponent::getTopicWordMatrix()
 {
-	return wordTopicMat;
+	return topicWordMat;
 }
 
 PlsaComponent::PlsaComponent( float** data, int rows, int cols, int topics )
 {
-	numberOfCategories = topics; 
+	numberOfTopics = topics; 
 	numberOfRows       = rows;  
 	numberOfColumns    = cols; 
 	this->data = data;
 }
+
+PlsaComponent::PlsaComponent()
+{
+
+}
+
+void PlsaComponent::testPLSA()
+{
+	int rows = 5;
+	int cols = 6;
+
+	float data[5][6] = {
+		{0.1, 0.1, 0.1, 0.1, 0, 0},   
+		{0.1, 0.2, 0.1, 0.1, 0, 0},   
+		{0.2, 0.1, 0.2, 0.1, 0, 0.1},
+		{0.1, 0.1, 0.0, 0.2, 0.4, 0.7},
+		{0.1, 0.3, 0.6, 0.5, 0.7, 0.6},   
+	};
+
+	float** bows = new float*[5];
+	for(int i = 0; i < 5; i++)
+	{
+		bows[i] = new float[6];
+		for(int j = 0; j < 6; j++)
+		{
+			bows[i][j] = data[i][j];
+		}
+	}
+
+	this->data = bows;
+	this->numberOfRows = 5;
+	this->numberOfColumns = 6;
+	this->numberOfTopics = 2;
+	
+	this->performPlsa();
+}
+
+void PlsaComponent::performPlsa( PlsaParam param )
+{
+	numberOfTopics = param.topicCount; 
+	numberOfRows       = param.documentCount;  
+	numberOfColumns    = param.wordCount; 
+	data = param.data;
+	this->maxIterations = param.maxIterations;
+	this->param = param;
+
+	performPlsa();
+}
+
+void PlsaComponent::save()
+{
+	Mat topicWord = Helper::floatsToMat(topicWordMat, numberOfTopics, numberOfColumns);
+
+	FileStorage f = FileStorage(Content::ymlFile("plsa"), FileStorage::WRITE);
+
+	f << "topicCount" << numberOfTopics;
+	f << "documentCount" << numberOfRows;
+	f << "wordCount" << numberOfColumns;
+	f << "maxIterations" << maxIterations;
+
+	f << "topicWordMat" << topicWord;
+		 
+	vector<int> indexes = Helper::intArrayToVector(relevantIndexes, relevantIndexesCount);
+	f << "relevantIndexes" << indexes;
+
+	f.release();
+}
+
+void PlsaComponent::load()
+{
+	FileStorage f = FileStorage(Content::ymlFile("plsa"), FileStorage::READ);
+	Mat topicWord;
+		
+	f["topicCount"] >> numberOfTopics;
+	f["documentCount"] >> numberOfRows;
+	f["wordCount"] >> numberOfColumns;
+	f["maxIterations"] >> maxIterations;
+
+	f["topicWordMat"] >> topicWord;
+
+	vector<int> revs;
+	f["relevantIndexes"] >> revs;
+
+	int count = 0;
+	this->relevantIndexes = Helper::vectorToIntArray(revs, &count);
+	this->relevantIndexesCount = count;
+
+	this->topicWordMat = Helper::MatToFloats(topicWord);
+	
+	f.release();
+}
+
+int* PlsaComponent::computeRelevantFeatures( PlsaParam param )
+{
+	assert(param.topicCount == 1);
+	assert(param.keptFeatureCount > 0);
+
+	performPlsa(param);
+
+	float** wordProb = this->getTopicWordMatrix();
+	
+	int* positions = new int[param.wordCount];
+	for(int i = 0; i < param.wordCount; i++)
+	{
+		positions[i] = i;
+	}
+
+	
+	float* fake = new float[param.wordCount];
+	
+	for(int i = 0; i < param.wordCount; i++)
+	{
+		fake[i] = wordProb[0][i];
+	}
+
+
+	for(int i = 0; i < param.wordCount - 1; i++)
+	{
+		for(int j = i+1; j < param.wordCount; j++)
+		{
+			if(fake[i] < fake[j])
+			{
+				float aux = fake[i];
+				fake[i] = fake[j];
+				fake[j] = aux;
+
+				int auxx = positions[i];
+				positions[i] = positions[j];
+				positions[j] = auxx;
+			}
+		}
+	}
+
+	int toKeep = param.keptFeatureCount;
+	
+	int* relevantIndexes = new int[toKeep];
+	for(int i = 0 ; i < toKeep; i++)
+	{
+		relevantIndexes[i] = positions[i];
+	}
+
+	this->relevantIndexes = relevantIndexes;
+	this->relevantIndexesCount = param.keptFeatureCount;
+
+	return relevantIndexes;
+}
+
+
+
+

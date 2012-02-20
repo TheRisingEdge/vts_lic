@@ -1,4 +1,5 @@
 #include "Tester.h"
+#include "Helper.h"
 #include <conio.h>
 
 typedef struct testResult
@@ -131,7 +132,7 @@ void Tester::test()
 	for(int i = 0; i < size; i++)
 	{
 		Mat image = images[i];
-		Mat bow = bowComponent->extractBow(image);
+		Mat bow = bowComponent->extractBow(image);		
 		float prediction = svm->predict(bow);
 
 		if(prediction < 0)
@@ -150,4 +151,75 @@ void Tester::test()
 	getch();
 }
 
+void Tester::testFiltered( int* filteredColumns, int count )
+{
+	vector<Mat> images;
+	images = importer->loadCarImages();
 
+
+	int size = images.size();
+	int wrongs = 0;
+
+	for(int i = 0; i < size; i++)
+	{
+		Mat image = images.at(i);
+		Mat bow = bowComponent->extractBow(image);
+		Mat bownew = Helper::filterColumns(bow, filteredColumns, count);
+		float prediction = svm->predict(bownew);
+
+		if(prediction < 0)
+			wrongs++;
+	}
+
+	TestResult r;
+	r.totalTested = size;
+	r.missclassified = wrongs;
+	r.computeErrorRate();
+	r.message = "positive images test";
+
+	printToConsole(r);
+	printToFile(r);
+
+	getch();
+}
+
+
+void Tester::testFilteredNegatives( int* filteredColumns, int count )
+{
+	vector<Mat> images;
+	images = importer->loadNonCarImages();
+
+
+	int size = images.size();
+	int wrongs = 0;
+
+	for(int i = 0; i < size; i++)
+	{
+		Mat image = images.at(i);
+		Mat bow = bowComponent->extractBow(image);
+		if(bow.rows == 0)
+			continue;
+
+		Mat bownew = Helper::filterColumns(bow, filteredColumns, count);
+		float prediction = svm->predict(bownew);
+
+		if(prediction > 0)
+			wrongs++;
+	}
+
+	TestResult r;
+	r.totalTested = size;
+	r.missclassified = wrongs;
+	r.computeErrorRate();
+	r.message = "negative images test";
+
+	printToConsole(r);
+	printToFile(r);
+
+	getch();
+}
+
+void Tester::testPositiveImage( Mat image )
+{
+
+}

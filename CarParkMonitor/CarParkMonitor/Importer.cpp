@@ -11,6 +11,8 @@ Importer::Importer( void )
 	testCarsLoaded = false;
 }
 
+#pragma region helpers
+
 void loadImagesWithIndexPath(char* indexPath, int count, vector<Mat>* output)
 {
 	for(int i = 1; i < count; i++)
@@ -21,12 +23,15 @@ void loadImagesWithIndexPath(char* indexPath, int count, vector<Mat>* output)
 	}
 }
 
+#pragma  endregion helpers
+
 vector<Mat> Importer::loadCarImages()
 {
 	if(!allCarsLoaded)
 	{
 		int carCount	=  AppConfig::carSampleCount;	
 		loadImagesWithIndexPath("./Content/TrainImages/pos-%d.pgm", carCount, &allCars);		
+
 		allCarsLoaded = true;
 		testCarsLoaded = true;
 
@@ -35,8 +40,7 @@ vector<Mat> Importer::loadCarImages()
 		{
 			bool isIncluded = ((i/AppConfig::partitionSize) != AppConfig::partitionTestIndex);
 			Mat image = allCars[i];
-			if(isIncluded)
-			{
+			if(isIncluded){
 				trainingCars.push_back(image);
 			}else{
 				testCars.push_back(image);
@@ -59,7 +63,7 @@ vector<Mat> Importer::loadNonCarImages()
 	return allNonCars;
 }
 
-void  Importer::loadTrainingImages()
+void  Importer::loadAllImages()
 {						
 	loadCarImages();	
 	loadNonCarImages();
@@ -89,11 +93,21 @@ cv::Mat Importer::loadCarImage( int nr )
 	}	
 }
 
+vector<Mat> Importer::loadTestImages()
+{
+	if(!testCarsLoaded)
+		loadCarImages();
+
+	return testCars;
+}
+
 cv::Mat Importer::loadTestImage( int nr )
 {
 	char* path = Content::pathTo("./Content/TestImages/test-%d.pgm",nr);
 	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
 }
+
+#pragma region notused
 
 cv::Mat Importer::loadGrayImage( char* fileName )
 {
@@ -107,13 +121,11 @@ char* Importer::videoPath( int nr )
 	return Content::pathTo("./Content/Videos/video-%d.avi", nr);
 }
 
-vector<Mat> Importer::loadTestImages()
-{
-	if(!testCarsLoaded)
-		loadCarImages();
+#pragma endregion notused
 
-	return testCars;
-}
+
+
+
 
 
 

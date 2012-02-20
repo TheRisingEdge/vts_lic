@@ -78,6 +78,8 @@
     <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="BowComponent.cpp" />
     <ClCompile Include="Content.cpp" />
+    <ClCompile Include="DrawComponent.cpp" />
+    <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlsaComponent.cpp" />
@@ -88,6 +90,8 @@
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="BowComponent.h" />
     <ClInclude Include="Content.h" />
+    <ClInclude Include="DrawComponent.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="PlsaComponent.h" />
     <ClInclude Include="SvmComponent.h" />

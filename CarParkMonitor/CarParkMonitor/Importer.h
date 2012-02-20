@@ -30,7 +30,7 @@ class Importer
 		Mat loadNonCarSample(int nr);		
 		Mat loadGrayImage(char* path);
 
-		void loadTrainingImages();
+		void loadAllImages();
 
 		vector<Mat> loadCarImages();
 		vector<Mat> loadNonCarImages();

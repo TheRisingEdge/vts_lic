@@ -15,7 +15,10 @@ public:
 	~Tester(void);
 
 	void test();
+	void testFiltered(int* filteredColumns, int count);
 	void testPositives(vector<Mat>* images = NULL);
 	void testNegatives();
+	void testFilteredNegatives( int* filteredColumns, int count );
+	void testPositiveImage(Mat image);
 };
 

@@ -30,6 +30,7 @@ void SvmComponent::train( Mat_<float> positiveSamples, Mat_<float> negativeSampl
 	trainingLabels.push_back(negativeLabels);
 
 	this->svm.train(trainingData, trainingLabels, Mat(), Mat(), AppConfig::svmParams);	
+	this->save();
 }
 
 void SvmComponent::save()

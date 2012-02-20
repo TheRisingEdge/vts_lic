@@ -44,7 +44,7 @@ void AppConfig::load()
 {
 	AppConfig::carSampleCount		= 550;
 	AppConfig::nonCarSampleCount	= 450;	
-	AppConfig::clusterCount			= 600;
+	AppConfig::clusterCount			= 900;
 
 	AppConfig::svmParams.svm_type    = SVM::C_SVC;
 	AppConfig::svmParams.C           = 80;
