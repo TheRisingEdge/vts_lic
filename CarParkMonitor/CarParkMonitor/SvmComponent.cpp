@@ -29,8 +29,14 @@ void SvmComponent::train( Mat_<float> positiveSamples, Mat_<float> negativeSampl
 	trainingLabels.push_back(positiveLabels);
 	trainingLabels.push_back(negativeLabels);
 
+	cout << "SVM training started \n";
+	cout << "\t positive features: " << positiveSamples.rows << "\n";
+	cout << "\t negative features: " << negativeSamples.rows << "\n";
+
 	this->svm.train(trainingData, trainingLabels, Mat(), Mat(), AppConfig::svmParams);	
 	this->save();
+	cout << "SVM training ended (saved SVM) \n";
+	cout << "\t support vectors: " << svm.get_support_vector_count() << "\n";
 }
 
 void SvmComponent::save()
@@ -43,6 +49,7 @@ void SvmComponent::load()
 {
 	char* path = Content::ymlFile("svm");
 	svm.load(path);
+	cout << "SVM loaded, support vectors: " << svm.get_support_vector_count() << "\n"; 
 }
 
 float SvmComponent::predict( Mat sample )

@@ -141,7 +141,6 @@ int* Helper::vectorToIntArray( vector<int> vec, int* count /*= NULL*/ )
 {
 	int* arr = new int[vec.size()];
 	*count = vec.size();
-
 	for(int i = 0; i < vec.size(); i++)
 	{
 		arr[i] = vec[i];
@@ -149,4 +148,31 @@ int* Helper::vectorToIntArray( vector<int> vec, int* count /*= NULL*/ )
 
 	return arr;
 }
+
+Mat_<int> Helper::intArrayToMat( int* arr, int len )
+{
+	Mat_<int> mat(1, len);
+	for(int i = 0; i < len; i++)
+	{
+		mat[0][i] = arr[i]; 
+	}
+
+	return mat;
+}
+
+int* Helper::MatToIntArray( Mat_<int> mat, int* len )
+{
+	int size = mat.cols;
+	*len = size;
+
+	int* arr = new int[size];
+	for(int i = 0; i < size; i++)
+	{
+		arr[i] = mat[0][i];
+	}
+
+	return arr;
+}
+
+
 

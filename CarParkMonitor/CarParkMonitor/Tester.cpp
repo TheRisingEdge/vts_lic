@@ -154,7 +154,7 @@ void Tester::test()
 void Tester::testFiltered( int* filteredColumns, int count )
 {
 	vector<Mat> images;
-	images = importer->loadCarImages();
+	images = importer->loadTestImages();
 
 
 	int size = images.size();
@@ -175,7 +175,7 @@ void Tester::testFiltered( int* filteredColumns, int count )
 	r.totalTested = size;
 	r.missclassified = wrongs;
 	r.computeErrorRate();
-	r.message = "positive images test";
+	r.message = "positive images test, plsa on all cars";
 
 	printToConsole(r);
 	printToFile(r);

@@ -47,8 +47,10 @@ void AppConfig::load()
 	AppConfig::clusterCount			= 900;
 
 	AppConfig::svmParams.svm_type    = SVM::C_SVC;
-	AppConfig::svmParams.C           = 80;
-	AppConfig::svmParams.kernel_type = SVM::RBF;
+	AppConfig::svmParams.C           = 300;
+	AppConfig::svmParams.coef0		 = 30;
+	AppConfig::svmParams.degree		 = 2;
+	AppConfig::svmParams.kernel_type = SVM::POLY;
 	AppConfig::svmParams.term_crit   = TermCriteria(CV_TERMCRIT_ITER, 100000, 1e-6);
 
 	AppConfig::partitionCount = 5;

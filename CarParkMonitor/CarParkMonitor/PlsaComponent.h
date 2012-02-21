@@ -24,6 +24,7 @@ typedef struct plsaParam
 
 	int maxIterations;
 	int keptFeatureCount;
+	bool verbose;
 
 	static struct plsaParam FromCvMat(Mat_<float> m, int topics, int maxIterations = 1000)
 	{
@@ -34,6 +35,7 @@ typedef struct plsaParam
 		param.documentCount = m.rows;
 		param.topicCount = topics;
 		param.maxIterations = maxIterations;
+		param.verbose = false;
 
 		return param;
 	}
@@ -47,9 +49,6 @@ private:
 	float** documentTopicMat;
 	float** topicWordMat;
 	int maxIterations;
-
-	int* relevantIndexes;
-	int relevantIndexesCount;
 
 	void printVector(char* title, float* Vector, int n);
 
@@ -80,6 +79,8 @@ public:
 	int numberOfRows;
 	int numberOfColumns;
 	int numberOfTopics;
+	int* relevantIndexes;
+	int relevantIndexesCount;
 
 	PlsaParam param;
 	PlsaComponent();

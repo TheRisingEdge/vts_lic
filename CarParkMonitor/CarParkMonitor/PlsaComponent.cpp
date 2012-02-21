@@ -260,14 +260,18 @@ void PlsaComponent::performPlsa()
 		printf("current likelihood %f\n", currentLikelihood);
 		++nCounter;
 		if (nCounter >= this->maxIterations) break;
-	}
-	printf("\n\n");
+	}	
+	
 	normalizeMatrix(D2, nRows, nCats);
 	normalizeMatrix(W2, nCats, nCols);
 
-	printMatrix("Document-category", D2, numberOfRows, nCats);
-	printMatrix("Word-category", W2, nCats, numberOfColumns);
-	printf("End PLSA\n\n");	
+	if(param.verbose)
+	{
+		printf("\n\n");
+		printMatrix("Document-category", D2, numberOfRows, nCats);
+		printMatrix("Word-category", W2, nCats, numberOfColumns);
+		printf("End PLSA\n\n");	
+	}
 
 	documentTopicMat = D2;
 	topicWordMat = W2;
@@ -374,8 +378,8 @@ void PlsaComponent::save()
 	f << "maxIterations" << maxIterations;
 
 	f << "topicWordMat" << topicWord;
-		 
-	vector<int> indexes = Helper::intArrayToVector(relevantIndexes, relevantIndexesCount);
+		 	
+	Mat_<int> indexes = Helper::intArrayToMat(relevantIndexes, relevantIndexesCount);
 	f << "relevantIndexes" << indexes;
 
 	f.release();
@@ -393,11 +397,11 @@ void PlsaComponent::load()
 
 	f["topicWordMat"] >> topicWord;
 
-	vector<int> revs;
-	f["relevantIndexes"] >> revs;
+	Mat_<int> relevant;
+	f["relevantIndexes"] >> relevant;
 
 	int count = 0;
-	this->relevantIndexes = Helper::vectorToIntArray(revs, &count);
+	this->relevantIndexes = Helper::MatToIntArray(relevant, &count);
 	this->relevantIndexesCount = count;
 
 	this->topicWordMat = Helper::MatToFloats(topicWord);
@@ -419,10 +423,8 @@ int* PlsaComponent::computeRelevantFeatures( PlsaParam param )
 	{
 		positions[i] = i;
 	}
-
 	
-	float* fake = new float[param.wordCount];
-	
+	float* fake = new float[param.wordCount];	
 	for(int i = 0; i < param.wordCount; i++)
 	{
 		fake[i] = wordProb[0][i];
@@ -446,9 +448,9 @@ int* PlsaComponent::computeRelevantFeatures( PlsaParam param )
 		}
 	}
 
-	int toKeep = param.keptFeatureCount;
-	
+	int toKeep = param.keptFeatureCount;	
 	int* relevantIndexes = new int[toKeep];
+
 	for(int i = 0 ; i < toKeep; i++)
 	{
 		relevantIndexes[i] = positions[i];

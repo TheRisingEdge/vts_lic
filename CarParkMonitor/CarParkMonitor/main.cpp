@@ -29,8 +29,7 @@ int main(int argc, char** argv)
 	{		
 		importer.loadAllImages();				
 		//bowComponent.extractBows(true, true, true);	
-		bowComponent.loadVocabulary();		
-		bowComponent.loadBows();
+		bowComponent.loadLastConfig();
 				
 		//plsa.testPLSA();
 
@@ -40,29 +39,29 @@ int main(int argc, char** argv)
 
 		PlsaParam param = PlsaParam::FromCvMat(bowComponent.positiveBows, 1, 100000);
 		param.keptFeatureCount = keptFeatureCount;		
-		featureIndexes = plsa.computeRelevantFeatures(param);
+		plsa.load();
+		featureIndexes = plsa.relevantIndexes;//plsa.computeRelevantFeatures(param);
 		//plsa.save();
 		
 		Mat_<float> newBows = Helper::filterColumns(bowComponent.positiveBows, featureIndexes, param.keptFeatureCount);
 		Mat_<float> newNonBows = Helper::filterColumns(bowComponent.negativeBows, featureIndexes, param.keptFeatureCount);		
-		Mat pos = newBows;
-		Mat neg = newNonBows;
+		Mat pos = bowComponent.positiveBows;//newBows;
+		Mat neg = bowComponent.negativeBows;//newNonBows;
 
 		svm.train(pos, neg);	
 		//svm.load();
 
 		Tester tester(&bowComponent, &svm);		
-		tester.testFiltered(featureIndexes, param.keptFeatureCount);
-		//tester.testPositives();
-		//tester.testPositives(&(importer.loadTestImages()));
+		//tester.testFiltered(featureIndexes, param.keptFeatureCount);
+		tester.testNegatives();
+		tester.testPositives();
+		tester.testPositives(&(importer.loadTestImages()));
 
 		//tester.testFilteredNegatives(featureIndexes, keptFeatureCount);
 
 	}else{
-
 		svm.load();
 		plsa.load();
-
 		Tester tester(&bowComponent, &svm);		
 		tester.testFiltered(featureIndexes, keptFeatureCount);
 	}

@@ -227,13 +227,21 @@ void BowComponent::loadKeypointsAndDescriptors()
 
 void BowComponent::drawKeypoints( int imageIndex )
 {
-	Mat image = importer->loadCarImages()[imageIndex];
-	vector<KeyPoint> keypoints = carKeypoints[0];
+	vector<Mat> allImages = importer->loadCarImages();
+	Mat image = allImages[imageIndex];
+	vector<KeyPoint> keypoints = carKeypoints[imageIndex];
 
 	Mat img_keypoint;
 	cv::drawKeypoints( image, keypoints, img_keypoint, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
 
 	imshow("bow test", img_keypoint);
+}
+
+void BowComponent::loadLastConfig()
+{
+	loadVocabulary();
+	loadKeypointsAndDescriptors();
+	loadBows();	
 }
 
 #pragma endregion storage

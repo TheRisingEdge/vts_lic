@@ -18,6 +18,7 @@ public:
 	static void readKeypointCollectionVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>>* carKeypoints );
 	static Mat_<float> filterColumns(Mat_<float> origin, int* columnsKept, int count);
 	static vector<int> intArrayToVector(int* arr, int count);
-	static int* vectorToIntArray(vector<int> vec, int* count = NULL);
+	static int* vectorToIntArray(vector<int> vec, int* count = NULL);	
+	static Mat_<int> intArrayToMat(int* arr, int len);
+	static int* MatToIntArray(Mat_<int> mat, int* len);
 };
-
