@@ -5,45 +5,11 @@ Helper::Helper(void)
 {
 }
 
-
 Helper::~Helper(void)
 {
 }
 
-float** Helper::MatToFloats( Mat_<float> m )
-{
-	int rows = m.rows;
-	int cols = m.cols;
-
-	float** fmat = new float*[rows];
-	for(int i = 0; i < rows; i++)
-	{
-		fmat[i] = new float[cols];
-		for(int j = 0; j < cols; j++)
-		{	
-			fmat[i][j] = m.at<float>(i,j);
-		}		
-	}
-
-	return fmat;
-}
-
-Mat_<float> Helper::floatsToMat( float** data, int rows, int cols )
-{
-	Mat_<float> mat = Mat_<float>(rows, cols);
-
-	for(int i = 0; i < rows; i++)
-	{
-		for(int j = 0; j < cols; j++)
-		{
-			mat[i][j] = data[i][j];
-		}
-	}
-
-	return mat;
-}
-
-
+#pragma region storage
 
 void Helper::writeKeypointCollectionVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>> carKeypoints )
 {
@@ -110,10 +76,14 @@ void Helper::readMatVec( FileStorage f, const char* baseKey, vector<Mat>* carDes
 	}
 }
 
+#pragma endregion storage
+
+#pragma region converters
+
 Mat_<float> Helper::filterColumns(Mat_<float> origin, int* columnsKept, int count)
 {
 	Mat_<float> dest = Mat_<float>(origin.rows, count);
-	
+
 	for(int i = 0; i < origin.rows; i++)
 	{
 		int insIndex = 0;
@@ -125,28 +95,6 @@ Mat_<float> Helper::filterColumns(Mat_<float> origin, int* columnsKept, int coun
 	}
 
 	return dest;
-}
-
-vector<int> Helper::intArrayToVector( int* arr, int count )
-{
-	vector<int> vec;
-	for(int i = 0; i < count; i++)
-	{
-		vec.push_back(arr[i]);
-	}
-	return vec;
-}
-
-int* Helper::vectorToIntArray( vector<int> vec, int* count /*= NULL*/ )
-{
-	int* arr = new int[vec.size()];
-	*count = vec.size();
-	for(int i = 0; i < vec.size(); i++)
-	{
-		arr[i] = vec[i];
-	}
-
-	return arr;
 }
 
 Mat_<int> Helper::intArrayToMat( int* arr, int len )
@@ -174,5 +122,39 @@ int* Helper::MatToIntArray( Mat_<int> mat, int* len )
 	return arr;
 }
 
+float** Helper::MatToFloats( Mat_<float> m )
+{
+	int rows = m.rows;
+	int cols = m.cols;
+
+	float** fmat = new float*[rows];
+	for(int i = 0; i < rows; i++)
+	{
+		fmat[i] = new float[cols];
+		for(int j = 0; j < cols; j++)
+		{	
+			fmat[i][j] = m.at<float>(i,j);
+		}		
+	}
+
+	return fmat;
+}
+
+Mat_<float> Helper::floatsToMat( float** data, int rows, int cols )
+{
+	Mat_<float> mat = Mat_<float>(rows, cols);
+
+	for(int i = 0; i < rows; i++)
+	{
+		for(int j = 0; j < cols; j++)
+		{
+			mat[i][j] = data[i][j];
+		}
+	}
+
+	return mat;
+}
+
+#pragma endregion converters
 
 

@@ -29,16 +29,14 @@ void BowComponent::extractBows(bool extractDescriptors, bool extractVocabulary ,
 	{
 		positiveDescriptors = getCarDescriptors();
 		negativeDescriptors	= getNonCarDescriptors();
-		saveKeypointsAndDescriptors();
-		
+		saveKeypointsAndDescriptors();		
 	}else{
 		loadKeypointsAndDescriptors();
 	}
 
 	if(extractVocabulary)
 	{
-		bowTrainer->add(positiveDescriptors);
-		
+		bowTrainer->add(positiveDescriptors);		
 		vocabulary = bowTrainer->cluster();
 		bowDE->setVocabulary(vocabulary);
 
@@ -57,6 +55,28 @@ void BowComponent::extractBows(bool extractDescriptors, bool extractVocabulary ,
 	}
 }
 
+Mat_<float> BowComponent::extractBow( Mat image )
+{
+	if(!vocabularyLoaded){
+		loadVocabulary();
+	}
+
+	vector<KeyPoint> keypoints;
+	Mat_<float> descriptors;
+	Mat_<float> bag;
+
+	detector->detect(image, keypoints);
+	bowDE->compute(image, keypoints, bag);
+
+	return bag;	
+}
+
+cv::Mat BowComponent::getVocabulary()
+{
+	return this->vocabulary;
+}
+
+#pragma region helperComputations
 cv::Mat BowComponent::computeBows( const vector<Mat> images,const vector<vector<KeyPoint>> keypoints )
 {
 	Mat bags;
@@ -120,37 +140,7 @@ cv::Mat BowComponent::computerNonCarBows()
 	Mat bows = computeBows(images, nonCarKeypoints);
 	return bows;
 }
-
-Mat_<float> BowComponent::extractBow( Mat image )
-{
-	if(!vocabularyLoaded){
-		loadVocabulary();
-	}
-
-	vector<KeyPoint> keypoints;
-	Mat_<float> descriptors;
-	Mat_<float> bag;
-
-	detector->detect(image, keypoints);
-	bowDE->compute(image, keypoints, bag);
-	
-	return bag;	
-}
-
-cv::Mat BowComponent::getVocabulary()
-{
-	return this->vocabulary;
-}
-
-vector<Mat> BowComponent::getImagesDescriptors()
-{
-	return this->carDescriptors;
-}
-
-vector<vector<KeyPoint>> BowComponent::getImagesKeypoints()
-{
-	return carKeypoints;		
-}
+#pragma endregion helperComputations
 
 #pragma region storage
 
@@ -184,12 +174,12 @@ void BowComponent::loadVocabulary()
 	FileStorage f = FileStorage(Content::ymlFile("bowConfig"), FileStorage::READ);
 	f["vocabulary"] >> vocabulary;
 	f.release();
-
-	vocabularyLoaded = true;
+	
 	bowDE->setVocabulary(vocabulary);
-
 	assert(vocabulary.rows > 0);
 	assert(vocabulary.cols > 0);
+
+	vocabularyLoaded = true;
 }
 
 void BowComponent::saveKeypointsAndDescriptors()

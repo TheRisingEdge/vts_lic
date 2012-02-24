@@ -7,6 +7,9 @@ using namespace cv;
 class BowComponent
 {
 private:	
+	Mat vocabulary;
+	bool vocabularyLoaded;
+
 	Ptr<DescriptorMatcher>		matcher;
 	BOWImgDescriptorExtractor*	bowDE; 
 	BOWKMeansTrainer*			bowTrainer;
@@ -19,42 +22,35 @@ private:
 
 	Mat_<float> positiveDescriptors;
 	Mat_<float> negativeDescriptors;
+			
+	Mat getCarDescriptors();
+	Mat getNonCarDescriptors();
+	Mat computeCarBows();
+	Mat computerNonCarBows();
 
-	void saveBows();
-	
 	void saveKeypointsAndDescriptors();
 	void loadKeypointsAndDescriptors();
 
-	void writeDescriptorsVec( FileStorage f, const char*  sizeKey, const char* baseKey, vector<Mat> carDescriptors );
-	void readDescriptorsVec( FileStorage f, const char*  sizeKey, const char* baseKey, vector<Mat>* carDescriptors );
-	void writeKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>> carKeypoints );
-	void readKeypointsVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>>* carKeypoints );
-
-	Mat computeKeypointsAndDescriptors(vector<Mat> images,vector<vector<KeyPoint>>* keypoints_out, vector<Mat>* descriptors_out);
-	Mat getCarDescriptors();
-	Mat getNonCarDescriptors();
-	Mat computeBows(const vector<Mat> images,const vector<vector<KeyPoint>> keypoints );
-	Mat computeCarBows();
-	Mat computerNonCarBows();
-	vector<Mat> getImagesDescriptors();
-	vector<vector<KeyPoint>> getImagesKeypoints();	
 	void saveVocabulary();
 	void loadVocabulary();
+
+	void saveBows();
 	void loadBows();
-
-public:
-	Ptr<FeatureDetector>		detector;
-	Ptr<DescriptorExtractor>	extractor;
-
-	Importer* importer;
-	BowComponent(Importer* importer);	
-	~BowComponent(void);
 	
-	Mat vocabulary;
+	Mat computeBows(const vector<Mat> images,const vector<vector<KeyPoint>> keypoints );
+	Mat computeKeypointsAndDescriptors(vector<Mat> images,vector<vector<KeyPoint>>* keypoints_out, vector<Mat>* descriptors_out);
+
+public:	
 	Mat positiveBows;
 	Mat negativeBows;
-	bool vocabularyLoaded;
+	
+	Importer* importer;
+	Ptr<FeatureDetector>	detector;
+	Ptr<DescriptorExtractor> extractor;
 
+	BowComponent(Importer* importer);	
+	~BowComponent(void);
+		
 	void extractBows( bool extractDescriptors = true, bool extractVocabulary = true, bool extractBows = true);			
 	Mat_<float> extractBow(Mat image);
 

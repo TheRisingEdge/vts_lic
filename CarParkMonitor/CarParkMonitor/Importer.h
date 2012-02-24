@@ -19,19 +19,20 @@ class Importer
 		 bool nonCarsLoaded;
 		 bool testCarsLoaded;
 
+		 vector<Mat> readCarImages();
 	public:
 		Importer(void);
 		~Importer(void);
 			
 		char* videoPath(int nr);
+		Mat loadGrayImage(char* path);
 
 		Mat loadTestImage(int nr);
 		Mat loadCarImage(int nr);
-		Mat loadNonCarSample(int nr);		
-		Mat loadGrayImage(char* path);
+		Mat loadNonCarSample(int nr);				
 
 		void loadAllImages();
-
+		
 		vector<Mat> loadCarImages();
 		vector<Mat> loadNonCarImages();
 		vector<Mat> loadTestImages();

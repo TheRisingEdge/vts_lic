@@ -25,7 +25,7 @@ void loadImagesWithIndexPath(char* indexPath, int count, vector<Mat>* output)
 
 #pragma  endregion helpers
 
-vector<Mat> Importer::loadCarImages()
+vector<Mat> Importer::readCarImages()
 {
 	if(!allCarsLoaded)
 	{
@@ -65,7 +65,7 @@ vector<Mat> Importer::loadNonCarImages()
 
 void  Importer::loadAllImages()
 {						
-	loadCarImages();	
+	readCarImages();	
 	loadNonCarImages();
 }
 
@@ -96,7 +96,7 @@ cv::Mat Importer::loadCarImage( int nr )
 vector<Mat> Importer::loadTestImages()
 {
 	if(!testCarsLoaded)
-		loadCarImages();
+		readCarImages();
 
 	return testCars;
 }
@@ -119,6 +119,14 @@ cv::Mat Importer::loadGrayImage( char* fileName )
 char* Importer::videoPath( int nr )
 {
 	return Content::pathTo("./Content/Videos/video-%d.avi", nr);
+}
+
+vector<Mat> Importer::loadCarImages()
+{
+	if(!allCarsLoaded)
+		readCarImages();
+
+	return trainingCars;
 }
 
 #pragma endregion notused
