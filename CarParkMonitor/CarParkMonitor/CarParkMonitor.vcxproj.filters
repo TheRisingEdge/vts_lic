@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Video">
       <UniqueIdentifier>{1b60413f-a72c-47af-b5e3-2a4649e9d98d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\BlobTracking">
+      <UniqueIdentifier>{a1f20569-78ef-4648-8613-09126efc1de3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BlobTracking">
+      <UniqueIdentifier>{3fcd80b9-b2fa-482c-8b29-4e6870161061}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,6 +68,15 @@
     </ClCompile>
     <ClCompile Include="VideoProcessor.cpp">
       <Filter>Source Files\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameProcessor.cpp">
+      <Filter>Source Files\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="BgFgSegmentator.cpp">
+      <Filter>Source Files\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="ForegroundSegmentator.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -107,5 +122,19 @@
     <ClInclude Include="CannyFrameProcessor.h">
       <Filter>Header Files\Video</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BgFgSegmentator.h">
+      <Filter>Header Files\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="ForegroundSegmentator.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CarParkMonitor.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

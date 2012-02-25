@@ -24,7 +24,6 @@ class Importer
 		Importer(void);
 		~Importer(void);
 			
-		char* videoPath(int nr);
 		Mat loadGrayImage(char* path);
 
 		Mat loadTestImage(int nr);

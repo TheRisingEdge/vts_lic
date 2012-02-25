@@ -18,7 +18,7 @@ class FeatureTracker: public FrameProcessor
 		std::vector<float> err;    						// error in tracking
 
 
-		FeatureTracker(void){
+		FeatureTracker(void):FrameProcessor("Feature Tracker"){
 			maxDetectedFeatures = 100;
 			detectionQualityLevel = 0.070;
 			minFeatureDistance = 30.;

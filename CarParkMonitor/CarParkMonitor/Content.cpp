@@ -9,18 +9,18 @@ Content::~Content(void)
 {
 }
 
-char* Content::pathTo( char* pathReg, int id )
+char* Content::pathTo( char* pathReg, int index )
 {
 	char* fileName = new char[50];
-	sprintf(fileName,pathReg, id);
+	sprintf(fileName,pathReg, index);
 	return fileName;
 }
 
-char* Content::pathTo( char* pathReg, char* file )
+char* Content::pathTo( char* pathReg, char* fileName )
 {
-	char* fileName = new char[50];
-	sprintf(fileName,pathReg, file);
-	return fileName;
+	char* filePath = new char[50];
+	sprintf(filePath,pathReg, fileName);
+	return filePath;
 }
 
 char* Content::file( char* name )
@@ -31,4 +31,9 @@ char* Content::file( char* name )
 char* Content::ymlFile( char* name )
 {
 	return pathTo("./Content/Assets/%s.yml", name);
+}
+
+char* Content::videoFile( char* name )
+{
+	return pathTo("./Content/Videos/%s", name);
 }

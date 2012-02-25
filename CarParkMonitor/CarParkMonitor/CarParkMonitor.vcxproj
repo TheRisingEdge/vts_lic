@@ -77,11 +77,14 @@
   <ItemGroup>
     <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="BackgroundSegmentator.cpp" />
+    <ClCompile Include="BgFgSegmentator.cpp" />
     <ClCompile Include="BowComponent.cpp" />
     <ClCompile Include="CannyFrameProcessor.cpp" />
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="FeatureTracker.cpp" />
+    <ClCompile Include="ForegroundSegmentator.cpp" />
+    <ClCompile Include="FrameProcessor.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -93,18 +96,24 @@
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="BackgroundSegmentator.h" />
+    <ClInclude Include="BgFgSegmentator.h" />
     <ClInclude Include="BowComponent.h" />
     <ClInclude Include="CannyFrameProcessor.h" />
     <ClInclude Include="Content.h" />
     <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="FeatureTracker.h" />
+    <ClInclude Include="ForegroundSegmentator.h" />
     <ClInclude Include="FrameProcessor.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="PlsaComponent.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="SvmComponent.h" />
     <ClInclude Include="Tester.h" />
     <ClInclude Include="VideoProcessor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CarParkMonitor.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

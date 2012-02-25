@@ -12,35 +12,34 @@ VideoProcessor::~VideoProcessor(){}
 
 void VideoProcessor::run(FrameProcessor* frameProcessor )
 {	
-	bool stop = false;
-	this->capture.open(videoPath);
-
-	if(!capture.isOpened()){
-		stop = true;
+	
+	this->capture.open(this->videoPath);
+	if(!capture.isOpened())
+	{
+		capture.release();
+		return;
 	}
 
-	double frameRate = capture.get(CV_CAP_PROP_FPS);		
-	int delay = 1000/frameRate;
+	double fps = capture.get(CV_CAP_PROP_FPS);		
+	int delay = 1000.0/120.0;
 
 	cv::namedWindow(this->windowName);
+	cv::namedWindow(frameProcessor->windowName);
 
+	bool stop = false;
 	while(!stop){
 		if(!capture.read(this->in)){
 			break;
 		}
-
+		cv::imshow(this->windowName, this->in);
+		
 		frameProcessor->process(this->in, &this->out);
+		cv::imshow(frameProcessor->windowName, this->out);
 
-		cv::imshow(windowName, this->out);
 		if(cv::waitKey(delay)>=0){
 			stop = true;
 		}
 	}
 
 	capture.release();
-}
-
-void VideoProcessor::run( FrameProcessor* frameProcessors, int howMany )
-{
-
 }

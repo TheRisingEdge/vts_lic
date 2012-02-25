@@ -5,7 +5,7 @@
 class CannyFrameProcessor: public FrameProcessor
 {
 	public:
-		CannyFrameProcessor(void);
+		CannyFrameProcessor();
 		~CannyFrameProcessor(void);
 
 		void process(cv::Mat in, cv::Mat* out);	

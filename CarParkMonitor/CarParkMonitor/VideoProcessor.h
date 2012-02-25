@@ -15,7 +15,5 @@ class VideoProcessor
 		~VideoProcessor(void);
 	
 		void run(FrameProcessor* frameProcessor);
-		void run(FrameProcessor* frameProcessors, int howMany);
-
 };
 

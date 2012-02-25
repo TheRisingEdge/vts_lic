@@ -116,11 +116,6 @@ cv::Mat Importer::loadGrayImage( char* fileName )
 	return imread(path, CV_LOAD_IMAGE_GRAYSCALE);
 }
 
-char* Importer::videoPath( int nr )
-{
-	return Content::pathTo("./Content/Videos/video-%d.avi", nr);
-}
-
 vector<Mat> Importer::loadCarImages()
 {
 	if(!allCarsLoaded)
