@@ -51,54 +51,42 @@ typedef struct CvBlobTrackAuto
 
 class AutoTracker: public CvBlobTrackerAuto
 {
-public:
-    AutoTracker(CvBlobTrackerAutoParam1* param);
-    ~AutoTracker();
-    CvBlob* GetBlob(int index){return m_BlobList.GetBlob(index);};
-    CvBlob* GetBlobByID(int ID){return m_BlobList.GetBlobByID(ID);};
-    int     GetBlobNum(){return m_BlobList.GetBlobNum();};
-    virtual IplImage* GetFGMask(){return m_pFGMask;};
-    float   GetState(int BlobID){return m_pBTA?m_pBTA->GetState(BlobID):0;};
-    const char*   GetStateDesc(int BlobID){return m_pBTA?m_pBTA->GetStateDesc(BlobID):NULL;};
-    /* Return 0 if trajectory is normal;
-       return >0 if trajectory abnormal. */
-    void Process(IplImage* pImg, IplImage* pMask = NULL);
-    void Release(){delete this;};
 
 private:
-    IplImage*               m_pFGMask;
+    IplImage*               fgMask;
     int                     m_FGTrainFrames;
-    CvFGDetector*           m_pFG; /* Pointer to foreground mask detector module. */
-    CvBlobTracker*          m_pBT; /* Pointer to Blob tracker module. */
+    CvFGDetector*           fgDetector; /* Pointer to foreground mask detector module. */
+    CvBlobTracker*          blobTracker; /* Pointer to Blob tracker module. */
     int                     m_BTDel;
     int                     m_BTReal;
-    CvBlobDetector*         m_pBD; /* Pointer to Blob detector module. */
+    CvBlobDetector*         blobDetector; /* Pointer to Blob detector module. */
     int                     m_BDDel;
-    CvBlobTrackGen*         m_pBTGen;
-    CvBlobTrackPostProc*    m_pBTPostProc;
+    CvBlobTrackGen*         blobTrackGenerator;
+    CvBlobTrackPostProc*    blobTrackPostProc;
     int                     m_UsePPData;
-    CvBlobTrackAnalysis*    m_pBTA; /* Blob trajectory analyser. */
-    CvBlobSeq               m_BlobList;
-    int                     m_FrameCount;
-    int                     m_NextBlobID;
-    const char*                   m_TimesFile;
+    CvBlobTrackAnalysis*    blobTrackAnalyser; /* Blob trajectory analyser. */
+    CvBlobSeq               trackedBlobs;
+    int                     frameCount;
+    int                     nextBlobId;
+    const char*				m_TimesFile;
 
 public:
-    virtual void SaveState(CvFileStorage* fs)
-    {
-        cvWriteInt(fs,"FrameCount",m_FrameCount);
-        cvWriteInt(fs,"NextBlobID",m_NextBlobID);
-        m_BlobList.Write(fs,"BlobList");
-    };
+	AutoTracker(CvBlobTrackerAutoParam1* param);
+    ~AutoTracker();
 
-    virtual void LoadState(CvFileStorage* fs, CvFileNode* node)
-    {
-        CvFileNode* BlobListNode = cvGetFileNodeByName(fs,node,"BlobList");
-        m_FrameCount = cvReadIntByName(fs,node, "FrameCount", m_FrameCount);
-        m_NextBlobID = cvReadIntByName(fs,node, "NextBlobID", m_NextBlobID);
-        if(BlobListNode)
-        {
-            m_BlobList.Load(fs,BlobListNode);
-        }
-    };
+	virtual IplImage* GetFGMask();;
+
+    CvBlob* GetBlob(int index){return trackedBlobs.GetBlob(index);};
+    CvBlob* GetBlobByID(int ID){return trackedBlobs.GetBlobByID(ID);};
+    int     GetBlobNum(){return trackedBlobs.GetBlobNum();};    
+    float   GetState(int BlobID){return blobTrackAnalyser?blobTrackAnalyser->GetState(BlobID):0;};
+    const char*   GetStateDesc(int BlobID){return blobTrackAnalyser?blobTrackAnalyser->GetStateDesc(BlobID):NULL;};
+
+    /* Return 0 if trajectory is normal;
+       return >0 if trajectory abnormal. */    
+	void Process(IplImage* pImg, IplImage* pMask = NULL);
+    void Release(){delete this;};
+
+    virtual void SaveState(CvFileStorage* fs);
+    virtual void LoadState(CvFileStorage* fs, CvFileNode* node);;
 };

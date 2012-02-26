@@ -13,9 +13,11 @@ private:
 	cv::Mat background;		// accumulated background
 	cv::Mat backImage;		// background image
 	cv::Mat foreground;		// foreground image
+	Mat newForeground;
 	double learningRate;    // learning rate in background accumulation
 	int threshold;			// threshold for foreground extraction
 	IplImage foregroundIpl;
+	Mat structuringElement;
 
 public:
 	ForegroundSegmentator();

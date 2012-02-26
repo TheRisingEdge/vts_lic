@@ -367,121 +367,132 @@ static void print_params(CvVSModule* pM, const char* module, const char* log_nam
 
 }   /* print_params */
 
+/* Main function: */
 int main(int argc, char* argv[])
-{   /* Main function: */
-    CvCapture*                  pCap = NULL;
-    CvBlobTrackerAutoParam1     param = {0};
-    CvBlobTrackerAuto*          pTracker = NULL;
+{   
 
-    float       scale = 1;
-    const char* scale_name = NULL;
-    char*       yml_name = NULL;
-    char**      yml_video_names = NULL;
-    int         yml_video_num = 0;
-    char*       avi_name = NULL;
-    const char* fg_name = NULL;
-    char*       fgavi_name = NULL;
-    char*       btavi_name = NULL;
-    const char* bd_name = NULL;
-    const char* bt_name = NULL;
-    const char* btgen_name = NULL;
-    const char* btpp_name = NULL;
-    const char* bta_name = NULL;
-    char*       bta_data_name = NULL;
-    char*       track_name = NULL;
-    char*       comment_name = NULL;
-    char*       FGTrainFrames = NULL;
-    char*       log_name = NULL;
-    char*       savestate_name = NULL;
-    char*       loadstate_name = NULL;
-    const char* bt_corr = NULL;
-    DefModule_FGDetector*           pFGModule = NULL;
-    DefModule_BlobDetector*         pBDModule = NULL;
-    DefModule_BlobTracker*          pBTModule = NULL;
-    DefModule_BlobTrackPostProc*    pBTPostProcModule = NULL;
-    DefModule_BlobTrackGen*         pBTGenModule = NULL;
-    DefModule_BlobTrackAnalysis*    pBTAnalysisModule = NULL;
+cvInitSystem(argc, argv);
 
-    cvInitSystem(argc, argv);
+#pragma region declarations
+	CvCapture*                  pCap = NULL;
+	CvBlobTrackerAutoParam1     param = {0};
+	CvBlobTrackerAuto*          pTracker = NULL;
 
-    if(argc < 2)
-    {   /* Print help: */
-        int i;
-        printf("blobtrack [fg=<fg_name>] [bd=<bd_name>]\n"
-            "          [bt=<bt_name>] [btpp=<btpp_name>]\n"
-            "          [bta=<bta_name>\n"
-            "          [bta_data=<bta_data_name>\n"
-            "          [bt_corr=<bt_corr_way>]\n"
-            "          [btgen=<btgen_name>]\n"
-            "          [track=<track_file_name>]\n"
-            "          [scale=<scale val>] [noise=<noise_name>] [IVar=<IVar_name>]\n"
-            "          [FGTrainFrames=<FGTrainFrames>]\n"
-            "          [btavi=<avi output>] [fgavi=<avi output on FG>]\n"
-            "          <avi_file>\n");
+	float       scale = 1;
+	const char* scale_name = NULL;
+	char*       yml_name = NULL;
+	char**      yml_video_names = NULL;
+	int         yml_video_num = 0;
+	char*       avi_name = NULL;
+	const char* fg_name = NULL;
+	char*       fgavi_name = NULL;
+	char*       btavi_name = NULL;
+	const char* bd_name = NULL;
+	const char* bt_name = NULL;
+	const char* btgen_name = NULL;
+	const char* btpp_name = NULL;
+	const char* bta_name = NULL;
+	char*       bta_data_name = NULL;
+	char*       track_name = NULL;
+	char*       comment_name = NULL;
+	char*       FGTrainFrames = NULL;
+	char*       log_name = NULL;
+	char*       savestate_name = NULL;
+	char*       loadstate_name = NULL;
+	const char* bt_corr = NULL;
+	DefModule_FGDetector*           pFGModule = NULL;
+	DefModule_BlobDetector*         pBDModule = NULL;
+	DefModule_BlobTracker*          pBTModule = NULL;
+	DefModule_BlobTrackPostProc*    pBTPostProcModule = NULL;
+	DefModule_BlobTrackGen*         pBTGenModule = NULL;
+	DefModule_BlobTrackAnalysis*    pBTAnalysisModule = NULL;
+#pragma endregion declarations
 
-        printf("  <bt_corr_way> is the method of blob position correction for the \"Blob Tracking\" module\n"
-            "     <bt_corr_way>=none,PostProcRes\n"
-            "  <FGTrainFrames> is number of frames for FG training\n"
-            "  <track_file_name> is file name for save tracked trajectories\n"
-            "  <bta_data> is file name for data base of trajectory analysis module\n"
-            "  <avi_file> is file name of avi to process by BlobTrackerAuto\n");
+#pragma region params
+	if(argc < 2)
+	{   /* Print help: */
+		int i;
+		printf("blobtrack [fg=<fg_name>] [bd=<bd_name>]\n"
+			"          [bt=<bt_name>] [btpp=<btpp_name>]\n"
+			"          [bta=<bta_name>\n"
+			"          [bta_data=<bta_data_name>\n"
+			"          [bt_corr=<bt_corr_way>]\n"
+			"          [btgen=<btgen_name>]\n"
+			"          [track=<track_file_name>]\n"
+			"          [scale=<scale val>] [noise=<noise_name>] [IVar=<IVar_name>]\n"
+			"          [FGTrainFrames=<FGTrainFrames>]\n"
+			"          [btavi=<avi output>] [fgavi=<avi output on FG>]\n"
+			"          <avi_file>\n");
 
-        puts("\nModules:");
+		printf("  <bt_corr_way> is the method of blob position correction for the \"Blob Tracking\" module\n"
+			"     <bt_corr_way>=none,PostProcRes\n"
+			"  <FGTrainFrames> is number of frames for FG training\n"
+			"  <track_file_name> is file name for save tracked trajectories\n"
+			"  <bta_data> is file name for data base of trajectory analysis module\n"
+			"  <avi_file> is file name of avi to process by BlobTrackerAuto\n");
+
+		puts("\nModules:");
 #define PR(_name,_m,_mt)\
-        printf("<%s> is \"%s\" module name and can be:\n",_name,_mt);\
-        for(i=0; _m[i].nickname; ++i)\
-        {\
-            printf("  %d. %s",i+1,_m[i].nickname);\
-            if(_m[i].description)printf(" - %s",_m[i].description);\
-            printf("\n");\
-        }
+	printf("<%s> is \"%s\" module name and can be:\n",_name,_mt);\
+	for(i=0; _m[i].nickname; ++i)\
+		{\
+		printf("  %d. %s",i+1,_m[i].nickname);\
+		if(_m[i].description)printf(" - %s",_m[i].description);\
+		printf("\n");\
+		}
 
-        PR("fg_name",FGDetector_Modules,"FG/BG Detection");
-        PR("bd_name",BlobDetector_Modules,"Blob Entrance Detection");
-        PR("bt_name",BlobTracker_Modules,"Blob Tracking");
-        PR("btpp_name",BlobTrackPostProc_Modules, "Blob Trajectory Post Processing");
-        PR("btgen_name",BlobTrackGen_Modules, "Blob Trajectory Generation");
-        PR("bta_name",BlobTrackAnalysis_Modules, "Blob Trajectory Analysis");
+		PR("fg_name",FGDetector_Modules,"FG/BG Detection");
+		PR("bd_name",BlobDetector_Modules,"Blob Entrance Detection");
+		PR("bt_name",BlobTracker_Modules,"Blob Tracking");
+		PR("btpp_name",BlobTrackPostProc_Modules, "Blob Trajectory Post Processing");
+		PR("btgen_name",BlobTrackGen_Modules, "Blob Trajectory Generation");
+		PR("bta_name",BlobTrackAnalysis_Modules, "Blob Trajectory Analysis");
 #undef PR
-        return 0;
-    }   /* Print help. */
+		return 0;
+	}   /* Print help. */
 
-    {   /* Parse arguments: */
-        int i;
-        for(i=1; i<argc; ++i)
-        {
-            int bParsed = 0;
-            size_t len = strlen(argv[i]);
+#pragma endregion params
+
+#pragma region parseParams
+	{   /* Parse arguments: */
+		int i;
+		for(i=1; i<argc; ++i)
+		{
+			int bParsed = 0;
+			size_t len = strlen(argv[i]);
 #define RO(_n1,_n2) if(strncmp(argv[i],_n1,strlen(_n1))==0) {_n2 = argv[i]+strlen(_n1);bParsed=1;};
-            RO("fg=",fg_name);
-            RO("fgavi=",fgavi_name);
-            RO("btavi=",btavi_name);
-            RO("bd=",bd_name);
-            RO("bt=",bt_name);
-            RO("bt_corr=",bt_corr);
-            RO("btpp=",btpp_name);
-            RO("bta=",bta_name);
-            RO("bta_data=",bta_data_name);
-            RO("btgen=",btgen_name);
-            RO("track=",track_name);
-            RO("comment=",comment_name);
-            RO("FGTrainFrames=",FGTrainFrames);
-            RO("log=",log_name);
-            RO("savestate=",savestate_name);
-            RO("loadstate=",loadstate_name);
+			RO("fg=",fg_name);
+			RO("fgavi=",fgavi_name);
+			RO("btavi=",btavi_name);
+			RO("bd=",bd_name);
+			RO("bt=",bt_name);
+			RO("bt_corr=",bt_corr);
+			RO("btpp=",btpp_name);
+			RO("bta=",bta_name);
+			RO("bta_data=",bta_data_name);
+			RO("btgen=",btgen_name);
+			RO("track=",track_name);
+			RO("comment=",comment_name);
+			RO("FGTrainFrames=",FGTrainFrames);
+			RO("log=",log_name);
+			RO("savestate=",savestate_name);
+			RO("loadstate=",loadstate_name);
 #undef RO
-            {
-                char* ext = argv[i] + len-4;
-                if( strrchr(argv[i],'=') == NULL &&
-                    !bParsed &&
-                    (len>3 && (MY_STRICMP(ext,".avi") == 0 )))
-                {
-                    avi_name = Content::videoFile(argv[i]);
-                    break;
-                }
-            }   /* Next argument. */
-        }
-    }   /* Parse arguments. */
+			{
+				char* ext = argv[i] + len-4;
+				if( strrchr(argv[i],'=') == NULL &&
+					!bParsed &&
+					(len>3 && (MY_STRICMP(ext,".avi") == 0 )))
+				{
+					avi_name = Content::videoFile(argv[i]);
+					break;
+				}
+			}   /* Next argument. */
+		}
+	}   /* Parse arguments. */
+#pragma endregion parseParams
+
+	
 
     if(track_name)
     {   /* Set Trajectory Generator module: */
@@ -504,34 +515,37 @@ int main(int argc, char* argv[])
         if(MY_STRICMP(btpp_name,"none")!=0)bt_corr = "PostProcRes";
     }
 
+
     {   /* Set default parameters for one processing: */
         if(!bt_corr) bt_corr = "none";
         if(!fg_name) fg_name = FGDetector_Modules[2].nickname;
         if(!bd_name) bd_name = BlobDetector_Modules[1].nickname;
-        if(!bt_name) bt_name = BlobTracker_Modules[4].nickname;
+        if(!bt_name) bt_name = BlobTracker_Modules[1].nickname;
 
         if(!btpp_name) btpp_name = BlobTrackPostProc_Modules[1].nickname;
         if(!bta_name) bta_name = BlobTrackAnalysis_Modules[1].nickname;
         if(!scale_name) scale_name = "1";
     }
 
-    if(scale_name)
-        scale = (float)atof(scale_name);
+#pragma region setModules
+	if(scale_name)
+		scale = (float)atof(scale_name);
 
-    for(pFGModule=FGDetector_Modules; pFGModule->nickname; ++pFGModule)
-        if( fg_name && MY_STRICMP(fg_name,pFGModule->nickname)==0 ) break;
+	for(pFGModule=FGDetector_Modules; pFGModule->nickname; ++pFGModule)
+		if( fg_name && MY_STRICMP(fg_name,pFGModule->nickname)==0 ) break;
 
-    for(pBDModule=BlobDetector_Modules; pBDModule->nickname; ++pBDModule)
-        if( bd_name && MY_STRICMP(bd_name,pBDModule->nickname)==0 ) break;
+	for(pBDModule=BlobDetector_Modules; pBDModule->nickname; ++pBDModule)
+		if( bd_name && MY_STRICMP(bd_name,pBDModule->nickname)==0 ) break;
 
-    for(pBTModule=BlobTracker_Modules; pBTModule->nickname; ++pBTModule)
-        if( bt_name && MY_STRICMP(bt_name,pBTModule->nickname)==0 ) break;
+	for(pBTModule=BlobTracker_Modules; pBTModule->nickname; ++pBTModule)
+		if( bt_name && MY_STRICMP(bt_name,pBTModule->nickname)==0 ) break;
 
-    for(pBTPostProcModule=BlobTrackPostProc_Modules; pBTPostProcModule->nickname; ++pBTPostProcModule)
-        if( btpp_name && MY_STRICMP(btpp_name,pBTPostProcModule->nickname)==0 ) break;
+	for(pBTPostProcModule=BlobTrackPostProc_Modules; pBTPostProcModule->nickname; ++pBTPostProcModule)
+		if( btpp_name && MY_STRICMP(btpp_name,pBTPostProcModule->nickname)==0 ) break;
 
-    for(pBTAnalysisModule=BlobTrackAnalysis_Modules; pBTAnalysisModule->nickname; ++pBTAnalysisModule)
-        if( bta_name && MY_STRICMP(bta_name,pBTAnalysisModule->nickname)==0 ) break;
+	for(pBTAnalysisModule=BlobTrackAnalysis_Modules; pBTAnalysisModule->nickname; ++pBTAnalysisModule)
+		if( bta_name && MY_STRICMP(bta_name,pBTAnalysisModule->nickname)==0 ) break;
+#pragma  endregion setModules
 
     /* Create source video: */
     if(avi_name)
@@ -551,6 +565,7 @@ int main(int argc, char* argv[])
         {
             printf("AVIFile: %s\n",avi_name);
         }
+
         printf("FGDetector:   %s\n", pFGModule->nickname);
         printf("BlobDetector: %s\n", pBDModule->nickname);
         printf("BlobTracker:  %s\n", pBTModule->nickname);
@@ -660,36 +675,38 @@ int main(int argc, char* argv[])
     /* Run pipeline: */
     RunBlobTrackingAuto( pCap, pTracker, fgavi_name, btavi_name );
 
-    {   /* Save state and release modules: */
-        CvFileStorage* fs = NULL;
-        if(savestate_name)
-        {
-            fs=cvOpenFileStorage(savestate_name,NULL,CV_STORAGE_WRITE);
-        }
-        if(fs)
-        {
-            cvStartWriteStruct(fs,"BlobTracker",CV_NODE_MAP);
-            if(param.pBT)param.pBT->SaveState(fs);
-            cvEndWriteStruct(fs);
-            cvStartWriteStruct(fs,"BlobTrackerAuto",CV_NODE_MAP);
-            if(pTracker)pTracker->SaveState(fs);
-            cvEndWriteStruct(fs);
-            cvStartWriteStruct(fs,"BlobTrackAnalyser",CV_NODE_MAP);
-            if(param.pBTA)param.pBTA->SaveState(fs);
-            cvEndWriteStruct(fs);
-            cvReleaseFileStorage(&fs);
-        }
-        if(param.pBT)cvReleaseBlobTracker(&param.pBT);
-        if(param.pBD)cvReleaseBlobDetector(&param.pBD);
-        if(param.pBTGen)cvReleaseBlobTrackGen(&param.pBTGen);
-        if(param.pBTA)cvReleaseBlobTrackAnalysis(&param.pBTA);
-        if(param.pFG)cvReleaseFGDetector(&param.pFG);
-        if(pTracker)cvReleaseBlobTrackerAuto(&pTracker);
+#pragma  region dealocate
+	{   /* Save state and release modules: */
+		CvFileStorage* fs = NULL;
+		if(savestate_name)
+		{
+			fs=cvOpenFileStorage(savestate_name,NULL,CV_STORAGE_WRITE);
+		}
+		if(fs)
+		{
+			cvStartWriteStruct(fs,"BlobTracker",CV_NODE_MAP);
+			if(param.pBT)param.pBT->SaveState(fs);
+			cvEndWriteStruct(fs);
+			cvStartWriteStruct(fs,"BlobTrackerAuto",CV_NODE_MAP);
+			if(pTracker)pTracker->SaveState(fs);
+			cvEndWriteStruct(fs);
+			cvStartWriteStruct(fs,"BlobTrackAnalyser",CV_NODE_MAP);
+			if(param.pBTA)param.pBTA->SaveState(fs);
+			cvEndWriteStruct(fs);
+			cvReleaseFileStorage(&fs);
+		}
+		if(param.pBT)cvReleaseBlobTracker(&param.pBT);
+		if(param.pBD)cvReleaseBlobDetector(&param.pBD);
+		if(param.pBTGen)cvReleaseBlobTrackGen(&param.pBTGen);
+		if(param.pBTA)cvReleaseBlobTrackAnalysis(&param.pBTA);
+		if(param.pFG)cvReleaseFGDetector(&param.pFG);
+		if(pTracker)cvReleaseBlobTrackerAuto(&pTracker);
 
-    }   /* Save state and release modules. */
+	}   /* Save state and release modules. */
 
-    if(pCap)
-        cvReleaseCapture(&pCap);
+	if(pCap)
+		cvReleaseCapture(&pCap);
+#pragma  endregion dealocate
 
     return 0;
 
