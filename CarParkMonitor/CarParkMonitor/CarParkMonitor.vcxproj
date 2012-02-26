@@ -76,6 +76,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AppConfig.cpp" />
+    <ClCompile Include="AutoTracker.cpp" />
     <ClCompile Include="BackgroundSegmentator.cpp" />
     <ClCompile Include="BgFgSegmentator.cpp" />
     <ClCompile Include="BowComponent.cpp" />
@@ -95,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
+    <ClInclude Include="AutoTracker.h" />
     <ClInclude Include="BackgroundSegmentator.h" />
     <ClInclude Include="BgFgSegmentator.h" />
     <ClInclude Include="BowComponent.h" />
