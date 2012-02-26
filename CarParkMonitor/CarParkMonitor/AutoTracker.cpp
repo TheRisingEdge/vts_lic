@@ -11,7 +11,7 @@ AutoTracker::AutoTracker(CvBlobTrackerAutoParam1* param):trackedBlobs(sizeof(CvB
     fgMask = NULL;
     frameCount = 0;
 
-    m_FGTrainFrames = param?param->FGTrainFrames:0;
+    trainingFramesCount = param?param->FGTrainFrames:0;
     fgDetector = param?param->pFG:0;
 
     m_BDDel = 0;
@@ -50,7 +50,6 @@ AutoTracker::~AutoTracker()
     if(m_BDDel)blobDetector->Release();
     if(m_BTDel)blobTracker->Release();
 }
-
 
 void AutoTracker::Process(IplImage* pImg, IplImage* pMask)
 {
@@ -265,34 +264,30 @@ TIME_BEGIN()
         blobTracker->Update(pImg, pFG);
     TIME_END("BlobTrackerUpdate",CurBlobNum)
 
-    /* Detect new blob: */
+#pragma region blobDetection
+	
     TIME_BEGIN()
-    if(!m_BTReal && blobDetector && pFG && (frameCount > m_FGTrainFrames) )
+    if(!m_BTReal && blobDetector && pFG && (frameCount > trainingFramesCount) )
     {   /* Detect new blob: */
-        static CvBlobSeq    NewBlobList;
+        static CvBlobSeq    newPotentialBlobs;
         CvBlobTrackAuto     autoBlob;
 
-        NewBlobList.Clear();
+        newPotentialBlobs.Clear();
 
-        if(blobDetector->DetectNewBlob(pImg, pFG, &NewBlobList, &trackedBlobs))
-        {   /* Add new blob to tracker and blob list: */
-            int i;
+		//add blobs to be tracked
+        if(blobDetector->DetectNewBlob(pImg, pFG, &newPotentialBlobs, &trackedBlobs))
+        {               
             IplImage* mask = pFG;
 
-            /*if(0)if(NewBlobList.GetBlobNum()>0 && pFG )
-            {// erode FG mask (only for FG_0 and MS1||MS2)
-                pMask = cvCloneImage(pFG);
-                cvErode(pFG,pMask,NULL,2);
-            }*/
-
-            for(i=0; i<NewBlobList.GetBlobNum(); ++i)
+			int size = newPotentialBlobs.GetBlobNum();
+            for(int i = 0; i < size; ++i)
             {
-                CvBlob* blob = NewBlobList.GetBlob(i);
-                blob->ID = nextBlobId;
+                CvBlob* potentialBlob = newPotentialBlobs.GetBlob(i);
+                potentialBlob->ID = nextBlobId;
 
-                if(blob && blob->w >= CV_BLOB_MINW && blob->h >= CV_BLOB_MINH)
+                if(potentialBlob->w >= CV_BLOB_MINW && potentialBlob->h >= CV_BLOB_MINH)
                 {
-                    CvBlob* trackedBlob = blobTracker->AddBlob(blob, pImg, mask );
+                    CvBlob* trackedBlob = blobTracker->AddBlob(potentialBlob, pImg, mask );
                     if(trackedBlob)
                     {
                         autoBlob.blob = *trackedBlob;
@@ -301,15 +296,13 @@ TIME_BEGIN()
                         nextBlobId++;
                     }
                 }
-            }   /* Add next blob from list of detected blob. */
-
+            }
             if(mask != pFG) cvReleaseImage(&mask);
-
-        }   /* Create and add new blobs and trackers. */
-
-    }   /*  Detect new blob. */
+        }
+    } 
 
     TIME_END("BlobDetector",-1)
+#pragma endregion blobDetection
 
 #pragma region track_generator
 	TIME_BEGIN()
@@ -342,7 +335,6 @@ TIME_BEGIN()
 
 
 } /* CvBlobTrackerAuto1::Process */
-
 
 #pragma region helpers
 

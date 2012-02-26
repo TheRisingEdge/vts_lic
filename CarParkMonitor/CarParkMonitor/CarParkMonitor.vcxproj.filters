@@ -81,6 +81,9 @@
     <ClCompile Include="AutoTracker.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
+    <ClCompile Include="BlobDetector.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h">
@@ -135,6 +138,9 @@
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
     <ClInclude Include="AutoTracker.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="BlobDetector.h">
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
   </ItemGroup>

@@ -519,7 +519,7 @@ cvInitSystem(argc, argv);
     {   /* Set default parameters for one processing: */
         if(!bt_corr) bt_corr = "none";
         if(!fg_name) fg_name = FGDetector_Modules[2].nickname;
-        if(!bd_name) bd_name = BlobDetector_Modules[1].nickname;
+        if(!bd_name) bd_name = BlobDetector_Modules[0].nickname;
         if(!bt_name) bt_name = BlobTracker_Modules[1].nickname;
 
         if(!btpp_name) btpp_name = BlobTrackPostProc_Modules[1].nickname;

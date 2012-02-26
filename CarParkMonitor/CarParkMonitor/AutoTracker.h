@@ -54,7 +54,7 @@ class AutoTracker: public CvBlobTrackerAuto
 
 private:
     IplImage*               fgMask;
-    int                     m_FGTrainFrames;
+    int                     trainingFramesCount;
     CvFGDetector*           fgDetector; /* Pointer to foreground mask detector module. */
     CvBlobTracker*          blobTracker; /* Pointer to Blob tracker module. */
     int                     m_BTDel;
