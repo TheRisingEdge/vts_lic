@@ -1,19 +1,23 @@
 #pragma once
-#include "opencv2\legacy\blobtrack.hpp"
-#include "opencv2\imgproc\imgproc_c.h"
-#include "opencv2\core\core.hpp"
+#include "opencv2/opencv.hpp"
+#include "Blob.h"
+#include "BlobMatcher.h"
+
+using namespace cv;
 
 #define MIN_HEIGHT 10
-#define MIN_WIDTH  10
+#define MIN_WIDTH  20
 
-class BlobDetector:public CvBlobDetector
+
+class BlobDetector
 {
 private:	
 	int minArea;
+	BlobMatcher* blobMatcher;
 
 public:
     BlobDetector();
-   ~BlobDetector();    
-    int DetectNewBlob(IplImage* frame, IplImage* fgMask, CvBlobSeq* potentialBlobList, CvBlobSeq* trackedBlobs);
-    void Release();
+   ~BlobDetector();
+
+	void process(Mat frame, Mat foreground, BlobSeq trackedBlobs, BlobSeq* newBlobs);
 };

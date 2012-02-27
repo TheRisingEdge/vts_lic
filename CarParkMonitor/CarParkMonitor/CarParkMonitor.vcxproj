@@ -79,7 +79,9 @@
     <ClCompile Include="AutoTracker.cpp" />
     <ClCompile Include="BackgroundSegmentator.cpp" />
     <ClCompile Include="BgFgSegmentator.cpp" />
+    <ClCompile Include="Blob.cpp" />
     <ClCompile Include="BlobDetector.cpp" />
+    <ClCompile Include="BlobMatcher.cpp" />
     <ClCompile Include="BowComponent.cpp" />
     <ClCompile Include="CannyFrameProcessor.cpp" />
     <ClCompile Include="Content.cpp" />
@@ -101,7 +103,9 @@
     <ClInclude Include="AutoTracker.h" />
     <ClInclude Include="BackgroundSegmentator.h" />
     <ClInclude Include="BgFgSegmentator.h" />
+    <ClInclude Include="Blob.h" />
     <ClInclude Include="BlobDetector.h" />
+    <ClInclude Include="BlobMatcher.h" />
     <ClInclude Include="BowComponent.h" />
     <ClInclude Include="CannyFrameProcessor.h" />
     <ClInclude Include="Content.h" />

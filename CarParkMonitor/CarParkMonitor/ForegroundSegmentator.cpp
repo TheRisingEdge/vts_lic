@@ -1,9 +1,11 @@
 #include "ForegroundSegmentator.h"
 
-ForegroundSegmentator::ForegroundSegmentator():threshold(10), learningRate(0.001)
+ForegroundSegmentator::ForegroundSegmentator():threshold(15), learningRate(0.001)
 {
-	int erosionType = MORPH_RECT;
-	int erosionSize = 1;
+	this->closeHolesCount = 1;
+
+	int erosionType = MORPH_CROSS;
+	int erosionSize = 2;
 
 	this->structuringElement = getStructuringElement( 
 		erosionType,
@@ -12,34 +14,8 @@ ForegroundSegmentator::ForegroundSegmentator():threshold(10), learningRate(0.001
 	);
 }
 
-ForegroundSegmentator::~ForegroundSegmentator(void)
+Mat ForegroundSegmentator::process( Mat frame )
 {
-}
-
-void ForegroundSegmentator::SaveState( CvFileStorage* )
-{
-
-}
-
-void ForegroundSegmentator::LoadState( CvFileStorage* , CvFileNode* )
-{
-
-}
-
-void ForegroundSegmentator::ParamUpdate()
-{
-
-}
-
-
-IplImage* ForegroundSegmentator::GetMask()
-{	
-	return &foregroundIpl;
-}
-
-void ForegroundSegmentator::Process( IplImage* pImg )
-{
-	Mat frame(pImg);
 	// convert to gray-level image
 	cv::cvtColor(frame, gray, CV_BGR2GRAY); 
 
@@ -59,15 +35,32 @@ void ForegroundSegmentator::Process( IplImage* pImg )
 	// accumulate background
 	cv::accumulateWeighted(gray, background, learningRate, foreground);	
 
-	erode(foreground, newForeground, structuringElement);
-	dilate( newForeground, foreground, structuringElement );
+	namedWindow("er");
 	
-	foregroundIpl = foreground;
+	cv::dilate(foreground, foreground, structuringElement);
+	cv::dilate(foreground, foreground, structuringElement);
+
+	cv::erode(foreground, foreground, structuringElement);
+	cv::erode(foreground, foreground, structuringElement);
+
+
+	imshow("er", foreground);
+
+
+	//if (this->closeHolesCount > 0){
+	//	Mat temp_foreground_mask;
+
+	//	// close holes
+	//	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
+	//	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
+
+	//	// close gaps
+	//	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
+	//	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
+	//}
+	
+	return foreground;
 }
 
-void ForegroundSegmentator::Release()
-{
-
-}
 
 

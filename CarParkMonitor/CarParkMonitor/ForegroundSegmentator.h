@@ -1,12 +1,8 @@
-
 #include "opencv2\opencv.hpp"
-#include "opencv2\legacy\blobtrack.hpp"
-#include "opencv2\core\core.hpp"
 
 using namespace cv;
 
-
-class ForegroundSegmentator : public CvFGDetector
+class ForegroundSegmentator
 {
 private:
 	cv::Mat gray;			// current gray-level image
@@ -18,19 +14,10 @@ private:
 	int threshold;			// threshold for foreground extraction
 	IplImage foregroundIpl;
 	Mat structuringElement;
-
+	int closeHolesCount;
 public:
 	ForegroundSegmentator();
 	~ForegroundSegmentator();
 
-	virtual void SaveState(CvFileStorage* );;
-	virtual void LoadState(CvFileStorage* , CvFileNode* );;
-		
-	void ParamUpdate();
-	IplImage* GetMask();;
-
-	/* Process current image: */
-	virtual void  Process(IplImage* pImg);
-	/* Release foreground detector: */
-	virtual void    Release();;
+	virtual Mat process(Mat frame);
 };

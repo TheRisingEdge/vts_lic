@@ -87,6 +87,12 @@
     <ClCompile Include="SyncBuffer.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
+    <ClCompile Include="Blob.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="BlobMatcher.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h">
@@ -147,6 +153,12 @@
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
     <ClInclude Include="SyncBuffer.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="Blob.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="BlobMatcher.h">
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
   </ItemGroup>
