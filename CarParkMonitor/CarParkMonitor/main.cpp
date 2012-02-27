@@ -7,6 +7,7 @@
 #include "Content.h"
 #include "ForegroundSegmentator.h"
 #include "AutoTracker.h"
+#include "BlobDetector.h"
 
 /* Select appropriate case insensitive string comparison function: */
 #if defined WIN32 || defined _MSC_VER
@@ -644,6 +645,7 @@ cvInitSystem(argc, argv);
             set_params(argc, argv, param.pBTA, "bta", pBTAnalysisModule->nickname);
         }
 
+		param.pBD = new BlobDetector();
         /* Create whole pipline: */
         pTracker = new AutoTracker(&param);//cvCreateBlobTrackerAuto1(&param);
         if(!pTracker)

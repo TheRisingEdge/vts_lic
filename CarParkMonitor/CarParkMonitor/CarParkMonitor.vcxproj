@@ -92,6 +92,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlsaComponent.cpp" />
     <ClCompile Include="SvmComponent.cpp" />
+    <ClCompile Include="SyncBuffer.cpp" />
     <ClCompile Include="Tester.cpp" />
     <ClCompile Include="VideoProcessor.cpp" />
   </ItemGroup>
@@ -113,6 +114,7 @@
     <ClInclude Include="PlsaComponent.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SvmComponent.h" />
+    <ClInclude Include="SyncBuffer.h" />
     <ClInclude Include="Tester.h" />
     <ClInclude Include="VideoProcessor.h" />
   </ItemGroup>

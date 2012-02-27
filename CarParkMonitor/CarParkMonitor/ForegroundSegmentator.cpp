@@ -1,9 +1,9 @@
 #include "ForegroundSegmentator.h"
 
-ForegroundSegmentator::ForegroundSegmentator():threshold(20), learningRate(0.001)
+ForegroundSegmentator::ForegroundSegmentator():threshold(10), learningRate(0.001)
 {
-	int erosionType = MORPH_ELLIPSE;
-	int erosionSize = 4;
+	int erosionType = MORPH_RECT;
+	int erosionSize = 1;
 
 	this->structuringElement = getStructuringElement( 
 		erosionType,
@@ -59,8 +59,8 @@ void ForegroundSegmentator::Process( IplImage* pImg )
 	// accumulate background
 	cv::accumulateWeighted(gray, background, learningRate, foreground);	
 
-	//erode(foreground, newForeground, structuringElement);
-	//dilate( newForeground, foreground, structuringElement );
+	erode(foreground, newForeground, structuringElement);
+	dilate( newForeground, foreground, structuringElement );
 	
 	foregroundIpl = foreground;
 }
