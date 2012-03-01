@@ -81,7 +81,7 @@
     <ClCompile Include="BgFgSegmentator.cpp" />
     <ClCompile Include="Blob.cpp" />
     <ClCompile Include="BlobDetector.cpp" />
-    <ClCompile Include="BlobMatcher.cpp" />
+    <ClCompile Include="BlobTracker.cpp" />
     <ClCompile Include="BowComponent.cpp" />
     <ClCompile Include="CannyFrameProcessor.cpp" />
     <ClCompile Include="Content.cpp" />
@@ -90,6 +90,7 @@
     <ClCompile Include="ForegroundSegmentator.cpp" />
     <ClCompile Include="FrameProcessor.cpp" />
     <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="TrackHistory.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlsaComponent.cpp" />
@@ -105,7 +106,7 @@
     <ClInclude Include="BgFgSegmentator.h" />
     <ClInclude Include="Blob.h" />
     <ClInclude Include="BlobDetector.h" />
-    <ClInclude Include="BlobMatcher.h" />
+    <ClInclude Include="BlobTracker.h" />
     <ClInclude Include="BowComponent.h" />
     <ClInclude Include="CannyFrameProcessor.h" />
     <ClInclude Include="Content.h" />
@@ -114,6 +115,7 @@
     <ClInclude Include="ForegroundSegmentator.h" />
     <ClInclude Include="FrameProcessor.h" />
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="TrackHistory.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="PlsaComponent.h" />
     <ClInclude Include="resource.h" />

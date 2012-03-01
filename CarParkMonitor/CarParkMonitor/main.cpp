@@ -13,6 +13,10 @@ int main(int argc, char** argv)
 	param.foregroundSegmentator = new ForegroundSegmentator();
 	param.blobDetector = new BlobDetector();
 
+	TrackHistory history(100);
+	param.trackHistory = &history;
+	param.blobTracker = new BlobTracker(&history);		
+
 	AutoTracker tracker(param);
 	tracker.process();
 

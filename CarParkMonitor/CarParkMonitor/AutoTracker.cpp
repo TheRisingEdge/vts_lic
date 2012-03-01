@@ -6,10 +6,14 @@ AutoTracker::AutoTracker( AutoTrackerParam param )
 	this->videoPath = param.videoPath;
 	this->foregroungSegmentator = param.foregroundSegmentator;
 	this->blobDetector = param.blobDetector;
+	this->blobTracker = param.blobTracker;
+	this->trackHistory = param.trackHistory;
 
 	assert(this->videoPath);
 	assert(this->foregroungSegmentator);
 	assert(this->blobDetector);
+	assert(this->blobTracker);
+	assert(this->trackHistory);
 }
 
 AutoTracker::~AutoTracker()
@@ -44,19 +48,43 @@ void AutoTracker::process()
 	namedWindow("foreground");
 	namedWindow("frame");
 
-	BlobSeq trackedBlobs(NULL);
-	BlobSeq newBlobs(NULL);
+	DetectorParams detectorParam;
+	MatcherParams matcherParam;
+	MatcherResult matcherResult;
+
+	vector<blob> detectedBlobs;
 
 	Mat frame;
-	while(capture.read(frame)){
-	
-		imshow("frame", frame);
+	Mat prevFrame;
+	Mat foreground;
+	Mat prevForeground;
 
-		Mat foregroundMask = foregroungSegmentator->process(frame);
+	capture.read(prevFrame);
+	while(capture.read(frame)){
+			
+		Mat foregroundMask = foregroungSegmentator->segment(frame);
+		foreground = foregroundMask;
+
+		detectorParam.frame = frame;
+		detectorParam.prevFrame = prevFrame;
+		detectorParam.foreground = foregroundMask;
+		blobDetector->detect(detectorParam,&detectedBlobs);
+		
+		matcherParam.frame = frame;
+		matcherParam.previousFrame = prevFrame;
+		matcherParam.foreground = foregroundMask;
+		matcherParam.previousForeground = prevForeground;
+		matcherParam.detectedBlobs = &detectedBlobs;
+		blobTracker->match(matcherParam, &matcherResult);
+
+		trackHistory->previousBlobs = detectedBlobs;
+		//trackHistory->update();
+
+		imshow("frame", frame);
 		imshow("foreground", foregroundMask);
 
-		blobDetector->process(frame, foregroundMask, trackedBlobs, &newBlobs);
-
-		waitKey(frameDelay);
+		cv::swap(prevFrame, frame);	
+		cv::swap(prevForeground, foreground);
+		waitKey(frameDelay/5);
 	}	
 }

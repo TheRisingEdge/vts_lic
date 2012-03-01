@@ -13,8 +13,10 @@ BlobDetector::~BlobDetector()
 {
 }
 
-void BlobDetector::process( Mat frame, Mat foreground, BlobSeq trackedBlobs, BlobSeq* newBlobs )
+void BlobDetector::detect(DetectorParams params , vector<blob>* foundBlobs )
 {
+	Mat foreground = params.foreground;
+	Mat frame = params.frame;
 	Mat maskCopy = foreground.clone();
 
 	vector<vector<Point> > contours;
@@ -22,28 +24,26 @@ void BlobDetector::process( Mat frame, Mat foreground, BlobSeq trackedBlobs, Blo
 
 	findContours( maskCopy, contours, hierarchy, CV_RETR_EXTERNAL , CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
 
-	vector<Rect> boundingRectangles;
-	vector<blob> detected;
+	foundBlobs->clear();
 	int size = contours.size();
 	for( int i = 0; i < size; i++ )
 	{     
 		Rect rect = boundingRect( Mat(contours[i]) );		
 		if(rect.area() > this->minArea && rect.width > MIN_WIDTH)
-		{
-			//boundingRectangles.push_back(rect);
+		{			
 			blob b;
 			b.sourceRect = rect;
-			detected.push_back(b);
+			foundBlobs->push_back(b);
 		}			
 	}
 
 #pragma region debug_draw
 
 	RNG rng(12345);	
-	size = boundingRectangles.size();
+	size = foundBlobs->size();
 	for( int i = 0; i< size; i++ )
 	{
-		Rect rect = boundingRectangles[i];
+		Rect rect = (*foundBlobs)[i].sourceRect;
 		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 		rectangle( frame, rect.tl(), rect.br(), color);
 	}
@@ -52,21 +52,4 @@ void BlobDetector::process( Mat frame, Mat foreground, BlobSeq trackedBlobs, Blo
 	imshow( "Contours", frame );
 
 #pragma endregion debug_draw
-
-	//vector<int> matches;
-	//blobMatcher->match(detected, trackedBlobs, &matches, &frame);
-
-	//size = matches.size();
-	//for(int i = 0; i < size; i++)
-	//{
-	//	if(matches[i] == NO_MATCH)
-	//	{
-	//		trackedBlobs.addBlob(detected[i]);
-	//	}
-	//}
-
-
-
-
-
 }

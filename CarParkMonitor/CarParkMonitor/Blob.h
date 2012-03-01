@@ -8,6 +8,8 @@ using namespace std;
 typedef struct
 {
 	Mat descriptor;
+	vector<KeyPoint> keypoints;
+	vector<Point2f> pointFeatures;
 
 }blobDescriptor;
 
@@ -91,23 +93,10 @@ public:
 	}
 };
 
-class TrackHistory
+
+struct historyEntry
 {
-private:
-	vector<blob> history;
-	int size;
-
-public:
-	TrackHistory(int size)
-	{
-		this->size = size;
-	}
-
-	void append(blob b)
-	{
-		/*vector<int>::iterator it = history.begin();
-		myvector.insert ( it , b );		
-		history.resize(size);	*/	
-	}
+	int blobId;
 };
+
 

@@ -1,6 +1,6 @@
 #include "ForegroundSegmentator.h"
 
-ForegroundSegmentator::ForegroundSegmentator():threshold(15), learningRate(0.001)
+ForegroundSegmentator::ForegroundSegmentator():threshold(20), learningRate(0.001)
 {
 	this->closeHolesCount = 1;
 
@@ -14,7 +14,7 @@ ForegroundSegmentator::ForegroundSegmentator():threshold(15), learningRate(0.001
 	);
 }
 
-Mat ForegroundSegmentator::process( Mat frame )
+Mat ForegroundSegmentator::segment( Mat frame )
 {
 	// convert to gray-level image
 	cv::cvtColor(frame, gray, CV_BGR2GRAY); 
@@ -33,7 +33,7 @@ Mat ForegroundSegmentator::process( Mat frame )
 	cv::threshold(foreground, foreground,threshold,255,cv::THRESH_BINARY);
 
 	// accumulate background
-	cv::accumulateWeighted(gray, background, learningRate, foreground);	
+	cv::accumulateWeighted(gray, background, learningRate, foreground);	//can also pass mask to ignore stationary cars
 
 	namedWindow("er");
 	
@@ -47,17 +47,17 @@ Mat ForegroundSegmentator::process( Mat frame )
 	imshow("er", foreground);
 
 
-	//if (this->closeHolesCount > 0){
-	//	Mat temp_foreground_mask;
+	if (this->closeHolesCount > 0){
+		Mat temp_foreground_mask;
 
-	//	// close holes
-	//	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
-	//	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
+		// close holes
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
+		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
 
-	//	// close gaps
-	//	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
-	//	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
-	//}
+		// close gaps
+		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
+	}
 	
 	return foreground;
 }

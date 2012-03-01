@@ -19,5 +19,5 @@ public:
 	ForegroundSegmentator();
 	~ForegroundSegmentator();
 
-	virtual Mat process(Mat frame);
+	virtual Mat segment(Mat frame);
 };

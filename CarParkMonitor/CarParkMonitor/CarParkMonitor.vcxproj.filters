@@ -81,16 +81,19 @@
     <ClCompile Include="AutoTracker.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
-    <ClCompile Include="BlobDetector.cpp">
-      <Filter>Source Files\BlobTracking</Filter>
-    </ClCompile>
     <ClCompile Include="SyncBuffer.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
     <ClCompile Include="Blob.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
-    <ClCompile Include="BlobMatcher.cpp">
+    <ClCompile Include="TrackHistory.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="BlobTracker.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="BlobDetector.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
   </ItemGroup>
@@ -158,7 +161,10 @@
     <ClInclude Include="Blob.h">
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
-    <ClInclude Include="BlobMatcher.h">
+    <ClInclude Include="BlobTracker.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="TrackHistory.h">
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
   </ItemGroup>

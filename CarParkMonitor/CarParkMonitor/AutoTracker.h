@@ -1,6 +1,8 @@
 #include "opencv2\opencv.hpp"
-#include "BlobDetector.h"
 #include "ForegroundSegmentator.h"
+#include "BlobTracker.h"
+#include "BlobDetector.h"
+
 
 using namespace cv;
 
@@ -11,6 +13,8 @@ typedef struct
 
 	ForegroundSegmentator* foregroundSegmentator;
 	BlobDetector* blobDetector;
+	BlobTracker* blobTracker;
+	TrackHistory* trackHistory;
 
 }AutoTrackerParam;
 
@@ -21,6 +25,8 @@ private:
 	char* videoPath;
 	ForegroundSegmentator* foregroungSegmentator;
 	BlobDetector* blobDetector;
+	BlobTracker* blobTracker;
+	TrackHistory* trackHistory;
 
 	VideoCapture capture;	
 	bool openVideoCapture(int* fps = NULL, double* frameDelay = NULL);
