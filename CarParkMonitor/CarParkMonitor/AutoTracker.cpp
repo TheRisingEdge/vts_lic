@@ -41,50 +41,81 @@ void AutoTracker::process()
 {
 	int fps;
 	double frameDelay;
+	int frameCount;
 
 	if(!openVideoCapture(&fps, &frameDelay))	
 		return;
 
-	namedWindow("foreground");
 	namedWindow("frame");
+
+	IdGenerator* idGenerator = new IdGenerator(1);
 
 	DetectorParams detectorParam;
 	MatcherParams matcherParam;
+	TrackParam trackParam;
 	MatcherResult matcherResult;
 
-	vector<blob> detectedBlobs;
+	vector<blob*> detectedBlobs;
 
-	Mat frame;
-	Mat prevFrame;
+	Mat frame, grayFrame;
+	Mat prevFrame, prevGrayFrame;
 	Mat foreground;
 	Mat prevForeground;
 
+	frameCount = 1;
 	capture.read(prevFrame);
 	while(capture.read(frame)){
-			
+
+		frameCount++;		
+
+		cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);		
+
 		Mat foregroundMask = foregroungSegmentator->segment(frame);
-		foreground = foregroundMask;
+		foreground = foregroundMask;		
 
 		detectorParam.frame = frame;
 		detectorParam.prevFrame = prevFrame;
 		detectorParam.foreground = foregroundMask;
 		blobDetector->detect(detectorParam,&detectedBlobs);
 		
-		matcherParam.frame = frame;
-		matcherParam.previousFrame = prevFrame;
-		matcherParam.foreground = foregroundMask;
+		matcherParam.frame 				= frame;
+		matcherParam.grayFrame 			= grayFrame;
+		matcherParam.previousFrame 		= prevFrame;
+		matcherParam.previousGrayFrame 		= prevGrayFrame;		
+
+		matcherParam.foreground 		= foregroundMask;
 		matcherParam.previousForeground = prevForeground;
-		matcherParam.detectedBlobs = &detectedBlobs;
+
+		matcherParam.detectedBlobs 		= detectedBlobs;
+		matcherParam.generator 			= idGenerator;		
+		matcherParam.frameCount			= frameCount;
+		
+		matcherResult.init();
 		blobTracker->match(matcherParam, &matcherResult);
+		
+		vector<blob*>::iterator it = matcherResult.newBlobs.begin();
+		vector<blob*>::iterator end = matcherResult.newBlobs.end();
+		for(;it != end; it++)
+		{
+			blob* b = *it;
+			assert(b->id == ID_UNDEFINED);
+			b->id = idGenerator->nextId();			
+		}
 
 		trackHistory->previousBlobs = detectedBlobs;
-		//trackHistory->update();
+		trackParam.trackedBlobs = detectedBlobs;		
+		trackParam.prevLostBlobs = matcherResult.prevLostBlobs;
+
+		trackHistory->update(&trackParam);
 
 		imshow("frame", frame);
-		imshow("foreground", foregroundMask);
 
-		cv::swap(prevFrame, frame);	
+		cv::swap(prevFrame, frame);
+		cv::swap(prevGrayFrame, grayFrame);
 		cv::swap(prevForeground, foreground);
-		waitKey(frameDelay/5);
+		if(waitKey(frameDelay/5) >= 0)
+		{
+			frameDelay = 1000000;
+		}		
 	}	
 }

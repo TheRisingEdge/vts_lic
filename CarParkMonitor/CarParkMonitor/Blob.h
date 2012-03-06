@@ -7,6 +7,7 @@ using namespace std;
 
 typedef struct
 {
+	Mat image;
 	Mat descriptor;
 	vector<KeyPoint> keypoints;
 	vector<Point2f> pointFeatures;
@@ -15,16 +16,44 @@ typedef struct
 
 typedef struct
 {
+	vector<Point2f> trackedPoints;
+	vector<int> trackIndexes;
+	bool trackedByPrev;
+	float prevConfidence;
+
+	bool wasLost;
+
+
+	void init()
+	{
+		this->prevConfidence = 0;
+		trackedByPrev = false;
+		trackedPoints.clear();
+		trackIndexes.clear();
+		wasLost = false;
+	}
+
+}tempInfo;
+
+typedef struct
+{
 	int id;
+	int detectorId;	
 	blobDescriptor descriptor;
 	Rect sourceRect;
 	
+
+	vector<int> hash;
+	tempInfo temp;
+
+
 }blob;
 
 class IdGenerator
 {
 	int current;
 
+public:
 	IdGenerator(int base)
 	{
 		current = base;

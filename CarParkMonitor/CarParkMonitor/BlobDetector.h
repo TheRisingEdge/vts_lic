@@ -8,6 +8,7 @@ using namespace cv;
 #define MIN_HEIGHT 10
 #define MIN_WIDTH  20
 
+#define ID_UNDEFINED -1
 
 typedef struct
 {
@@ -27,5 +28,5 @@ public:
     BlobDetector();
    ~BlobDetector();
 
-	void detect(DetectorParams params, vector<blob>* foundBlobs);
+	void detect(DetectorParams params, vector<blob*>* foundBlobs);
 };

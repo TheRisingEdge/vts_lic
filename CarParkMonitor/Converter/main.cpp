@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 		// add frame to recorded video
 		record << frame; 
 
-		if(waitKey(30) >= 0) break;
+		if(waitKey(1) >= 0) break;
 	}
 	
 	return 0;

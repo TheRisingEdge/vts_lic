@@ -13,8 +13,10 @@ private:
 	double learningRate;    // learning rate in background accumulation
 	int threshold;			// threshold for foreground extraction
 	IplImage foregroundIpl;
-	Mat structuringElement;
+	
 	int closeHolesCount;
+	Mat structuringElement;
+	Mat elipseElement;
 public:
 	ForegroundSegmentator();
 	~ForegroundSegmentator();

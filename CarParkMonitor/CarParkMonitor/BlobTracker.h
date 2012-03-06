@@ -6,18 +6,31 @@
 
 typedef struct
 {
-	Mat frame;
-	Mat foreground;
+	int frameCount;
 
-	Mat previousFrame;
-	Mat previousForeground;
+	Mat frame;
+	Mat grayFrame;	
+	Mat foreground;
 	
-	vector<blob>* detectedBlobs;
+	Mat previousFrame;
+	Mat previousGrayFrame;
+	Mat previousForeground;
+				
+	IdGenerator* generator;
+	vector<blob*> detectedBlobs;
 
 }MatcherParams;
 
 typedef struct
 {
+	vector<blob*> newBlobs;
+	vector<blob*> prevLostBlobs;
+
+	void init()
+	{
+		newBlobs.clear();
+		prevLostBlobs.clear();
+	}
 
 }MatcherResult;
 
@@ -25,12 +38,14 @@ class BlobTracker
 {
 private:
 	TrackHistory* trackHistory;
+	FeatureDetector* featureDetector;
+	DescriptorExtractor* descriptorExtractor;
 
 public:
 	BlobTracker(void);
 	BlobTracker(TrackHistory* trackHistory);
 	~BlobTracker(void);	
 
+	void injectBlobDescription(blob* b, Mat image, Mat foreground);
 	void match(MatcherParams params, MatcherResult* result);
 };
-
