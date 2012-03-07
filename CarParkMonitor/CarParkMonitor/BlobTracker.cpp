@@ -131,61 +131,66 @@ int containedPointsInRect(Rect rect, vector<Point2f> pts)
 	return contained;
 }
 
-void BlobTracker::match( TrackerParam param, MatcherResult* result )
+void BlobTracker::match( TrackerParam params, MatcherResult* result )
 {
-	int frameCount 				= param.frameCount;
-	vector<blob*> detectedBlobs = param.detectedBlobs;
-	Mat frame 					= param.frame;
-	Mat foreground				= param.foreground;
-	Mat prevFrame 				= param.previousFrame;
-	Mat prevForeground 			= param.previousForeground;
-	vector<blob*> prevBlobs 	= trackHistory->previousBlobs;
+	vector<blob*> detectedBlobs = params.detectedBlobs;
+	Mat frame = params.frame;
+	Mat prevFrame = params.previousFrame;
+	Mat prevForegroung = params.previousForeground;
+	vector<blob> prevBlobs = trackHistory->previousBlobs;
 
-	Mat grayFrame 	  = param.grayFrame;
-	Mat prevGrayFrame = param.previousGrayFrame;
-	
-	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
-	{
+	vector<Point2f> prevFrameKeypoints;
+	vector<Point2f> currentFrameKeypoints;
+	vector<uchar> trackingStatus;
+	vector<float> trackingErrors;
+
+	Mat grayFrame;
+	Mat prevGrayFrame;
+
+	cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
+	cv::cvtColor(prevFrame, prevGrayFrame, CV_BGR2GRAY);
+
+	int size = prevBlobs.size();
+	if(prevBlobs.size() == 0 && detectedBlobs->size() == 0)	
 		return;
+
+
+	for(int i = 0; i < size; i++)
+	{
+		blob* b = &(prevBlobs[i]);
+
+		Rect blobRect = b->sourceRect;		 
+		Mat blobImage = prevGrayFrame(blobRect);
+		Mat blobForeground = prevForegroung(blobRect);
+
+		vector<Point2f> keypoints = getGoodFeatures(blobImage, blobForeground);
+		b->descriptor.pointFeatures = keypoints;
+		Point2f tl = blobRect.tl();
+		for(int j = 0; j < keypoints.size(); j++)
+		{			
+			prevFrameKeypoints.push_back(tl + keypoints[j]);
+		}		
 	}
 
-	if(prevBlobs.size() == 0 && detectedBlobs.size() != 0)
-	{
-		result->newBlobs.clear();
-		result->newBlobs.assign(detectedBlobs.begin(), detectedBlobs.end());
+	if(prevFrameKeypoints.size() == 0)
 		return;
-	}
 
-	//int size = prevBlobs.size();
-	//for(int i = 0; i < size; i++)
-	//{
-	//	blob* b = prevBlobs[i];
+	cv::calcOpticalFlowPyrLK(
+		prevGrayFrame,			
+		grayFrame, 				// 2 consecutive images, must be gray
+		prevFrameKeypoints, 	// input point position in first image
+		currentFrameKeypoints, 	// output point postion in the second image
+		trackingStatus,			// tracking success
+		trackingErrors			// tracking error  	   
+		);      			
 
-	//	Rect blobRect = b->sourceRect;		 
-	//	Mat blobImage = prevGrayFrame(blobRect);
-	//	Mat blobForeground = prevForeground(blobRect);
-	//	
-	//	//this->track(b->sourceRect, param.grayFrameBuffer);
+	drawTrackedPoints(prevFrameKeypoints, currentFrameKeypoints, frame);	
 
-	//	vector<Point2f> points_t;
-	//	points_t.push_back(Point2f(10,20));
-	//	vector<Point2f> points_t1;
-	//	vector<char> status;
-	//	vector<float>
+	//for each detected blob filter keypoints with respect to its rect (it is a keypoint filter class)
+	//map the keypoints back to a previous blob
+	//find simple blob match
 
-	//	cv::calcOpticalFlowPyrLK(
-	//		prevGrayFrame,			
-	//		grayFrame, 				// 2 consecutive images, must be gray
-	//		points_t, 	// input point position in first image
-	//		points_t1, 	// output point postion in the second image
-	//		status,			// tracking success
-	//		errors			// tracking error  	   
-	//	);  
-
-	//	int a;
-	//	a = 3;
-	//}
-	
+	//debug draw
 }
 
 void BlobTracker::injectBlobDescription( blob* b, Mat image, Mat foreground )
