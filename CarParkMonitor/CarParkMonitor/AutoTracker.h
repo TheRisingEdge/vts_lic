@@ -28,6 +28,8 @@ private:
 	BlobTracker* blobTracker;
 	TrackHistory* trackHistory;
 
+	TrackerParam trackerParam;
+
 	VideoCapture capture;	
 	bool openVideoCapture(int* fps = NULL, double* frameDelay = NULL);
 

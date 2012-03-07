@@ -51,7 +51,7 @@ void AutoTracker::process()
 	IdGenerator* idGenerator = new IdGenerator(1);
 
 	DetectorParams detectorParam;
-	MatcherParams matcherParam;
+	TrackerParam matcherParam;
 	TrackParam trackParam;
 	MatcherResult matcherResult;
 
@@ -62,60 +62,105 @@ void AutoTracker::process()
 	Mat foreground;
 	Mat prevForeground;
 
+	int trainingFrames = 50;
+
+
+	vector<Mat> frameBuffer;
+	vector<Mat> grayFrameBuffer;
+	vector<Mat> foregroundBuffer;
+
+	int frameBufferSize = 5;
+
 	frameCount = 1;
-	capture.read(prevFrame);
+
+	capture.read(prevFrame);	
 	while(capture.read(frame)){
 
 		frameCount++;		
+		cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
 
-		cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);		
+		frameBuffer.insert(frameBuffer.begin(), frame.clone());			
+		grayFrameBuffer.insert(grayFrameBuffer.begin(), grayFrame.clone());
 
-		Mat foregroundMask = foregroungSegmentator->segment(frame);
-		foreground = foregroundMask;		
+		frameBuffer.resize(frameBufferSize);
+		grayFrameBuffer.resize(frameBufferSize);
 
-		detectorParam.frame = frame;
-		detectorParam.prevFrame = prevFrame;
-		detectorParam.foreground = foregroundMask;
-		blobDetector->detect(detectorParam,&detectedBlobs);
-		
-		matcherParam.frame 				= frame;
-		matcherParam.grayFrame 			= grayFrame;
-		matcherParam.previousFrame 		= prevFrame;
-		matcherParam.previousGrayFrame 		= prevGrayFrame;		
+		Mat foregroundMask = foregroungSegmentator->segment(frame); // use background model to segment frame
+		foregroundBuffer.insert(foregroundBuffer.begin(), foregroundMask.clone());
+		foregroundBuffer.resize(frameBufferSize);
 
-		matcherParam.foreground 		= foregroundMask;
-		matcherParam.previousForeground = prevForeground;
 
-		matcherParam.detectedBlobs 		= detectedBlobs;
-		matcherParam.generator 			= idGenerator;		
-		matcherParam.frameCount			= frameCount;
-		
-		matcherResult.init();
-		blobTracker->match(matcherParam, &matcherResult);
-		
-		vector<blob*>::iterator it = matcherResult.newBlobs.begin();
-		vector<blob*>::iterator end = matcherResult.newBlobs.end();
-		for(;it != end; it++)
-		{
-			blob* b = *it;
-			assert(b->id == ID_UNDEFINED);
-			b->id = idGenerator->nextId();			
+		if(frameCount < trainingFrames)
+		{//construct background model
+
+
+
+		}else
+		{//detection and classification
+
+			foreground = foregroundMask;		
+
+			detectorParam.frame = frame;
+			detectorParam.prevFrame = prevFrame;
+			detectorParam.foreground = foregroundMask;
+			blobDetector->detect(detectorParam,&detectedBlobs);
+			
+
+			//** setup Tracker parameters *******************************//
+			trackerParam.frame 				= frame;
+			trackerParam.grayFrame 			= grayFrame;
+			trackerParam.previousFrame 		= prevFrame;
+			trackerParam.previousGrayFrame 	= prevGrayFrame;		
+
+			trackerParam.foreground 		= foregroundMask;
+			trackerParam.previousForeground = prevForeground;
+
+			trackerParam.detectedBlobs 		= detectedBlobs;
+			trackerParam.generator 			= idGenerator;		
+			trackerParam.frameCount			= frameCount;
+
+			trackerParam.frameBuffer 		= frameBuffer;
+			trackerParam.grayFrameBuffer    = grayFrameBuffer;
+			trackerParam.foregroundBuffer   = foregroundBuffer;
+			
+			matcherResult.init();
+
+			blobTracker->match(trackerParam, &matcherResult);
+
+			
+			//** Assign ids for new detected Blobs *********************//
+			vector<blob*>::iterator it = matcherResult.newBlobs.begin();
+			vector<blob*>::iterator end = matcherResult.newBlobs.end();
+			for(;it != end; it++)
+			{
+				blob* b = *it;
+				assert(b->id == ID_UNDEFINED);
+				b->id = idGenerator->nextId();			
+			}
+
+			//delete previous matched blobs
+
+
+
+
+			//** Update Tracking history ******************************//
+			trackHistory->previousBlobs = detectedBlobs;
+			//trackParam.trackedBlobs = detectedBlobs;		
+			//trackParam.prevLostBlobs = matcherResult.prevLostBlobs;
+
+			//trackHistory->update(&trackParam);
 		}
 
-		trackHistory->previousBlobs = detectedBlobs;
-		trackParam.trackedBlobs = detectedBlobs;		
-		trackParam.prevLostBlobs = matcherResult.prevLostBlobs;
 
-		trackHistory->update(&trackParam);
+			imshow("frame", frame);
 
-		imshow("frame", frame);
+			cv::swap(prevFrame, frame);
+			cv::swap(prevGrayFrame, grayFrame);
+			cv::swap(prevForeground, foreground);
 
-		cv::swap(prevFrame, frame);
-		cv::swap(prevGrayFrame, grayFrame);
-		cv::swap(prevForeground, foreground);
-		if(waitKey(frameDelay/5) >= 0)
-		{
-			frameDelay = 1000000;
-		}		
+			if(waitKey(frameDelay/5) >= 0)
+			{
+				frameDelay = 1000000;
+			}				
 	}	
 }
