@@ -3,6 +3,11 @@
 #include "BlobDetector.h"
 #include "AppConfig.h"
 
+
+
+#define DIM_POINTS 5
+#define TOTAL_POINTS (DIM_POINTS * DIM_POINTS)
+
 BlobTracker::BlobTracker( TrackHistory* trackHistory )
 {
 	this->trackHistory = trackHistory;
@@ -11,6 +16,18 @@ BlobTracker::BlobTracker( TrackHistory* trackHistory )
 		//0.01, // quality level
 		//1); // minimum allowed distance between points;//
 	this->descriptorExtractor = AppConfig::bowProperties.extractor;
+}
+
+float median(float *A, int length) {
+	int index = (int)(length / 2);
+	std::sort(A, A + length);
+
+	if (length % 2 == 0) {
+		return (A[index] + A[index + 1]) / 2;
+	}
+	else {
+		return A[index];
+	}
 }
 
 
@@ -131,66 +148,114 @@ int containedPointsInRect(Rect rect, vector<Point2f> pts)
 	return contained;
 }
 
-void BlobTracker::match( TrackerParam params, MatcherResult* result )
+void drawPoints(vector<Point2f> prev, cv:: Mat &output) {
+	int size = prev.size();
+	for(int i= 0; i < size; i++ ) {		
+		cv::circle(output, prev[i], 2, cv::Scalar(255,255,255),-1);
+	}
+}
+
+void BlobTracker::track( TrackerParam param, MatcherResult* result )
 {
-	vector<blob*> detectedBlobs = params.detectedBlobs;
-	Mat frame = params.frame;
-	Mat prevFrame = params.previousFrame;
-	Mat prevForegroung = params.previousForeground;
-	vector<blob> prevBlobs = trackHistory->previousBlobs;
+	this->trackerParam = param;
+
+	int frameCount 				= param.frameCount;
+	vector<blob*> detectedBlobs = param.detectedBlobs;
+	Mat frame 					= param.frame;
+	Mat foreground				= param.foreground;
+	Mat prevFrame 				= param.previousFrame;
+	Mat prevForeground 			= param.previousForeground;
+	vector<blob*> prevBlobs 	= trackHistory->previousBlobs;
 
 	vector<Point2f> prevFrameKeypoints;
 	vector<Point2f> currentFrameKeypoints;
+	vector<Point2f> correctTracked;
 	vector<uchar> trackingStatus;
 	vector<float> trackingErrors;
 
-	Mat grayFrame;
-	Mat prevGrayFrame;
+	Mat grayFrame 	  = param.grayFrame;
+	Mat prevGrayFrame = param.previousGrayFrame;
 
-	cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
-	cv::cvtColor(prevFrame, prevGrayFrame, CV_BGR2GRAY);
+	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
+	{
+		return;
+	}
+
+	if(prevBlobs.size() == 0 && detectedBlobs.size() != 0)
+	{
+		result->newBlobs.assign(detectedBlobs.begin(), detectedBlobs.end());
+		return;
+	}
 
 	int size = prevBlobs.size();
-	if(prevBlobs.size() == 0 && detectedBlobs->size() == 0)	
-		return;
-
-
 	for(int i = 0; i < size; i++)
 	{
-		blob* b = &(prevBlobs[i]);
+		blob* b = prevBlobs[i];
 
 		Rect blobRect = b->sourceRect;		 
 		Mat blobImage = prevGrayFrame(blobRect);
-		Mat blobForeground = prevForegroung(blobRect);
+		Mat blobForeground = prevForeground(blobRect);
 
-		vector<Point2f> keypoints = getGoodFeatures(blobImage, blobForeground);
-		b->descriptor.pointFeatures = keypoints;
-		Point2f tl = blobRect.tl();
-		for(int j = 0; j < keypoints.size(); j++)
-		{			
-			prevFrameKeypoints.push_back(tl + keypoints[j]);
-		}		
+		Point2f lower = blobRect.br();
+		if(lower.x < 400 && lower.y < 400 )
+		trackFB(blobRect, this->trackerParam.grayFrameBuffer);							
+	}
+}
+
+
+void BlobTracker::trackFB( Rect r , vector<Mat> frames)
+{
+	// Perform Lucas-Kanade Tracking -----------------------------------------
+	// Distribute points to track uniformly over the bounding-box
+	double bbWidth = r.width;
+	double bbHeight = r.height;
+	double stepX = bbWidth / (DIM_POINTS + 1);
+	double stepY = bbHeight / (DIM_POINTS + 1);
+	int i, x, y;
+
+	vector<Point2f> startPoints;
+	vector<Point2f> endPoints;
+	vector<Point2f> retrackedPoints;
+	vector<Point2f> inliers;
+
+	Point2f tl = r.tl();
+
+	for (x = 1; x <= DIM_POINTS; x++) {
+		for (y = 1; y <= DIM_POINTS; y++) {
+			Point2f selectedPoint = tl + Point2f(x*stepX, y*stepY);
+			startPoints.push_back(selectedPoint);						
+		}
 	}
 
-	if(prevFrameKeypoints.size() == 0)
-		return;
+	reverse(frames.begin(), frames.end());	
+	trackForeward(startPoints, frames, &endPoints);
+	reverse(frames.begin(), frames.end());
+	
+	trackForeward(endPoints, frames, &retrackedPoints);
 
-	cv::calcOpticalFlowPyrLK(
-		prevGrayFrame,			
-		grayFrame, 				// 2 consecutive images, must be gray
-		prevFrameKeypoints, 	// input point position in first image
-		currentFrameKeypoints, 	// output point postion in the second image
-		trackingStatus,			// tracking success
-		trackingErrors			// tracking error  	   
-		);      			
+	filterInliers(startPoints, retrackedPoints, &inliers);
 
-	drawTrackedPoints(prevFrameKeypoints, currentFrameKeypoints, frame);	
+	Mat c = frames[0].clone();
+	drawPoints(inliers, c);
+	imshow("inliers",c);
+	cv::waitKey();
 
-	//for each detected blob filter keypoints with respect to its rect (it is a keypoint filter class)
-	//map the keypoints back to a previous blob
-	//find simple blob match
+	int inliersSize = inliers.size();
+	float* dxs =  new float[inliersSize];
+	float* dys =  new float[inliersSize];
+	int successful = 0;
 
-	//debug draw
+	Point2f* distances = new Point2f[inliersSize];
+	for(int i = 0 ; i < inliersSize; i++)
+	{
+		distances[i] = startPoints[i] - retrackedPoints[i];		
+	}
+
+	// Get the median displacements
+	double dispX = (double)median(dxs, successful);
+	double dispY = (double)median(dys, successful);
+
+	delete[] distances;
 }
 
 void BlobTracker::injectBlobDescription( blob* b, Mat image, Mat foreground )
@@ -223,37 +288,8 @@ void BlobTracker::injectBlobDescription( blob* b, Mat image, Mat foreground )
 
 
 
-
-
-
-
-#define DIM_POINTS 20
-#define TOTAL_POINTS (DIM_POINTS * DIM_POINTS)
-
-void drawPoints(vector<Point2f> prev, cv:: Mat &output) {
-	int size = prev.size();
-	for(int i= 0; i < size; i++ ) {		
-		cv::circle(output, prev[i], 2, cv::Scalar(255,255,255),-1);
-	}
-}
-
-
-float median(float *A, int length) {
-	int index = (int)(length / 2);
-	std::sort(A, A + length);
-
-	if (length % 2 == 0) {
-		return (A[index] + A[index + 1]) / 2;
-	}
-	else {
-		return A[index];
-	}
-}
-
-
-void trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result, Mat* output = NULL)
+void BlobTracker::trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result)
 {
-
 	assert(frames.size() > 1);
 	assert(result != NULL);
 
@@ -264,11 +300,14 @@ void trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* 
 
 	vector<Point2f> points_t = points;
 	vector<Point2f> points_t1;
-	vector<char> status;
+	vector<uchar> status;
 	vector<float> errors;
 	for(int i = 0; i < count ; i++)
 	{
 		points_t1.clear();
+
+		imshow("f", frames[i]);
+		waitKey();
 
 		cv::calcOpticalFlowPyrLK(
 			frames[i],			
@@ -282,12 +321,15 @@ void trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* 
 		status.clear();
 		errors.clear();
 
-		if(output)
-		{
-			drawPoints(points_t1, *output);
-			cv::waitKey();
-		}
+		Mat c1 = frames[i].clone();
+		drawPoints(points_t, c1);
+		imshow("t", c1);
+		cv::waitKey();
 
+		Mat c2 = frames[i+1].clone();
+		drawPoints(points_t1, c2);			
+		imshow("t", c2);
+		cv::waitKey();
 
 		points_t = points_t1;
 	}
@@ -295,16 +337,9 @@ void trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* 
 	*result = points_t1;
 }
 
-void trackBackward(vector<Point2f> futurePoints, vector<Mat> frames, vector<Point2f>* result)
+void BlobTracker::filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>* result)
 {
-	reverse(frames.begin(), frames.end());
-	trackForeward(futurePoints, frames, result);
-
-}
-
-void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>* result)
-{
-	assert(result != NULL);
+    assert(result != NULL);
 	assert(startPoints.size() == backTrackedPoints.size());
 	result->clear();
 
@@ -318,63 +353,9 @@ void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoint
 		float xdif = abs(pf.x - pb.x);
 		float ydif = abs(pf.y - pb.y);
 
-		if(sqrt(xdif*xdif + ydif*ydif) < treshold)
+		if(sqrt(xdif*xdif + ydif*ydif) < 1)
 		{
 			result->push_back(pf);			
 		}
 	}
-}
-
-
-void BlobTracker::track( Rect r, vector<Mat> frames )
-{
-	// Perform Lucas-Kanade Tracking -----------------------------------------
-	// Distribute points to track uniformly over the bounding-box
-	double bbWidth = r.width;
-	double bbHeight = r.height;
-	double stepX = bbWidth / (DIM_POINTS + 1);
-	double stepY = bbHeight / (DIM_POINTS + 1);
-	int i, x, y;
-
-	vector<Point2f> startPoints;
-	vector<Point2f> endPoints;
-	vector<Point2f> retrackedPoints;
-	vector<Point2f> inliers;
-
-	Point2f tl = r.tl();
-
-	for (x = 1; x <= DIM_POINTS; x++) {
-		for (y = 1; y <= DIM_POINTS; y++) {
-			Point2f selectedPoint = tl + Point2f(x*stepX, y*stepY);
-			startPoints.push_back(selectedPoint);						
-		}
-	}
-	
-	trackForeward(startPoints, frames, &endPoints);
-	trackBackward(endPoints, frames, &retrackedPoints);
-	filterInliers(startPoints, retrackedPoints, &inliers);
-	
-
-
-	// Calculate Bounding-Box Displacement -----------------------------------
-	// Calculate the median displacement of the bounding-box in each dimension
-	// We individually calculate the displacement of each point that was
-	// successfully tracked and then find the median values in each dimension
-
-	//int inliersSize = inliers.size();
-	//float* dxs =  new float[inliersSize];
-	//float* dys =  new float[inliersSize];
-	//int successful = 0;
-
-	//Point2f* distances = new Point2f[inliersSize];
-	//for(int i = 0 ; i < inliersSize; i++)
-	//{
-	//	distances[i] = startPoints[i] - retrackedPoints[i];		
-	//}
-
-	//// Get the median displacements
-	//double dispX = (double)median(dxs, successful);
-	//double dispY = (double)median(dys, successful);
-
-	//delete[] distances;
 }

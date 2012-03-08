@@ -37,6 +37,6 @@ public:
 	AutoTracker(AutoTrackerParam param);
     ~AutoTracker();
 
-	void process();
+	void run();
 
 };

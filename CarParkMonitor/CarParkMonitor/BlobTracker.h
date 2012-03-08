@@ -44,6 +44,7 @@ private:
 	TrackHistory* trackHistory;
 	FeatureDetector* featureDetector;
 	DescriptorExtractor* descriptorExtractor;
+	TrackerParam trackerParam;
 
 public:
 	BlobTracker(void);
@@ -51,6 +52,10 @@ public:
 	~BlobTracker(void);	
 
 	void injectBlobDescription(blob* b, Mat image, Mat foreground);
-	void match(TrackerParam params, MatcherResult* result);
-	void track(Rect r, vector<Mat> frames);	
+	void track(TrackerParam params, MatcherResult* result);
+	void trackFB(Rect r, vector<Mat> frames);
+
+	void trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result);
+	void trackBackward(vector<Point2f> futurePoints, vector<Mat> frames, vector<Point2f>* result);
+	void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>* result);
 };

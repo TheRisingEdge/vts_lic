@@ -37,7 +37,7 @@ bool AutoTracker::openVideoCapture(int* fps, double* frameDelay)
 	return true;
 }
 
-void AutoTracker::process()
+void AutoTracker::run()
 {
 	int fps;
 	double frameDelay;
@@ -69,7 +69,7 @@ void AutoTracker::process()
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
 
-	int frameBufferSize = 5;
+	int frameBufferSize = 10;
 
 	frameCount = 1;
 
@@ -100,9 +100,9 @@ void AutoTracker::process()
 
 			foreground = foregroundMask;		
 
-			detectorParam.frame = frame;
-			detectorParam.prevFrame = prevFrame;
-			detectorParam.foreground = foregroundMask;
+			detectorParam.frame 	 = frameBuffer[0];
+			detectorParam.prevFrame  = frameBuffer[1];
+			detectorParam.foreground = foregroundBuffer[0];
 			blobDetector->detect(detectorParam,&detectedBlobs);
 			
 
@@ -125,7 +125,7 @@ void AutoTracker::process()
 			
 			matcherResult.init();
 
-			blobTracker->match(trackerParam, &matcherResult);
+			blobTracker->track(trackerParam, &matcherResult);
 
 			
 			//** Assign ids for new detected Blobs *********************//

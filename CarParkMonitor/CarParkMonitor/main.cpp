@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 	param.blobTracker = new BlobTracker(&history);		
 
 	AutoTracker tracker(param);
-	tracker.process();
+	tracker.run();
 
 	return 0;
 }
