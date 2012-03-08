@@ -160,21 +160,18 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 	this->trackerParam = param;
 
 	int frameCount 				= param.frameCount;
+	int frameBufferSize			= param.frameBufferSize;
 	vector<blob*> detectedBlobs = param.detectedBlobs;
-	Mat frame 					= param.frame;
-	Mat foreground				= param.foreground;
+
+	Mat frame 					= param.frameBuffer[frameBufferSize - 1];
+	Mat foreground				= param.foregroundBuffer[frameBufferSize - 1];
+	Mat grayFrame 	  			= param.grayFrame;
+
 	Mat prevFrame 				= param.previousFrame;
-	Mat prevForeground 			= param.previousForeground;
-	vector<blob*> prevBlobs 	= trackHistory->previousBlobs;
+	Mat prevForeground 			= param.previousForeground;	
+	Mat prevGrayFrame 			= param.previousGrayFrame;
 
-	vector<Point2f> prevFrameKeypoints;
-	vector<Point2f> currentFrameKeypoints;
-	vector<Point2f> correctTracked;
-	vector<uchar> trackingStatus;
-	vector<float> trackingErrors;
-
-	Mat grayFrame 	  = param.grayFrame;
-	Mat prevGrayFrame = param.previousGrayFrame;
+	vector<blob*> prevBlobs 	= trackHistory->previousBlobs;	
 
 	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
 	{
@@ -197,7 +194,7 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 		Mat blobForeground = prevForeground(blobRect);
 
 		Point2f lower = blobRect.br();
-		if(lower.x < 400 && lower.y < 400 )
+		//if(lower.x < 400 && lower.y < 400 )
 		trackFB(blobRect, this->trackerParam.grayFrameBuffer);							
 	}
 }
@@ -235,28 +232,30 @@ void BlobTracker::trackFB( Rect r , vector<Mat> frames)
 
 	filterInliers(startPoints, retrackedPoints, &inliers);
 
-	Mat c = frames[0].clone();
+	Mat c = frames[frames.size()-1].clone();
 	drawPoints(inliers, c);
 	imshow("inliers",c);
-	cv::waitKey();
+	//cv::waitKey();
 
-	int inliersSize = inliers.size();
-	float* dxs =  new float[inliersSize];
-	float* dys =  new float[inliersSize];
-	int successful = 0;
+	//int inliersSize = inliers.size();
+	//float* dxs =  new float[inliersSize];
+	//float* dys =  new float[inliersSize];
+	//int successful = 0;
 
-	Point2f* distances = new Point2f[inliersSize];
-	for(int i = 0 ; i < inliersSize; i++)
-	{
-		distances[i] = startPoints[i] - retrackedPoints[i];		
-	}
+	//Point2f* distances = new Point2f[inliersSize];
+	//for(int i = 0 ; i < inliersSize; i++)
+	//{
+	//	distances[i] = startPoints[i] - retrackedPoints[i];		
+	//}
 
-	// Get the median displacements
-	double dispX = (double)median(dxs, successful);
-	double dispY = (double)median(dys, successful);
+	//// Get the median displacements
+	//double dispX = (double)median(dxs, successful);
+	//double dispY = (double)median(dys, successful);
 
-	delete[] distances;
+	//delete[] distances;
 }
+
+
 
 void BlobTracker::injectBlobDescription( blob* b, Mat image, Mat foreground )
 {
@@ -306,9 +305,6 @@ void BlobTracker::trackForeward(vector<Point2f> points, vector<Mat> frames, vect
 	{
 		points_t1.clear();
 
-		imshow("f", frames[i]);
-		waitKey();
-
 		cv::calcOpticalFlowPyrLK(
 			frames[i],			
 			frames[i+1], 				// 2 consecutive images, must be gray
@@ -321,15 +317,10 @@ void BlobTracker::trackForeward(vector<Point2f> points, vector<Mat> frames, vect
 		status.clear();
 		errors.clear();
 
-		Mat c1 = frames[i].clone();
-		drawPoints(points_t, c1);
-		imshow("t", c1);
-		cv::waitKey();
-
-		Mat c2 = frames[i+1].clone();
-		drawPoints(points_t1, c2);			
-		imshow("t", c2);
-		cv::waitKey();
+		//Mat c2 = frames[i+1].clone();
+		//drawPoints(points_t1, c2);			
+		//imshow("t", c2);
+		//cv::waitKey();
 
 		points_t = points_t1;
 	}

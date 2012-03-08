@@ -55,7 +55,6 @@ void AutoTracker::run()
 	TrackParam trackParam;
 	MatcherResult matcherResult;
 
-	vector<blob*> detectedBlobs;
 
 	Mat frame, grayFrame;
 	Mat prevFrame, prevGrayFrame;
@@ -68,6 +67,7 @@ void AutoTracker::run()
 	vector<Mat> frameBuffer;
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
+	vector<vector<blob*>> blobBuffer;
 
 	int frameBufferSize = 10;
 
@@ -85,9 +85,19 @@ void AutoTracker::run()
 		frameBuffer.resize(frameBufferSize);
 		grayFrameBuffer.resize(frameBufferSize);
 
+		//**Foreground segmentation**************************************//
 		Mat foregroundMask = foregroungSegmentator->segment(frame); // use background model to segment frame
 		foregroundBuffer.insert(foregroundBuffer.begin(), foregroundMask.clone());
 		foregroundBuffer.resize(frameBufferSize);
+
+
+		//**Detect blobs************************************************//
+		detectorParam.frame 	 = frame;
+		detectorParam.prevFrame  = prevFrame;
+		detectorParam.foreground = foregroundMask;
+		vector<blob*> foundBlobs = blobDetector->detect1(detectorParam);
+		blobBuffer.insert(blobBuffer.begin(), foundBlobs);
+		blobBuffer.resize(frameBufferSize);
 
 
 		if(frameCount < trainingFrames)
@@ -99,26 +109,21 @@ void AutoTracker::run()
 		{//detection and classification
 
 			foreground = foregroundMask;		
-
-			detectorParam.frame 	 = frameBuffer[0];
-			detectorParam.prevFrame  = frameBuffer[1];
-			detectorParam.foreground = foregroundBuffer[0];
-			blobDetector->detect(detectorParam,&detectedBlobs);
 			
-
 			//** setup Tracker parameters *******************************//
-			trackerParam.frame 				= frame;
-			trackerParam.grayFrame 			= grayFrame;
+			trackerParam.frame 				= frameBuffer[frameBufferSize-1];
+			trackerParam.grayFrame 			= grayFrameBuffer[frameBufferSize-1];
 			trackerParam.previousFrame 		= prevFrame;
 			trackerParam.previousGrayFrame 	= prevGrayFrame;		
 
-			trackerParam.foreground 		= foregroundMask;
+			trackerParam.foreground 		= foregroundBuffer[frameBufferSize-1];
 			trackerParam.previousForeground = prevForeground;
 
-			trackerParam.detectedBlobs 		= detectedBlobs;
+			trackerParam.detectedBlobs 		= blobBuffer[frameBufferSize-1];
 			trackerParam.generator 			= idGenerator;		
 			trackerParam.frameCount			= frameCount;
 
+			trackerParam.frameBufferSize    = frameBufferSize-1;
 			trackerParam.frameBuffer 		= frameBuffer;
 			trackerParam.grayFrameBuffer    = grayFrameBuffer;
 			trackerParam.foregroundBuffer   = foregroundBuffer;
@@ -144,23 +149,27 @@ void AutoTracker::run()
 
 
 			//** Update Tracking history ******************************//
-			trackHistory->previousBlobs = detectedBlobs;
+			trackHistory->previousBlobs = blobBuffer[frameBufferSize-1];
 			//trackParam.trackedBlobs = detectedBlobs;		
 			//trackParam.prevLostBlobs = matcherResult.prevLostBlobs;
 
 			//trackHistory->update(&trackParam);
 		}
+	
+		if(frameCount > frameBufferSize)
+		{
+		
+			
+			imshow("frame", frameBuffer[frameBufferSize-1]);
 
+			prevFrame 	   = frameBuffer[frameBufferSize-1];
+			prevGrayFrame  = grayFrameBuffer[frameBufferSize-1];
+			prevForeground = foregroundBuffer[frameBufferSize-1];
+		}
 
-			imshow("frame", frame);
-
-			cv::swap(prevFrame, frame);
-			cv::swap(prevGrayFrame, grayFrame);
-			cv::swap(prevForeground, foreground);
-
-			if(waitKey(frameDelay/5) >= 0)
-			{
-				frameDelay = 1000000;
-			}				
+		if(waitKey(frameDelay/5) >= 0)
+		{
+			frameDelay = 1000000;
+		}				
 	}	
 }

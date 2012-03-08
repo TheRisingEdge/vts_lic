@@ -19,6 +19,7 @@ typedef struct
 	IdGenerator* generator;
 	vector<blob*> detectedBlobs;
 
+	int frameBufferSize;
 	vector<Mat> frameBuffer;
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
@@ -52,6 +53,7 @@ public:
 	~BlobTracker(void);	
 
 	void injectBlobDescription(blob* b, Mat image, Mat foreground);
+
 	void track(TrackerParam params, MatcherResult* result);
 	void trackFB(Rect r, vector<Mat> frames);
 
