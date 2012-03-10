@@ -25,15 +25,15 @@
     <Filter Include="Source Files\BlobTracking">
       <UniqueIdentifier>{3fcd80b9-b2fa-482c-8b29-4e6870161061}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Bow">
+      <UniqueIdentifier>{a0a793aa-18a5-4f69-9f87-6df89f34d46e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Bow">
+      <UniqueIdentifier>{9e30faa9-b439-4cd4-af93-4ff4e57617a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AppConfig.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BowComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Content.cpp">
@@ -42,19 +42,7 @@
     <ClCompile Include="Importer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SvmComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tester.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlsaComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Helper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BackgroundSegmentator.cpp">
@@ -96,30 +84,30 @@
     <ClCompile Include="BlobDetector.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
+    <ClCompile Include="AppConfig.cpp">
+      <Filter>Source Files\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="BowComponent.cpp">
+      <Filter>Source Files\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawComponent.cpp">
+      <Filter>Source Files\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="PlsaComponent.cpp">
+      <Filter>Source Files\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="SvmComponent.cpp">
+      <Filter>Source Files\Bow</Filter>
+    </ClCompile>
+    <ClCompile Include="Tester.cpp">
+      <Filter>Source Files\Bow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AppConfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BowComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Content.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Importer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SvmComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tester.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlsaComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helper.h">
@@ -166,6 +154,24 @@
     </ClInclude>
     <ClInclude Include="TrackHistory.h">
       <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="AppConfig.h">
+      <Filter>Header Files\Bow</Filter>
+    </ClInclude>
+    <ClInclude Include="BowComponent.h">
+      <Filter>Header Files\Bow</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawComponent.h">
+      <Filter>Header Files\Bow</Filter>
+    </ClInclude>
+    <ClInclude Include="PlsaComponent.h">
+      <Filter>Header Files\Bow</Filter>
+    </ClInclude>
+    <ClInclude Include="SvmComponent.h">
+      <Filter>Header Files\Bow</Filter>
+    </ClInclude>
+    <ClInclude Include="Tester.h">
+      <Filter>Header Files\Bow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
