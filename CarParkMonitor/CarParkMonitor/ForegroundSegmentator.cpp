@@ -50,8 +50,7 @@ Mat ForegroundSegmentator::segment( Mat frame )
 	//cv::erode(foreground, foreground, structuringElement);
 	//cv::erode(foreground, foreground, structuringElement);
 	//cv::erode(foreground, foreground, structuringElement);
-
-
+	
 	
 
 
@@ -68,7 +67,7 @@ Mat ForegroundSegmentator::segment( Mat frame )
 		cv::dilate(temp_foreground_mask, foreground, this->elipseElement, Point(-1,-1), this->closeHolesCount);
 	}
 	
-	imshow("Segmentator", foreground);
+	imshow("Segmentator", foreground);	
 
 	return foreground;
 }

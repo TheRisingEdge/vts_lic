@@ -109,6 +109,6 @@ vector<blob*> BlobDetector::detect1( DetectorParams params )
 	cl.release();
 
 #pragma endregion debug_draw
-
+	
 	return foundBlobs;
 }

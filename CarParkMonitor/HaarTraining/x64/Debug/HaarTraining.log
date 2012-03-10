@@ -1,0 +1,31 @@
+﻿Build started 3/9/2012 11:22:42 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\HaarTraining\HaarTraining.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "x64\Debug\HaarTraining.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt main.cpp
+         main.cpp
+     1>main.cpp(78): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>main.cpp(78): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>main.cpp(79): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>main.cpp(79): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+       ManifestResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\HaarTraining.exe" /INCREMENTAL /NOLOGO /LIBPATH:d:\Programs\Libs\opencv\build\x64\vc10\lib opencv_calib3d231d.lib opencv_contrib231d.lib opencv_core231d.lib opencv_features2d231d.lib opencv_flann231d.lib opencv_gpu231d.lib opencv_haartraining_engined.lib opencv_highgui231d.lib opencv_imgproc231d.lib opencv_legacy231d.lib opencv_ml231d.lib opencv_objdetect231d.lib opencv_ts231d.lib opencv_video231d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"x64\Debug\HaarTraining.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\HaarTraining.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\HaarTraining.lib" /MACHINE:X64 x64\Debug\HaarTraining.exe.embed.manifest.res
+         x64\Debug\main.obj
+         HaarTraining.vcxproj -> E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\HaarTraining.exe
+       Manifest:
+         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /out:"x64\Debug\HaarTraining.exe.embed.manifest" /manifest x64\Debug\HaarTraining.exe.intermediate.manifest
+         All outputs are up-to-date.
+       LinkEmbedManifest:
+         All outputs are up-to-date.
+         HaarTraining.vcxproj -> E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\HaarTraining.exe
+       FinalizeBuildStatus:
+         Deleting file "x64\Debug\HaarTraining.unsuccessfulbuild".
+         Touching "x64\Debug\HaarTraining.lastbuildstate".
+     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\HaarTraining\HaarTraining.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.64
