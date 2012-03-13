@@ -31,7 +31,7 @@ private:
 	TrackerParam trackerParam;
 
 	VideoCapture capture;	
-	bool openVideoCapture(int* fps = NULL, double* frameDelay = NULL);
+	bool openVideoCapture(int& fps, double& frameDelay);
 
 public:
 	AutoTracker(AutoTrackerParam param);

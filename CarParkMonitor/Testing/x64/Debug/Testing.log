@@ -1,10 +1,12 @@
-﻿Build started 3/10/2012 11:02:43 AM.
+﻿Build started 3/11/2012 4:04:05 PM.
      1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\Testing\Testing.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\Testing.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt main.cpp
          main.cpp
+     1>main.cpp(37): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C++ conformant name: _getch. See online help for details.
+                 D:\Programs\Visual Studio 2010\VC\include\conio.h(128) : see declaration of 'getch'
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -24,4 +26,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.56
+Time Elapsed 00:00:01.39

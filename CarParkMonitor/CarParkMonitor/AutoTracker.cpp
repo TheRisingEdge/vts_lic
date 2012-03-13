@@ -21,7 +21,7 @@ AutoTracker::~AutoTracker()
 
 }
 
-bool AutoTracker::openVideoCapture(int* fps, double* frameDelay)
+bool AutoTracker::openVideoCapture(int& fps, double& frameDelay)
 {
 	this->capture.open(this->videoPath);
 
@@ -31,8 +31,8 @@ bool AutoTracker::openVideoCapture(int* fps, double* frameDelay)
 		return false;
 	}
 	
-	*fps = capture.get(CV_CAP_PROP_FPS);		
-	*frameDelay = 1000.0/(double)(*fps);
+	fps = capture.get(CV_CAP_PROP_FPS);		
+	frameDelay = 1000.0/(double)(fps);
 
 	return true;
 }
@@ -43,7 +43,7 @@ void AutoTracker::run()
 	double frameDelay;
 	int frameCount;
 
-	if(!openVideoCapture(&fps, &frameDelay))	
+	if(!openVideoCapture(fps, frameDelay))	
 		return;
 
 	namedWindow("frame");
@@ -79,26 +79,28 @@ void AutoTracker::run()
 		frameCount++;		
 		cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
 
-		frameBuffer.insert(frameBuffer.begin(), frame.clone());			
-		grayFrameBuffer.insert(grayFrameBuffer.begin(), grayFrame.clone());
-
-		frameBuffer.resize(frameBufferSize);
-		grayFrameBuffer.resize(frameBufferSize);
+		frameBuffer.push_back(frame.clone());
+		grayFrameBuffer.push_back(grayFrame.clone());
 
 		//**Foreground segmentation**************************************//
 		Mat foregroundMask = foregroungSegmentator->segment(frame); // use background model to segment frame
-		foregroundBuffer.insert(foregroundBuffer.begin(), foregroundMask.clone());
-		foregroundBuffer.resize(frameBufferSize);
-
-
+		foregroundBuffer.push_back(foregroundMask.clone());
+		
 		//**Detect blobs************************************************//
 		detectorParam.frame 	 = frame;
 		detectorParam.prevFrame  = prevFrame;
 		detectorParam.foreground = foregroundMask;
-		vector<blob*> foundBlobs = blobDetector->detect1(detectorParam);
-		blobBuffer.insert(blobBuffer.begin(), foundBlobs);
-		blobBuffer.resize(frameBufferSize);
+		vector<blob*> foundBlobs = blobDetector->detect(detectorParam);
+		blobBuffer.push_back(foundBlobs);
 
+
+		if(frameBuffer.size() > frameBufferSize)
+		{
+			frameBuffer.erase(frameBuffer.begin());
+			grayFrameBuffer.erase(grayFrameBuffer.begin());
+			foregroundBuffer.erase(foregroundBuffer.begin());
+			blobBuffer.erase(blobBuffer.begin());
+		}
 
 		if(frameCount < trainingFrames)
 		{//construct background model
@@ -109,27 +111,22 @@ void AutoTracker::run()
 		{//detection and classification
 
 			foreground = foregroundMask;		
-			
-			//** setup Tracker parameters *******************************//
-			trackerParam.frame 				= frameBuffer[frameBufferSize-1];
-			trackerParam.grayFrame 			= grayFrameBuffer[frameBufferSize-1];
-			trackerParam.previousFrame 		= prevFrame;
-			trackerParam.previousGrayFrame 	= prevGrayFrame;		
 
-			trackerParam.foreground 		= foregroundBuffer[frameBufferSize-1];
-			trackerParam.previousForeground = prevForeground;
-
-			trackerParam.detectedBlobs 		= blobBuffer[frameBufferSize-1];
+			//** setup Tracker parameters *******************************//			
 			trackerParam.generator 			= idGenerator;		
 			trackerParam.frameCount			= frameCount;
-
-			trackerParam.frameBufferSize    = frameBufferSize-1;
+			
+			trackerParam.prevFrame 			= prevFrame;
+			trackerParam.prevGrayFrame		= prevGrayFrame;		
+			trackerParam.prevForeground		= prevForeground;
+			
+			trackerParam.frameBufferSize    = frameBufferSize;
 			trackerParam.frameBuffer 		= frameBuffer;
 			trackerParam.grayFrameBuffer    = grayFrameBuffer;
 			trackerParam.foregroundBuffer   = foregroundBuffer;
+			trackerParam.blobBuffer			= blobBuffer;
 			
 			matcherResult.init();
-
 			blobTracker->track(trackerParam, &matcherResult);
 
 			
@@ -149,7 +146,7 @@ void AutoTracker::run()
 
 
 			//** Update Tracking history ******************************//
-			trackHistory->previousBlobs = blobBuffer[frameBufferSize-1];
+			trackHistory->previousBlobs = blobBuffer[0];
 			//trackParam.trackedBlobs = detectedBlobs;		
 			//trackParam.prevLostBlobs = matcherResult.prevLostBlobs;
 
@@ -160,11 +157,11 @@ void AutoTracker::run()
 		{
 		
 			
-			imshow("frame", frameBuffer[frameBufferSize-1]);
+			imshow("frame", frameBuffer[0]);
 
-			prevFrame 	   = frameBuffer[frameBufferSize-1];
-			prevGrayFrame  = grayFrameBuffer[frameBufferSize-1];
-			prevForeground = foregroundBuffer[frameBufferSize-1];
+			prevFrame 	   = frameBuffer[0];
+			prevGrayFrame  = grayFrameBuffer[0];
+			prevForeground = foregroundBuffer[0];
 		}
 
 		if(waitKey(frameDelay/5) >= 0)

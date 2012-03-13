@@ -1,6 +1,8 @@
 #include "opencv2/opencv.hpp"
+#include <iostream>
 
 using namespace cv;
+using namespace std;
 
 typedef struct 
 {
@@ -46,26 +48,52 @@ int main(int argc, char** argv)
 		return -1;
 	}
 
+	cout << "press [r] to start recording, [e] to finish" << endl;
+
 	namedWindow("video");
 	namedWindow("new video");
 
 	Mat frame;
 	
 	bool stop = false;
+	bool recording = false;
+	bool finished = false;
+
 	while(!stop)
 	{		
 		capture >> frame;
-		Mat newFrame = Mat(outSize, CV_32FC3);
 
-		cv::resize(frame, newFrame, outSize, 0, 0, INTER_LANCZOS4);
+
+		if(!recording && !finished)
+		{
+			if(cv::waitKey(1) == 'r')
+			{
+				recording = true;
+			}
+		}else{
+			if(cv::waitKey(1) == 'e')
+			{
+				recording = false;
+				finished = true;
+			}
+		}
+		
+		if(recording && !finished)
+		{
+			Mat newFrame = Mat(outSize, CV_32FC3);
+			cv::resize(frame, newFrame, outSize, 0, 0, INTER_LANCZOS4);
+			
+			imshow("new video", newFrame);
+			// add frame to recorded video
+			record << frame; 			
+		}
+
+		if(finished)
+			break;
+
+		cv::waitKey(5);
 		// show frame on screen
 		imshow("video", frame);
-		imshow("new video", newFrame);
-
-		// add frame to recorded video
-		record << frame; 
-
-		if(waitKey(1) >= 0) break;
 	}
 	
 	return 0;

@@ -28,6 +28,5 @@ public:
     BlobDetector();
    ~BlobDetector();
 
-	void detect(DetectorParams params, vector<blob*>* foundBlobs);
-	vector<blob*> detect1(DetectorParams params);
+	vector<blob*> detect(DetectorParams params);
 };

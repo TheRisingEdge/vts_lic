@@ -12,9 +12,9 @@ typedef struct
 	Mat grayFrame;	
 	Mat foreground;
 	
-	Mat previousFrame;
-	Mat previousGrayFrame;
-	Mat previousForeground;
+	Mat prevFrame;
+	Mat prevGrayFrame;
+	Mat prevForeground;
 				
 	IdGenerator* generator;
 	vector<blob*> detectedBlobs;
@@ -23,6 +23,7 @@ typedef struct
 	vector<Mat> frameBuffer;
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
+	vector<vector<blob*>> blobBuffer;
 
 }TrackerParam;
 
@@ -52,12 +53,10 @@ public:
 	BlobTracker(TrackHistory* trackHistory);
 	~BlobTracker(void);	
 
-	void injectBlobDescription(blob* b, Mat image, Mat foreground);
-
 	void track(TrackerParam params, MatcherResult* result);
 	void trackFB(Rect r, vector<Mat> frames);
 
-	void trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result);
+	void forewardTrack(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result);
 	void trackBackward(vector<Point2f> futurePoints, vector<Mat> frames, vector<Point2f>* result);
-	void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>* result);
+	void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>& result);
 };

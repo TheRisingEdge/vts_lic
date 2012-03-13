@@ -38,15 +38,14 @@ typedef struct
 typedef struct
 {
 	int id;
-	int detectorId;	
-	blobDescriptor descriptor;
-	Rect sourceRect;
-	
+	int detectorId;		
+	Rect rect;
+	vector<int> inferedIds;
 
+
+	blobDescriptor descriptor;
 	vector<int> hash;
 	tempInfo temp;
-
-
 }blob;
 
 class IdGenerator
@@ -87,7 +86,7 @@ public:
 		for(int i = 0; i < size; i++)
 		{
 			blob b;
-			b.sourceRect = rects[i];
+			b.rect = rects[i];
 			addBlob(b);
 		}
 	}
@@ -95,7 +94,7 @@ public:
 	void addBlob(Rect r)
 	{
 		blob b;
-		b.sourceRect = r;
+		b.rect = r;
 		b.id = nextId;
 		nextId++;
 

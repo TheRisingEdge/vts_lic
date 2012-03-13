@@ -27,7 +27,7 @@ void TrackHistory::update(TrackParam* param)
 		{
    			TrackInfo* info = t->second;
 			info->isLost = false;
-			info->trackedPoints.insert(info->trackedPoints.begin(), b->sourceRect.tl());
+			info->trackedPoints.insert(info->trackedPoints.begin(), b->rect.tl());
 			
 			if(info->trackedPoints.size() > this->size)
       			info->trackedPoints.resize(this->size);
@@ -39,7 +39,7 @@ void TrackHistory::update(TrackParam* param)
 			info->isLost = false;
 			//make snapshot		
 
-			info->trackedPoints.insert(info->trackedPoints.begin(), b->sourceRect.tl());
+			info->trackedPoints.insert(info->trackedPoints.begin(), b->rect.tl());
 
 			if(info->trackedPoints.size() > this->size)
 				info->trackedPoints.resize(this->size);

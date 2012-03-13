@@ -2,8 +2,10 @@
 #include <assert.h>
 #include "BlobDetector.h"
 #include "AppConfig.h"
+#include <algorithm>
 
 
+using namespace std;
 
 #define DIM_POINTS 5
 #define TOTAL_POINTS (DIM_POINTS * DIM_POINTS)
@@ -95,7 +97,7 @@ void drawBlobs(vector<blob*> blobs, Mat &output)
 
 	for( int i = 0; i< size; i++ )
 	{
-		Rect rect = blobs.at(i)->sourceRect;
+		Rect rect = blobs.at(i)->rect;
 
 		rectangle( output, rect.tl(), rect.br(), color);
 
@@ -104,31 +106,10 @@ void drawBlobs(vector<blob*> blobs, Mat &output)
 
 		string text = id.str();
 				
-		cv::Point textOrg = blobs.at(i)->sourceRect.tl();
+		cv::Point textOrg = blobs.at(i)->rect.tl();
 		cv::putText(output, text, textOrg, fontFace, fontScale, red, thickness,8);
 	}
 }
-
-//void rejectUntrackedFeatures(vector<Point2f>* points, vector<uchar> statuses){		
-//	int k = 0;
-//	int size = points->size();
-//	for( int i = 0; size; i++ ) {
-//		if (acceptTrackedPoint(i)) {			
-//			initialFeaturePosition[k]= initialFeaturePosition[i];
-//			points[1][k++] = points[1][i];
-//		}
-//	}
-//
-//	points[1].resize(k);
-//	initialFeaturePosition.resize(k);
-//}
-//
-//bool acceptTrackedPoint(int i) {
-//	return featureStatuses[i] &&
-//		// if point has moved
-//		(abs(points[0][i].x-points[1][i].x)+
-//		(abs(points[0][i].y-points[1][i].y))>2);
-//}
 
 int containedPointsInRect(Rect rect, vector<Point2f> pts)
 {
@@ -155,24 +136,28 @@ void drawPoints(vector<Point2f> prev, cv:: Mat &output) {
 	}
 }
 
+bool isSameBlob(blob* a, blob* b)
+{
+	return true;
+}
+
 void BlobTracker::track( TrackerParam param, MatcherResult* result )
 {
 	this->trackerParam = param;
 
 	int frameCount 				= param.frameCount;
 	int frameBufferSize			= param.frameBufferSize;
-	vector<blob*> detectedBlobs = param.detectedBlobs;
 
-	Mat frame 					= param.frameBuffer[frameBufferSize - 1];
-	Mat foreground				= param.foregroundBuffer[frameBufferSize - 1];
-	Mat grayFrame 	  			= param.grayFrame;
-
-	Mat prevFrame 				= param.previousFrame;
-	Mat prevForeground 			= param.previousForeground;	
-	Mat prevGrayFrame 			= param.previousGrayFrame;
+	Mat frame 					= param.frameBuffer[0];
+	Mat foreground				= param.foregroundBuffer[0];
+	Mat grayFrame 	  			= param.grayFrameBuffer[0];
+	vector<blob*> detectedBlobs = param.blobBuffer[0];
+	
+	Mat prevFrame 				= param.prevFrame;
+	Mat prevForeground 			= param.prevForeground;	
+	Mat prevGrayFrame 			= param.prevGrayFrame;
 
 	vector<blob*> prevBlobs 	= trackHistory->previousBlobs;	
-
 	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
 	{
 		return;
@@ -183,22 +168,27 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 		result->newBlobs.assign(detectedBlobs.begin(), detectedBlobs.end());
 		return;
 	}
+	
+	int prevSize = prevBlobs.size();
+	int currentSize = detectedBlobs.size();
+	
+	for_each(begin(prevBlobs), end(prevBlobs), [&](blob* b){
+		assert(b->id != ID_UNDEFINED);
 
-	int size = prevBlobs.size();
-	for(int i = 0; i < size; i++)
-	{
-		blob* b = prevBlobs[i];
 
-		Rect blobRect = b->sourceRect;		 
-		Mat blobImage = prevGrayFrame(blobRect);
-		Mat blobForeground = prevForeground(blobRect);
 
-		Point2f lower = blobRect.br();
-		//if(lower.x < 400 && lower.y < 400 )
-		trackFB(blobRect, this->trackerParam.grayFrameBuffer);							
-	}
+	});
+
+
+
+
+	//vector<blob*> allBlobs;
+	//allBlobs.assign(prevBlobs.begin(), prevBlobs.end());
+	//allBlobs.insert(allBlobs.end(), detectedBlobs.begin(), detectedBlobs.end());
+
+	//vector<int> labels;
+	//cv::partition(allBlobs,labels, isSameBlob);
 }
-
 
 void BlobTracker::trackFB( Rect r , vector<Mat> frames)
 {
@@ -224,18 +214,19 @@ void BlobTracker::trackFB( Rect r , vector<Mat> frames)
 		}
 	}
 
-	reverse(frames.begin(), frames.end());	
-	trackForeward(startPoints, frames, &endPoints);
-	reverse(frames.begin(), frames.end());
 	
-	trackForeward(endPoints, frames, &retrackedPoints);
+	forewardTrack(startPoints, frames, &endPoints);
+	
+	reverse(frames.begin(), frames.end());	
+	forewardTrack(endPoints, frames, &retrackedPoints);
+	reverse(frames.begin(), frames.end());
 
-	filterInliers(startPoints, retrackedPoints, &inliers);
+	filterInliers(startPoints, retrackedPoints, inliers);
 
-	Mat c = frames[frames.size()-1].clone();
+	Mat c = frames[0].clone();
 	drawPoints(inliers, c);
 	imshow("inliers",c);
-	//cv::waitKey();
+	cv::waitKey();
 
 	//int inliersSize = inliers.size();
 	//float* dxs =  new float[inliersSize];
@@ -255,39 +246,7 @@ void BlobTracker::trackFB( Rect r , vector<Mat> frames)
 	//delete[] distances;
 }
 
-
-
-void BlobTracker::injectBlobDescription( blob* b, Mat image, Mat foreground )
-{
-	Mat subimage = image(b->sourceRect);	
-	vector<KeyPoint> keypoints;
-	
-	Mat descriptors;	
-	Mat mask = foreground;
-	CV_Assert( mask.empty() || (mask.type() == CV_8UC1 && mask.size() == image.size()) );
-	this->featureDetector->detect(subimage, keypoints, Mat());
-	this->descriptorExtractor->compute(subimage, keypoints, descriptors);
-	
-	Mat img_keypoint;
-	cv::drawKeypoints( subimage, keypoints, img_keypoint, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
-
-	imshow("bl", subimage);
-	imshow("kps", img_keypoint);
-
-	//cv::waitKey();
-
-	b->descriptor.descriptor = descriptors;
-	b->descriptor.keypoints = keypoints;
-	b->descriptor.image = image(b->sourceRect).clone();
-}
-
-
-
-
-
-
-
-void BlobTracker::trackForeward(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result)
+void BlobTracker::forewardTrack(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result)
 {
 	assert(frames.size() > 1);
 	assert(result != NULL);
@@ -317,10 +276,11 @@ void BlobTracker::trackForeward(vector<Point2f> points, vector<Mat> frames, vect
 		status.clear();
 		errors.clear();
 
-		//Mat c2 = frames[i+1].clone();
-		//drawPoints(points_t1, c2);			
-		//imshow("t", c2);
-		//cv::waitKey();
+		Mat c2 = frames[i+1].clone();
+		drawPoints(points_t1, c2);			
+		imshow("t", c2);
+		cv::waitKey();
+		c2.release();
 
 		points_t = points_t1;
 	}
@@ -328,14 +288,13 @@ void BlobTracker::trackForeward(vector<Point2f> points, vector<Mat> frames, vect
 	*result = points_t1;
 }
 
-void BlobTracker::filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>* result)
+void BlobTracker::filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>& result)
 {
-    assert(result != NULL);
 	assert(startPoints.size() == backTrackedPoints.size());
-	result->clear();
+	result.clear();
 
-	float treshold = 2;
-
+	float treshold = 1;
+	
 	for(int i = 0; i < startPoints.size(); i++)
 	{
 		Point2f pf = startPoints[i];
@@ -344,9 +303,10 @@ void BlobTracker::filterInliers(vector<Point2f> startPoints, vector<Point2f> bac
 		float xdif = abs(pf.x - pb.x);
 		float ydif = abs(pf.y - pb.y);
 
-		if(sqrt(xdif*xdif + ydif*ydif) < 1)
+		float dist = xdif*xdif + ydif*ydif;
+		if( dist < treshold)
 		{
-			result->push_back(pf);			
+			result.push_back(pf);			
 		}
 	}
 }
