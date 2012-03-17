@@ -3,6 +3,7 @@
 #include "Content.h"
 #include "AppConfig.h"
 
+
 #pragma region mymain
 int main(int argc, char** argv)
 {
@@ -12,7 +13,7 @@ int main(int argc, char** argv)
 
 	AutoTrackerParam param;
 	param.videoPath = videoPath;
-	param.foregroundSegmentator = new ForegroundSegmentator();
+	param.foregroundSegmentator = new ForegroundSegmenter();
 	param.blobDetector = new BlobDetector();
 
 	TrackHistory history(100);

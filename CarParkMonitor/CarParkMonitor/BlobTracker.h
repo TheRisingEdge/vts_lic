@@ -11,10 +11,6 @@ typedef struct
 	Mat frame;
 	Mat grayFrame;	
 	Mat foreground;
-	
-	Mat prevFrame;
-	Mat prevGrayFrame;
-	Mat prevForeground;
 				
 	IdGenerator* generator;
 	vector<blob*> detectedBlobs;
@@ -47,16 +43,19 @@ private:
 	FeatureDetector* featureDetector;
 	DescriptorExtractor* descriptorExtractor;
 	TrackerParam trackerParam;
+	
+	void forewardBackwardTrack(Rect r, vector<Mat> frames);
+	void forewardTrack(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result);
+	void trackBackward(vector<Point2f> futurePoints, vector<Mat> frames, vector<Point2f>* result);
+	void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>& result);
+	vector<Point2f> getGoodFeatures(Mat image, Mat mask);
+
+	void debugDraw(const char* message, vector<Point2f> points, const Mat& output);
 
 public:
 	BlobTracker(void);
 	BlobTracker(TrackHistory* trackHistory);
 	~BlobTracker(void);	
 
-	void track(TrackerParam params, MatcherResult* result);
-	void trackFB(Rect r, vector<Mat> frames);
-
-	void forewardTrack(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result);
-	void trackBackward(vector<Point2f> futurePoints, vector<Mat> frames, vector<Point2f>* result);
-	void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>& result);
+	void track(TrackerParam params, MatcherResult* result);	
 };

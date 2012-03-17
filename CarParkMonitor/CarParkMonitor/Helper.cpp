@@ -155,6 +155,39 @@ Mat_<float> Helper::floatsToMat( float** data, int rows, int cols )
 	return mat;
 }
 
+cv::Mat Helper::concatImages( Mat img1, Mat img2 )
+{
+	Mat imgResult(std::max(img2.rows,img1.rows),img1.cols+img2.cols,img1.type()); // Your final image
+
+	Mat roiImgResult_Left = imgResult(Rect(0,0,img1.cols,img1.rows)); //Img1 will be on the left part
+	Mat roiImgResult_Right = imgResult(Rect(img1.cols,0,img2.cols,img2.rows)); //Img2 will be on the right part, we shift the roi of img1.cols on the right
+
+	Mat roiImg1 = img1(Rect(0,0,img1.cols,img1.rows));
+	Mat roiImg2 = img2(Rect(0,0,img2.cols,img2.rows));
+
+	roiImg1.copyTo(roiImgResult_Left); //Img1 will be on the left of imgResult
+	roiImg2.copyTo(roiImgResult_Right); //Img2 will be on the right of imgResult
+
+	return imgResult;
+}
+
+void Helper::drawText( const char* text,const Point& origin, Mat& output )
+{	
+	putText( output, text, origin, CV_FONT_HERSHEY_PLAIN, 1.2, Scalar(0, 0, 255));
+}
+
+void Helper::drawBlob( const blob* b, Mat& output )
+{
+	Rect rect = b->rect;
+	Scalar color = Scalar( 0, 0, 255 );
+	rectangle( output, rect.tl(), rect.br(), color);
+	
+	unique_ptr<char> text = unique_ptr<char>(new char[50]);
+	auto data = text.get();
+	sprintf(data, "%d", b->id);
+	drawText(data,b->rect.tl(), output);
+}
+
 #pragma endregion converters
 
 

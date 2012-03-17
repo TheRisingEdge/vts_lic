@@ -1,6 +1,6 @@
-#include "ForegroundSegmentator.h"
+#include "ForegroundSegmenter.h"
 
-ForegroundSegmentator::ForegroundSegmentator():threshold(10), learningRate(0.0001)
+ForegroundSegmenter::ForegroundSegmenter():threshold(10), learningRate(0.0001)
 {
 	this->closeHolesCount = 1;
 
@@ -21,7 +21,7 @@ ForegroundSegmentator::ForegroundSegmentator():threshold(10), learningRate(0.000
 	);
 }
 
-Mat ForegroundSegmentator::segment( Mat frame )
+Mat ForegroundSegmenter::segment( Mat frame )
 {
 	// convert to gray-level image
 	cv::cvtColor(frame, gray, CV_BGR2GRAY); 
@@ -67,8 +67,11 @@ Mat ForegroundSegmentator::segment( Mat frame )
 		cv::dilate(temp_foreground_mask, foreground, this->elipseElement, Point(-1,-1), this->closeHolesCount);
 	}
 	
-	imshow("Segmentator", foreground);	
 
+#if BG_DRAW
+	imshow("Segmentator", foreground);	
+#endif
+	
 	return foreground;
 }
 

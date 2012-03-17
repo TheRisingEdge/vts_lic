@@ -1,5 +1,6 @@
 #pragma once
 #include <opencv2/opencv.hpp>
+#include "Blob.h"
 
 using namespace cv;
 
@@ -23,4 +24,8 @@ public:
 	static void writeKeypointCollectionVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>> carKeypoints );
 	static void readKeypointCollectionVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>>* carKeypoints );
 	
+	static Mat concatImages(Mat img1, Mat img2);
+	static void drawText(const char* text,const Point& origin, Mat& output);
+	static void drawBlob(const blob* b, Mat& output);
+
 };

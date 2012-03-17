@@ -1,17 +1,18 @@
 #include "opencv2\opencv.hpp"
-#include "ForegroundSegmentator.h"
+#include "ForegroundSegmenter.h"
 #include "BlobTracker.h"
 #include "BlobDetector.h"
 
-
 using namespace cv;
+
+#define FRAME_DRAW 1
 
 typedef struct
 {
 	char* videoPath;
 	int trainingFrames;
 
-	ForegroundSegmentator* foregroundSegmentator;
+	ForegroundSegmenter* foregroundSegmentator;
 	BlobDetector* blobDetector;
 	BlobTracker* blobTracker;
 	TrackHistory* trackHistory;
@@ -23,7 +24,7 @@ class AutoTracker
 
 private:
 	char* videoPath;
-	ForegroundSegmentator* foregroungSegmentator;
+	ForegroundSegmenter* foregroungSegmentator;
 	BlobDetector* blobDetector;
 	BlobTracker* blobTracker;
 	TrackHistory* trackHistory;

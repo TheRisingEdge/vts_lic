@@ -63,11 +63,11 @@ void TrackHistory::update(TrackParam* param)
 			TrackInfo* info = t->second;
 			info->isLost = true;
 
-			assert(b->descriptor.descriptor.empty() == false);
+			//assert(b->descriptor.descriptor.empty() == false);
 
-			info->sifts.push_back(b->descriptor.descriptor);
-			info->keypoints.push_back(b->descriptor.keypoints);
-			info->images.push_back(b->descriptor.image);
+			//info->sifts.push_back(b->descriptor.descriptor);
+			//info->keypoints.push_back(b->descriptor.keypoints);
+			//info->images.push_back(b->descriptor.image);
 
 		}else
 		{

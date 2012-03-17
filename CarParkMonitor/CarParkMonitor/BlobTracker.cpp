@@ -2,7 +2,9 @@
 #include <assert.h>
 #include "BlobDetector.h"
 #include "AppConfig.h"
+#include "Helper.h"
 #include <algorithm>
+#include "DebugHelper.h"
 
 
 using namespace std;
@@ -32,39 +34,8 @@ float median(float *A, int length) {
 	}
 }
 
-
 BlobTracker::~BlobTracker(void)
 {
-}
-
-vector<Point2f> getGoodFeatures(Mat image)
-{
-	vector<Point2f> keypoints;
-
-	cv::goodFeaturesToTrack(
-		image, 		   // the image 
-		keypoints,   	   // the output detected features
-		20,  	   // the maximum number of features 
-		0.001,     // quality level
-		0.001);   	   // min distance between two features
-
-	return keypoints;
-}
-
-vector<Point2f> getGoodFeatures(Mat image, Mat mask)
-{
-	vector<Point2f> keypoints;
-
-	cv::goodFeaturesToTrack(
-		image, 		   // the image 
-		keypoints,   	   // the output detected features
-		10,  	   // the maximum number of features 
-		0.001,     // quality level
-		0.001,
-		mask
-	);   	   // min distance between two features
-
-	return keypoints;
 }
 
 void drawTrackedPoints(vector<Point2f> pts,cv:: Mat &output) {
@@ -136,61 +107,7 @@ void drawPoints(vector<Point2f> prev, cv:: Mat &output) {
 	}
 }
 
-bool isSameBlob(blob* a, blob* b)
-{
-	return true;
-}
-
-void BlobTracker::track( TrackerParam param, MatcherResult* result )
-{
-	this->trackerParam = param;
-
-	int frameCount 				= param.frameCount;
-	int frameBufferSize			= param.frameBufferSize;
-
-	Mat frame 					= param.frameBuffer[0];
-	Mat foreground				= param.foregroundBuffer[0];
-	Mat grayFrame 	  			= param.grayFrameBuffer[0];
-	vector<blob*> detectedBlobs = param.blobBuffer[0];
-	
-	Mat prevFrame 				= param.prevFrame;
-	Mat prevForeground 			= param.prevForeground;	
-	Mat prevGrayFrame 			= param.prevGrayFrame;
-
-	vector<blob*> prevBlobs 	= trackHistory->previousBlobs;	
-	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
-	{
-		return;
-	}
-
-	if(prevBlobs.size() == 0 && detectedBlobs.size() != 0)
-	{
-		result->newBlobs.assign(detectedBlobs.begin(), detectedBlobs.end());
-		return;
-	}
-	
-	int prevSize = prevBlobs.size();
-	int currentSize = detectedBlobs.size();
-	
-	for_each(begin(prevBlobs), end(prevBlobs), [&](blob* b){
-		assert(b->id != ID_UNDEFINED);
-
-
-
-	});
-
-
-
-
-	//vector<blob*> allBlobs;
-	//allBlobs.assign(prevBlobs.begin(), prevBlobs.end());
-	//allBlobs.insert(allBlobs.end(), detectedBlobs.begin(), detectedBlobs.end());
-
-	//vector<int> labels;
-	//cv::partition(allBlobs,labels, isSameBlob);
-}
-
-void BlobTracker::trackFB( Rect r , vector<Mat> frames)
+void BlobTracker::forewardBackwardTrack( Rect r , vector<Mat> frames)
 {
 	// Perform Lucas-Kanade Tracking -----------------------------------------
 	// Distribute points to track uniformly over the bounding-box
@@ -310,3 +227,127 @@ void BlobTracker::filterInliers(vector<Point2f> startPoints, vector<Point2f> bac
 		}
 	}
 }
+
+
+vector<Point2f> BlobTracker::getGoodFeatures( Mat image, Mat mask )
+{
+	vector<Point2f> keypoints;
+
+	cv::goodFeaturesToTrack(
+		image, 		   // the image 
+		keypoints,   	   // the output detected features
+		100,  	   // the maximum number of features 
+		0.01,     // quality level
+		0.001,
+		mask,
+		2,
+		true
+	);   	   // min distance between two features
+
+	return keypoints;
+}
+
+void BlobTracker::track( TrackerParam param, MatcherResult* result )
+{
+	this->trackerParam			= param;
+
+	int frameCount 				= param.frameCount;
+	int frameBufferSize			= param.frameBufferSize;
+	
+	Mat prevFrame				= param.frameBuffer[0];
+	Mat prevForeground			= param.foregroundBuffer[0];
+	Mat prevGrayFrame			= param.grayFrameBuffer[0]; 
+	vector<blob*> prevBlobs 	= param.blobBuffer[0];
+
+	Mat frame 					= param.frameBuffer[1];
+	Mat foreground				= param.foregroundBuffer[1];
+	Mat grayFrame 	  			= param.grayFrameBuffer[1];
+	vector<blob*> detectedBlobs = param.blobBuffer[1];
+
+	Mat nextFrame				= param.frameBuffer[2];
+	Mat nextForeground			= param.foregroundBuffer[2];
+	Mat nextGrayFrame			= param.grayFrameBuffer[2];
+
+
+   			// tracking error
+
+
+	DebugHelper::assertAllLabeled(prevBlobs);
+	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
+	{
+		return;
+	}
+
+	DebugHelper::assertAllUnlabeled(detectedBlobs);
+	if(prevBlobs.size() == 0 && detectedBlobs.size() != 0)
+	{
+		result->newBlobs.assign(detectedBlobs.begin(), detectedBlobs.end());
+		return;
+	}
+
+
+	for_each(begin(prevBlobs), end(prevBlobs), [&](blob* b){
+
+		Mat fg	   = prevForeground(b->rect);
+		Mat region = prevFrame(b->rect);
+		Mat gray   = prevGrayFrame(b->rect);		
+				
+		//vector<Point2f> trackedPoints = this->getGoodFeatures(gray, fg);
+		//Point2f tl = Point2f(b->rect.tl());
+		//for_each(begin(trackedPoints), end(trackedPoints), [&](Point2f& p){
+		//	p += tl;
+		//});
+
+		//imshow("blob", region);
+		//imshow("foreground", fg);
+		//this->debugDraw("good features",trackedPoints, image);
+
+		std::vector<uchar> status;
+		std::vector<float> errors;    	
+		std::vector<Point2f> trackedTo;
+
+		//cv::calcOpticalFlowPyrLK(
+		//	prevGrayFrame,
+		//	grayFrame, 		// 2 consecutive images
+		//	trackedPoints, 	// input point position in first image
+		//	trackedTo, 		// output point postion in the second image
+		//	status,			// tracking success
+		//	errors);   
+
+		//search overlaping blobs as they are the ones most probable
+
+		vector<blob*> possibleMatches;
+		int minArea = 0.6 * b->rect.area();
+		for_each(begin(detectedBlobs), end(detectedBlobs), [&](blob* nb)
+		{
+			//assert(nb->id == ID_UNDEFINED);
+
+			Rect intersection = b->rect & nb->rect;
+			if(intersection.area() > minArea)
+			{
+				possibleMatches.push_back(nb);
+				imshow("possible matches", Helper::concatImages(region, frame(nb->rect)));
+				cv::waitKey();
+			}
+		});
+		
+		for_each(begin(possibleMatches), end(possibleMatches), [&](blob* match)
+		{
+			//assert(match->id == ID_UNDEFINED);
+			match->id = b->id;				
+		});
+
+	});
+}
+
+void BlobTracker::debugDraw(const char* message, vector<Point2f> points, const Mat& output )
+{
+	Mat clone = output.clone();
+	for_each(begin(points), end(points), [&](Point2f p){
+		cv::circle(clone, p, 3, cv::Scalar(255,255,255),-1);
+	});
+	imshow(message, clone);
+	clone.release();
+}
+
+

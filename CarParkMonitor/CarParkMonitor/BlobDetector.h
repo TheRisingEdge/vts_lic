@@ -4,11 +4,10 @@
 #include "BlobTracker.h"
 
 using namespace cv;
-
 #define MIN_HEIGHT 10
 #define MIN_WIDTH  20
 
-#define ID_UNDEFINED -1
+#define BLOB_DRAW 1
 
 typedef struct
 {

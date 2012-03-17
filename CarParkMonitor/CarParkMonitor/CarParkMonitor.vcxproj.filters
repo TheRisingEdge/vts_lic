@@ -102,6 +102,18 @@
     <ClCompile Include="Tester.cpp">
       <Filter>Source Files\Bow</Filter>
     </ClCompile>
+    <ClCompile Include="MathHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VehicleClassifier.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="KalmanEstimator.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Content.h">
@@ -133,9 +145,6 @@
     </ClInclude>
     <ClInclude Include="BgFgSegmentator.h">
       <Filter>Header Files\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="ForegroundSegmentator.h">
-      <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
     <ClInclude Include="AutoTracker.h">
       <Filter>Header Files\BlobTracking</Filter>
@@ -172,6 +181,21 @@
     </ClInclude>
     <ClInclude Include="Tester.h">
       <Filter>Header Files\Bow</Filter>
+    </ClInclude>
+    <ClInclude Include="ForegroundSegmenter.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="MathHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VehicleClassifier.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="KalmanEstimator.h">
+      <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

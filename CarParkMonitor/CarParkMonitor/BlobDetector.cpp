@@ -3,17 +3,20 @@
 
 using namespace cv;
 
-
 BlobDetector::BlobDetector()
 {
 	this->minArea = MIN_HEIGHT*MIN_WIDTH;	
+
+#if BLOB_DRAW
+	namedWindow( "Blob detector", CV_WINDOW_AUTOSIZE);
+#endif
 }
 
 BlobDetector::~BlobDetector()
 {
 }
 
-vector<blob*> BlobDetector::detect( DetectorParams params )
+vector<blob*> BlobDetector::detect( DetectorParams params )//class SimpleBlobDetector
 {
 	Mat foreground = params.foreground;
 	Mat frame 	   = params.frame;
@@ -30,36 +33,31 @@ vector<blob*> BlobDetector::detect( DetectorParams params )
 	{     
 		Rect rect = boundingRect( Mat(contours[i]) );		
 		Point tl = rect.tl();
-		if(rect.area() > this->minArea && rect.width > MIN_WIDTH&& tl.x > 20 && tl.y > 20)
+		if(rect.area() > this->minArea && rect.width > MIN_WIDTH && tl.x > 20 && tl.y > 20)
 		{			
 			blob* b = new blob;
 			b->rect = rect;
 			b->detectorId = i;
-			b->id = ID_UNDEFINED;
-			b->temp.init();
-
+			b->id = ID_UNDEFINED;			
 			foundBlobs.push_back(b);
 		}			
 	}
 
-#pragma region debug_draw
-
+#if BLOB_DRAW
 	Mat cl = frame.clone();
 	RNG rng(12345);	
-	size = foundBlobs.size();
-	for( int i = 0; i< size; i++ )
+	for_each(begin(foundBlobs), end(foundBlobs), [&](blob* b)
 	{
-		Rect rect = foundBlobs[i]->rect;
+		Rect rect = b->rect;
 		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 		rectangle( cl, rect.tl(), rect.br(), color);
-	}
 
-
-	namedWindow( "Blob detector", CV_WINDOW_AUTOSIZE );
+	});
 	imshow( "Blob detector", cl );
 	cl.release();
+#endif
 
-#pragma endregion debug_draw
+
 	
 	return foundBlobs;
 }

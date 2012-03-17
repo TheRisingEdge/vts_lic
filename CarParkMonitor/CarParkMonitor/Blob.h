@@ -5,35 +5,8 @@
 using namespace cv;
 using namespace std;
 
-typedef struct
-{
-	Mat image;
-	Mat descriptor;
-	vector<KeyPoint> keypoints;
-	vector<Point2f> pointFeatures;
 
-}blobDescriptor;
-
-typedef struct
-{
-	vector<Point2f> trackedPoints;
-	vector<int> trackIndexes;
-	bool trackedByPrev;
-	float prevConfidence;
-
-	bool wasLost;
-
-
-	void init()
-	{
-		this->prevConfidence = 0;
-		trackedByPrev = false;
-		trackedPoints.clear();
-		trackIndexes.clear();
-		wasLost = false;
-	}
-
-}tempInfo;
+#define ID_UNDEFINED -1
 
 typedef struct
 {
@@ -42,10 +15,8 @@ typedef struct
 	Rect rect;
 	vector<int> inferedIds;
 
+	vector<Point2f> trackedPoints;
 
-	blobDescriptor descriptor;
-	vector<int> hash;
-	tempInfo temp;
 }blob;
 
 class IdGenerator

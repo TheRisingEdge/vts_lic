@@ -1,5 +1,9 @@
 #include "AutoTracker.h"
 #include "Blob.h"
+#include "Helper.h"
+#include <algorithm>
+
+using namespace std;
 
 AutoTracker::AutoTracker( AutoTrackerParam param )
 {
@@ -46,8 +50,10 @@ void AutoTracker::run()
 	if(!openVideoCapture(fps, frameDelay))	
 		return;
 
+#if FRAME_DRAW
 	namedWindow("frame");
-
+#endif
+	
 	IdGenerator* idGenerator = new IdGenerator(1);
 
 	DetectorParams detectorParam;
@@ -55,25 +61,20 @@ void AutoTracker::run()
 	TrackParam trackParam;
 	MatcherResult matcherResult;
 
-
-	Mat frame, grayFrame;
-	Mat prevFrame, prevGrayFrame;
-	Mat foreground;
-	Mat prevForeground;
+	Mat frame;
+	Mat grayFrame;
+	Mat foreground;	
 
 	int trainingFrames = 50;
-
 
 	vector<Mat> frameBuffer;
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
 	vector<vector<blob*>> blobBuffer;
-
+	
+	frameCount = 0;
 	int frameBufferSize = 10;
 
-	frameCount = 1;
-
-	capture.read(prevFrame);	
 	while(capture.read(frame)){
 
 		frameCount++;		
@@ -88,14 +89,17 @@ void AutoTracker::run()
 		
 		//**Detect blobs************************************************//
 		detectorParam.frame 	 = frame;
-		detectorParam.prevFrame  = prevFrame;
 		detectorParam.foreground = foregroundMask;
 		vector<blob*> foundBlobs = blobDetector->detect(detectorParam);
 		blobBuffer.push_back(foundBlobs);
 
 
 		if(frameBuffer.size() > frameBufferSize)
-		{
+		{			
+			frameBuffer[0].release();
+			grayFrameBuffer[0].release();
+			foregroundBuffer[0].release();
+
 			frameBuffer.erase(frameBuffer.begin());
 			grayFrameBuffer.erase(grayFrameBuffer.begin());
 			foregroundBuffer.erase(foregroundBuffer.begin());
@@ -105,20 +109,31 @@ void AutoTracker::run()
 		if(frameCount < trainingFrames)
 		{//construct background model
 
-
+			foregroungSegmentator->learn(frame);
 
 		}else
 		{//detection and classification
 
 			foreground = foregroundMask;		
 
+			auto prev = blobBuffer[0];
+			for_each(begin(prev), end(prev), [&](blob* b)-> void{
+				if(b->id == ID_UNDEFINED)
+					b->id = idGenerator->nextId();
+			});
+
+			//auto c = blobBuffer[1];
+			//for_each(begin(c), end(c), [&](blob* b){
+			//	if(b->id != ID_UNDEFINED)
+			//	{
+			//		int a;
+			//		a = 34;
+			//	}
+			//});
+
 			//** setup Tracker parameters *******************************//			
 			trackerParam.generator 			= idGenerator;		
 			trackerParam.frameCount			= frameCount;
-			
-			trackerParam.prevFrame 			= prevFrame;
-			trackerParam.prevGrayFrame		= prevGrayFrame;		
-			trackerParam.prevForeground		= prevForeground;
 			
 			trackerParam.frameBufferSize    = frameBufferSize;
 			trackerParam.frameBuffer 		= frameBuffer;
@@ -128,45 +143,39 @@ void AutoTracker::run()
 			
 			matcherResult.init();
 			blobTracker->track(trackerParam, &matcherResult);
-
 			
 			//** Assign ids for new detected Blobs *********************//
-			vector<blob*>::iterator it = matcherResult.newBlobs.begin();
-			vector<blob*>::iterator end = matcherResult.newBlobs.end();
-			for(;it != end; it++)
+			auto blobsNew = matcherResult.newBlobs;
+			for_each(begin(blobsNew), end(blobsNew), [&](blob* b)
 			{
-				blob* b = *it;
 				assert(b->id == ID_UNDEFINED);
-				b->id = idGenerator->nextId();			
-			}
+				//b->id = idGenerator->nextId();
+			});
 
-			//delete previous matched blobs
+			//drawCurrentBlobs
+			auto fclone = frameBuffer[1].clone();
+			auto currentBlobs = blobBuffer[1];
+			for_each(begin(currentBlobs), end(currentBlobs), [&](blob* b)
+			{
+				Helper::drawBlob(b, fclone);									
+			});
+			imshow("labeled Blobs", fclone);
+			fclone.release();
 
-
-
-
-			//** Update Tracking history ******************************//
-			trackHistory->previousBlobs = blobBuffer[0];
-			//trackParam.trackedBlobs = detectedBlobs;		
-			//trackParam.prevLostBlobs = matcherResult.prevLostBlobs;
-
-			//trackHistory->update(&trackParam);
 		}
-	
+#if FRAME_DRAW
+
 		if(frameCount > frameBufferSize)
-		{
-		
-			
-			imshow("frame", frameBuffer[0]);
-
-			prevFrame 	   = frameBuffer[0];
-			prevGrayFrame  = grayFrameBuffer[0];
-			prevForeground = foregroundBuffer[0];
+		{			
+			imshow("frame", frameBuffer[1]);
 		}
 
-		if(waitKey(frameDelay/5) >= 0)
+		/*if(waitKey(frameDelay/5) >= 0)
 		{
 			frameDelay = 1000000;
-		}				
+		}*/				
+#endif
+		
+		waitKey(frameDelay);		
 	}	
 }

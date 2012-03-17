@@ -85,11 +85,14 @@
     <ClCompile Include="BowComponent.cpp" />
     <ClCompile Include="CannyFrameProcessor.cpp" />
     <ClCompile Include="Content.cpp" />
+    <ClCompile Include="DebugHelper.cpp" />
     <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="FeatureTracker.cpp" />
     <ClCompile Include="ForegroundSegmentator.cpp" />
     <ClCompile Include="FrameProcessor.cpp" />
     <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="KalmanEstimator.cpp" />
+    <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="TrackHistory.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -97,6 +100,7 @@
     <ClCompile Include="SvmComponent.cpp" />
     <ClCompile Include="SyncBuffer.cpp" />
     <ClCompile Include="Tester.cpp" />
+    <ClCompile Include="VehicleClassifier.cpp" />
     <ClCompile Include="VideoProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -110,11 +114,14 @@
     <ClInclude Include="BowComponent.h" />
     <ClInclude Include="CannyFrameProcessor.h" />
     <ClInclude Include="Content.h" />
+    <ClInclude Include="DebugHelper.h" />
     <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="FeatureTracker.h" />
-    <ClInclude Include="ForegroundSegmentator.h" />
+    <ClInclude Include="ForegroundSegmenter.h" />
     <ClInclude Include="FrameProcessor.h" />
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="KalmanEstimator.h" />
+    <ClInclude Include="MathHelper.h" />
     <ClInclude Include="TrackHistory.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="PlsaComponent.h" />
@@ -122,6 +129,7 @@
     <ClInclude Include="SvmComponent.h" />
     <ClInclude Include="SyncBuffer.h" />
     <ClInclude Include="Tester.h" />
+    <ClInclude Include="VehicleClassifier.h" />
     <ClInclude Include="VideoProcessor.h" />
   </ItemGroup>
   <ItemGroup>
