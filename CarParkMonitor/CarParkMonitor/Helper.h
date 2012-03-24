@@ -27,5 +27,6 @@ public:
 	static Mat concatImages(Mat img1, Mat img2);
 	static void drawText(const char* text,const Point& origin, Mat& output);
 	static void drawBlob(const blob* b, Mat& output);
-
+	static void drawRect(const Rect& r, Mat& output);
+	static void drawAnotatedRect(int nr,const Rect& r, Mat& output);
 };

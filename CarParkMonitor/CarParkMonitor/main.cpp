@@ -2,7 +2,10 @@
 #include "AutoTracker.h"
 #include "Content.h"
 #include "AppConfig.h"
-
+#include "MogSubtractor.h"
+#include "CodebookSubtractor.h"
+#include "AvgSubtractor.h"
+#include "Mog2Subtractor.h"
 
 #pragma region mymain
 int main(int argc, char** argv)
@@ -13,7 +16,7 @@ int main(int argc, char** argv)
 
 	AutoTrackerParam param;
 	param.videoPath = videoPath;
-	param.foregroundSegmentator = new ForegroundSegmenter();
+	param.foregroundSegmentator = new Mog2Subtractor();
 	param.blobDetector = new BlobDetector();
 
 	TrackHistory history(100);

@@ -257,21 +257,21 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 	Mat prevFrame				= param.frameBuffer[0];
 	Mat prevForeground			= param.foregroundBuffer[0];
 	Mat prevGrayFrame			= param.grayFrameBuffer[0]; 
-	vector<blob*> prevBlobs 	= param.blobBuffer[0];
+
+	vector<shared_ptr<blob>> prevBlobs 	= param.blobBuffer[0];
 
 	Mat frame 					= param.frameBuffer[1];
 	Mat foreground				= param.foregroundBuffer[1];
 	Mat grayFrame 	  			= param.grayFrameBuffer[1];
-	vector<blob*> detectedBlobs = param.blobBuffer[1];
+
+	vector<shared_ptr<blob>> detectedBlobs = param.blobBuffer[1];
 
 	Mat nextFrame				= param.frameBuffer[2];
 	Mat nextForeground			= param.foregroundBuffer[2];
 	Mat nextGrayFrame			= param.grayFrameBuffer[2];
 
 
-   			// tracking error
-
-
+   	// tracking error
 	DebugHelper::assertAllLabeled(prevBlobs);
 	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
 	{
@@ -286,7 +286,7 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 	}
 
 
-	for_each(begin(prevBlobs), end(prevBlobs), [&](blob* b){
+	for_each(begin(prevBlobs), end(prevBlobs), [&](shared_ptr<blob> b){
 
 		Mat fg	   = prevForeground(b->rect);
 		Mat region = prevFrame(b->rect);
@@ -316,9 +316,9 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 
 		//search overlaping blobs as they are the ones most probable
 
-		vector<blob*> possibleMatches;
+		vector<shared_ptr<blob>> possibleMatches;
 		int minArea = 0.6 * b->rect.area();
-		for_each(begin(detectedBlobs), end(detectedBlobs), [&](blob* nb)
+		for_each(begin(detectedBlobs), end(detectedBlobs), [&](shared_ptr<blob> nb)
 		{
 			//assert(nb->id == ID_UNDEFINED);
 
@@ -327,11 +327,12 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 			{
 				possibleMatches.push_back(nb);
 				imshow("possible matches", Helper::concatImages(region, frame(nb->rect)));
-				cv::waitKey();
+				//cv::waitKey();
 			}
 		});
 		
-		for_each(begin(possibleMatches), end(possibleMatches), [&](blob* match)
+		//assert(possibleMatches.size() == 1);
+		for_each(begin(possibleMatches), end(possibleMatches), [&](shared_ptr<blob> match)
 		{
 			//assert(match->id == ID_UNDEFINED);
 			match->id = b->id;				

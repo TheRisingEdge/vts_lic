@@ -16,7 +16,7 @@ BlobDetector::~BlobDetector()
 {
 }
 
-vector<blob*> BlobDetector::detect( DetectorParams params )//class SimpleBlobDetector
+vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )//class SimpleBlobDetector
 {
 	Mat foreground = params.foreground;
 	Mat frame 	   = params.frame;
@@ -27,7 +27,7 @@ vector<blob*> BlobDetector::detect( DetectorParams params )//class SimpleBlobDet
 
 	findContours( maskCopy, contours, hierarchy, CV_RETR_EXTERNAL , CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );		
 
-	vector<blob*> foundBlobs;	
+	vector<shared_ptr<blob>> foundBlobs;	
 	int size = contours.size();
 	for( int i = 0; i < size; i++ )
 	{     
@@ -39,14 +39,18 @@ vector<blob*> BlobDetector::detect( DetectorParams params )//class SimpleBlobDet
 			b->rect = rect;
 			b->detectorId = i;
 			b->id = ID_UNDEFINED;			
-			foundBlobs.push_back(b);
+
+			auto pt = shared_ptr<blob>(b);
+			foundBlobs.push_back(pt);
 		}			
 	}
+
+	maskCopy.release();
 
 #if BLOB_DRAW
 	Mat cl = frame.clone();
 	RNG rng(12345);	
-	for_each(begin(foundBlobs), end(foundBlobs), [&](blob* b)
+	for_each(begin(foundBlobs), end(foundBlobs), [&](shared_ptr<blob> b)
 	{
 		Rect rect = b->rect;
 		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
@@ -56,8 +60,6 @@ vector<blob*> BlobDetector::detect( DetectorParams params )//class SimpleBlobDet
 	imshow( "Blob detector", cl );
 	cl.release();
 #endif
-
-
 	
 	return foundBlobs;
 }

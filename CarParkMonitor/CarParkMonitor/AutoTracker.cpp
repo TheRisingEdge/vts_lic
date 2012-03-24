@@ -2,6 +2,8 @@
 #include "Blob.h"
 #include "Helper.h"
 #include <algorithm>
+#include "EstimatorCollection.h"
+#include "VehicleClassifier.h"
 
 using namespace std;
 
@@ -70,41 +72,22 @@ void AutoTracker::run()
 	vector<Mat> frameBuffer;
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
-	vector<vector<blob*>> blobBuffer;
+	vector<vector<shared_ptr<blob>>> blobBuffer;
+	vector<vector<shared_ptr<vehicleDetection>>> vehicleDetectionBuffer;
+	vector<vector<shared_ptr<vehicleDetection>>> detectionBuffer;
 	
+	EstimatorCollection estimators;
+
+	ClassifierParam classifierParam;
+	ClassifierResult classifierResult;
+	VehicleClassifier vehicleClassifier;
+
 	frameCount = 0;
 	int frameBufferSize = 10;
 
 	while(capture.read(frame)){
 
 		frameCount++;		
-		cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
-
-		frameBuffer.push_back(frame.clone());
-		grayFrameBuffer.push_back(grayFrame.clone());
-
-		//**Foreground segmentation**************************************//
-		Mat foregroundMask = foregroungSegmentator->segment(frame); // use background model to segment frame
-		foregroundBuffer.push_back(foregroundMask.clone());
-		
-		//**Detect blobs************************************************//
-		detectorParam.frame 	 = frame;
-		detectorParam.foreground = foregroundMask;
-		vector<blob*> foundBlobs = blobDetector->detect(detectorParam);
-		blobBuffer.push_back(foundBlobs);
-
-
-		if(frameBuffer.size() > frameBufferSize)
-		{			
-			frameBuffer[0].release();
-			grayFrameBuffer[0].release();
-			foregroundBuffer[0].release();
-
-			frameBuffer.erase(frameBuffer.begin());
-			grayFrameBuffer.erase(grayFrameBuffer.begin());
-			foregroundBuffer.erase(foregroundBuffer.begin());
-			blobBuffer.erase(blobBuffer.begin());
-		}
 
 		if(frameCount < trainingFrames)
 		{//construct background model
@@ -113,67 +96,116 @@ void AutoTracker::run()
 
 		}else
 		{//detection and classification
+					
+			//**Foreground segmentation**************************************//
+			Mat foregroundMask = foregroungSegmentator->segment(frame);
+			
+			cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
 
-			foreground = foregroundMask;		
+			auto frameClone = frame.clone();
+			auto foregroundClone = foregroundMask.clone();
 
-			auto prev = blobBuffer[0];
-			for_each(begin(prev), end(prev), [&](blob* b)-> void{
-				if(b->id == ID_UNDEFINED)
+			frameBuffer.push_back(frameClone);
+			grayFrameBuffer.push_back(grayFrame.clone());
+			foregroundBuffer.push_back(foregroundClone);
+
+			//**Detect blobs************************************************//
+			detectorParam.frame 	 = frameClone;
+			detectorParam.foreground = foregroundClone;
+			vector<shared_ptr<blob>> foundBlobs = blobDetector->detect(detectorParam);
+			blobBuffer.push_back(foundBlobs);
+
+			//**setup Classifier parameters ******************************//
+			classifierParam.blobBuffer = foundBlobs;
+			classifierParam.frame 	   = frameClone;
+			classifierParam.foreground = foregroundClone;
+			vehicleClassifier.detect(classifierParam, classifierResult);
+			detectionBuffer.push_back(classifierResult.detections);
+
+			if(frameBuffer.size() > frameBufferSize)
+			{			
+				frameBuffer[0].release();
+				grayFrameBuffer[0].release();
+				foregroundBuffer[0].release();
+				detectionBuffer[0].clear();
+
+				frameBuffer.erase(frameBuffer.begin());
+				grayFrameBuffer.erase(grayFrameBuffer.begin());
+				foregroundBuffer.erase(foregroundBuffer.begin());
+				blobBuffer.erase(blobBuffer.begin());
+				detectionBuffer.erase(detectionBuffer.begin());
+
+				foreground = foregroundMask;		
+
+				auto prev = blobBuffer[0];
+				for_each(begin(prev), end(prev), [&](shared_ptr<blob> b)-> void{
+					if(b->id == ID_UNDEFINED)
+						b->id = idGenerator->nextId();
+				});
+				
+				//** setup Tracker parameters *******************************//			
+				trackerParam.generator 			= idGenerator;		
+				trackerParam.frameCount			= frameCount;
+
+				trackerParam.frameBufferSize    = frameBufferSize;
+				trackerParam.frameBuffer 		= frameBuffer;
+				trackerParam.grayFrameBuffer    = grayFrameBuffer;
+				trackerParam.foregroundBuffer   = foregroundBuffer;
+				trackerParam.blobBuffer			= blobBuffer;
+
+				matcherResult.init();
+				blobTracker->track(trackerParam, &matcherResult);
+
+				//** Assign ids for new detected Blobs *********************//
+				auto blobsNew = matcherResult.newBlobs;
+				for_each(begin(blobsNew), end(blobsNew), [&](shared_ptr<blob> b)
+				{
+					assert(b->id == ID_UNDEFINED);
 					b->id = idGenerator->nextId();
-			});
+					//estimators.update(b);
+				});
 
-			//auto c = blobBuffer[1];
-			//for_each(begin(c), end(c), [&](blob* b){
-			//	if(b->id != ID_UNDEFINED)
-			//	{
-			//		int a;
-			//		a = 34;
-			//	}
-			//});
+				//drawCurrentBlobs
+				auto fclone = frameBuffer[1].clone();
+				auto currentBlobs = blobBuffer[1];
+				//for_each(begin(currentBlobs), end(currentBlobs), [&](shared_ptr<blob> b)
+				//{
+				//	estimators.update(b);
+					//auto est = estimators.get(b->id);
+					//auto lastPrediction = est->getLastPrediction();
 
-			//** setup Tracker parameters *******************************//			
-			trackerParam.generator 			= idGenerator;		
-			trackerParam.frameCount			= frameCount;
-			
-			trackerParam.frameBufferSize    = frameBufferSize;
-			trackerParam.frameBuffer 		= frameBuffer;
-			trackerParam.grayFrameBuffer    = grayFrameBuffer;
-			trackerParam.foregroundBuffer   = foregroundBuffer;
-			trackerParam.blobBuffer			= blobBuffer;
-			
-			matcherResult.init();
-			blobTracker->track(trackerParam, &matcherResult);
-			
-			//** Assign ids for new detected Blobs *********************//
-			auto blobsNew = matcherResult.newBlobs;
-			for_each(begin(blobsNew), end(blobsNew), [&](blob* b)
-			{
-				assert(b->id == ID_UNDEFINED);
-				//b->id = idGenerator->nextId();
-			});
+					//Helper::drawBlob(b.get(), fclone);
 
-			//drawCurrentBlobs
-			auto fclone = frameBuffer[1].clone();
-			auto currentBlobs = blobBuffer[1];
-			for_each(begin(currentBlobs), end(currentBlobs), [&](blob* b)
-			{
-				Helper::drawBlob(b, fclone);									
-			});
-			imshow("labeled Blobs", fclone);
-			fclone.release();
+					//Helper::drawAnotatedRect(b->id,lastPrediction.toRect(), fclone);
+				//});
 
+				auto m = estimators.estimatorsMap;
+				auto it = m.begin();
+				auto stop = m.end();
+
+				for(;it != stop; it++ )
+				{
+					auto filter = (*it).second;
+					auto predict = filter->getLastPrediction();
+					Helper::drawAnotatedRect(filter->blodId,predict.toRect(), fclone);
+				}
+
+				imshow("labeled Blobs", fclone);
+				fclone.release();
+			}
 		}
+
 #if FRAME_DRAW
 
-		if(frameCount > frameBufferSize)
+		if(frameCount > trainingFrames + 2)
 		{			
 			imshow("frame", frameBuffer[1]);
 		}
 
-		/*if(waitKey(frameDelay/5) >= 0)
-		{
-			frameDelay = 1000000;
-		}*/				
+		///if(waitKey(frameDelay/5) >= 0)
+		//{
+		//	frameDelay = 1000000;
+		//}				
 #endif
 		
 		waitKey(frameDelay);		

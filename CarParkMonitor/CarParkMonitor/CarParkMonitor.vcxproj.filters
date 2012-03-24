@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Bow">
       <UniqueIdentifier>{9e30faa9-b439-4cd4-af93-4ff4e57617a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\BlobTracking\BackgroundSubtraction">
+      <UniqueIdentifier>{78bfe680-a678-42c2-981d-f7ed46a24b15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BlobTracking\BackgroundSubtraction">
+      <UniqueIdentifier>{00e27c78-17f1-4701-b010-4ce42afa2318}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -62,9 +68,6 @@
     </ClCompile>
     <ClCompile Include="BgFgSegmentator.cpp">
       <Filter>Source Files\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="ForegroundSegmentator.cpp">
-      <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
     <ClCompile Include="AutoTracker.cpp">
       <Filter>Source Files\BlobTracking</Filter>
@@ -113,6 +116,21 @@
     </ClCompile>
     <ClCompile Include="KalmanEstimator.cpp">
       <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="EstimatorCollection.cpp">
+      <Filter>Source Files\BlobTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="MogSubtractor.cpp">
+      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
+    </ClCompile>
+    <ClCompile Include="CodebookSubtractor.cpp">
+      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
+    </ClCompile>
+    <ClCompile Include="AvgSubtractor.cpp">
+      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
+    </ClCompile>
+    <ClCompile Include="Mog2Subtractor.cpp">
+      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,9 +200,6 @@
     <ClInclude Include="Tester.h">
       <Filter>Header Files\Bow</Filter>
     </ClInclude>
-    <ClInclude Include="ForegroundSegmenter.h">
-      <Filter>Header Files\BlobTracking</Filter>
-    </ClInclude>
     <ClInclude Include="MathHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -196,6 +211,24 @@
     </ClInclude>
     <ClInclude Include="KalmanEstimator.h">
       <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="EstimatorCollection.h">
+      <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="MogSubtractor.h">
+      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
+    </ClInclude>
+    <ClInclude Include="BgSubtractorBase.h">
+      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
+    </ClInclude>
+    <ClInclude Include="CodebookSubtractor.h">
+      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
+    </ClInclude>
+    <ClInclude Include="AvgSubtractor.h">
+      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
+    </ClInclude>
+    <ClInclude Include="Mog2Subtractor.h">
+      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

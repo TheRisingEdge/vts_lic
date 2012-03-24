@@ -188,6 +188,23 @@ void Helper::drawBlob( const blob* b, Mat& output )
 	drawText(data,b->rect.tl(), output);
 }
 
+void Helper::drawRect( const Rect& r, Mat& output )
+{
+	Scalar color = Scalar( 0, 255, 0 );
+	rectangle( output, r.tl(), r.br(), color);
+}
+
+void Helper::drawAnotatedRect(int nr, const Rect& r, Mat& output )
+{
+	char* s = new char[23];
+	sprintf(s,"%d", nr);
+
+	drawRect(r, output);
+	drawText(s, r.br(), output);
+
+	delete[] s;
+}
+
 #pragma endregion converters
 
 

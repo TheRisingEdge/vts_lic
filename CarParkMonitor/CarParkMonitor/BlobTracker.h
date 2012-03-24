@@ -19,14 +19,14 @@ typedef struct
 	vector<Mat> frameBuffer;
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
-	vector<vector<blob*>> blobBuffer;
+	vector<vector<shared_ptr<blob>>> blobBuffer;
 
 }TrackerParam;
 
 typedef struct
 {
-	vector<blob*> newBlobs;
-	vector<blob*> prevLostBlobs;
+	vector<shared_ptr<blob>> newBlobs;
+	vector<shared_ptr<blob>> prevLostBlobs;
 
 	void init()
 	{

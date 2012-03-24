@@ -19,6 +19,13 @@ typedef struct
 
 }blob;
 
+typedef struct
+{
+	int blobId;
+	Rect rect;
+
+}vehicleDetection;
+
 class IdGenerator
 {
 	int current;
@@ -91,7 +98,6 @@ public:
 		return NULL;
 	}
 };
-
 
 struct historyEntry
 {

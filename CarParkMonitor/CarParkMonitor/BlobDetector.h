@@ -27,5 +27,5 @@ public:
     BlobDetector();
    ~BlobDetector();
 
-	vector<blob*> detect(DetectorParams params);
+	vector<shared_ptr<blob>> detect(DetectorParams params);
 };

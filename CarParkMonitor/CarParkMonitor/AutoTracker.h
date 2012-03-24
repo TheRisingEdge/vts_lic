@@ -1,7 +1,7 @@
 #include "opencv2\opencv.hpp"
-#include "ForegroundSegmenter.h"
 #include "BlobTracker.h"
 #include "BlobDetector.h"
+#include "BgSubtractorBase.h"
 
 using namespace cv;
 
@@ -12,7 +12,7 @@ typedef struct
 	char* videoPath;
 	int trainingFrames;
 
-	ForegroundSegmenter* foregroundSegmentator;
+	BgSubtractorBase* foregroundSegmentator;
 	BlobDetector* blobDetector;
 	BlobTracker* blobTracker;
 	TrackHistory* trackHistory;
@@ -24,7 +24,7 @@ class AutoTracker
 
 private:
 	char* videoPath;
-	ForegroundSegmenter* foregroungSegmentator;
+	BgSubtractorBase* foregroungSegmentator;
 	BlobDetector* blobDetector;
 	BlobTracker* blobTracker;
 	TrackHistory* trackHistory;

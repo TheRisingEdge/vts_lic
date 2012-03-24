@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Testing", "Testing\Testing.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LatentSVM", "LatentSVM\LatentSVM.vcxproj", "{D339177D-D4BD-4327-95FC-14FA4BC32833}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kalman", "Kalman\Kalman.vcxproj", "{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -70,6 +72,15 @@ Global
 		{D339177D-D4BD-4327-95FC-14FA4BC32833}.Release|Win32.ActiveCfg = Release|x64
 		{D339177D-D4BD-4327-95FC-14FA4BC32833}.Release|x64.ActiveCfg = Release|x64
 		{D339177D-D4BD-4327-95FC-14FA4BC32833}.Release|x64.Build.0 = Release|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|Win32.ActiveCfg = Debug|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|x64.ActiveCfg = Debug|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|Mixed Platforms.Build.0 = Release|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|Win32.ActiveCfg = Release|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|x64.ActiveCfg = Release|x64
+		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
