@@ -47,7 +47,7 @@ vector<Mat> Importer::readCarImages()
 			}
 		}
 	}
-	
+
 	return trainingCars;
 }
 

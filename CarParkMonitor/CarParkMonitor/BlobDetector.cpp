@@ -33,8 +33,8 @@ vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )//class Si
 	{     
 		Rect rect = boundingRect( Mat(contours[i]) );		
 		Point tl = rect.tl();
-		if(rect.area() > this->minArea && rect.width > MIN_WIDTH && tl.x > 20 && tl.y > 20)
-		{			
+		//if(rect.area() > this->minArea && rect.width > MIN_WIDTH && tl.x > 20 && tl.y > 20)
+		//{			
 			blob* b = new blob;
 			b->rect = rect;
 			b->detectorId = i;
@@ -42,7 +42,7 @@ vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )//class Si
 
 			auto pt = shared_ptr<blob>(b);
 			foundBlobs.push_back(pt);
-		}			
+		//}			
 	}
 
 	maskCopy.release();

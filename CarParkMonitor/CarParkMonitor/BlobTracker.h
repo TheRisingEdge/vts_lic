@@ -20,6 +20,7 @@ typedef struct
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
 	vector<vector<shared_ptr<blob>>> blobBuffer;
+	vector<vector<shared_ptr<carDetection>>> vehicleDetectionBuffer;
 
 }TrackerParam;
 
@@ -28,13 +29,18 @@ typedef struct
 	vector<shared_ptr<blob>> newBlobs;
 	vector<shared_ptr<blob>> prevLostBlobs;
 
+	vector<shared_ptr<carDetection>> prevLostVehicleDetections;
+	vector<shared_ptr<carDetection>> newVehicleDetections;
+
 	void init()
 	{
 		newBlobs.clear();
 		prevLostBlobs.clear();
+		prevLostVehicleDetections.clear();
+		newVehicleDetections.clear();
 	}
 
-}MatcherResult;
+}TrackResult;
 
 class BlobTracker
 {
@@ -57,5 +63,5 @@ public:
 	BlobTracker(TrackHistory* trackHistory);
 	~BlobTracker(void);	
 
-	void track(TrackerParam params, MatcherResult* result);	
+	void track(TrackerParam params, TrackResult* result);	
 };

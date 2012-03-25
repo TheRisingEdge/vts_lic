@@ -247,7 +247,8 @@ vector<Point2f> BlobTracker::getGoodFeatures( Mat image, Mat mask )
 	return keypoints;
 }
 
-void BlobTracker::track( TrackerParam param, MatcherResult* result )
+
+void BlobTracker::track( TrackerParam param, TrackResult* result )
 {
 	this->trackerParam			= param;
 
@@ -258,6 +259,7 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 	Mat prevForeground			= param.foregroundBuffer[0];
 	Mat prevGrayFrame			= param.grayFrameBuffer[0]; 
 
+	vector<shared_ptr<carDetection>> prevDetectedVehicles= param.vehicleDetectionBuffer[0];
 	vector<shared_ptr<blob>> prevBlobs 	= param.blobBuffer[0];
 
 	Mat frame 					= param.frameBuffer[1];
@@ -265,6 +267,7 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 	Mat grayFrame 	  			= param.grayFrameBuffer[1];
 
 	vector<shared_ptr<blob>> detectedBlobs = param.blobBuffer[1];
+	vector<shared_ptr<carDetection>> detectedVehicles = param.vehicleDetectionBuffer[1];
 
 	Mat nextFrame				= param.frameBuffer[2];
 	Mat nextForeground			= param.foregroundBuffer[2];
@@ -272,21 +275,21 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 
 
    	// tracking error
-	DebugHelper::assertAllLabeled(prevBlobs);
-	if(prevBlobs.size() == 0 && detectedBlobs.size() == 0)	
+	DebugHelper::assertAllLabeled(prevDetectedVehicles);
+	if(prevDetectedVehicles.size() == 0 && detectedVehicles.size() == 0)	
 	{
 		return;
 	}
 
-	DebugHelper::assertAllUnlabeled(detectedBlobs);
-	if(prevBlobs.size() == 0 && detectedBlobs.size() != 0)
+	DebugHelper::assertAllUnlabeled(detectedVehicles);
+	if(prevDetectedVehicles.size() == 0 && detectedVehicles.size() != 0)
 	{
-		result->newBlobs.assign(detectedBlobs.begin(), detectedBlobs.end());
+		result->newVehicleDetections.assign(detectedVehicles.begin(), detectedVehicles.end());
 		return;
 	}
 
 
-	for_each(begin(prevBlobs), end(prevBlobs), [&](shared_ptr<blob> b){
+	for_each(begin(prevDetectedVehicles), end(prevDetectedVehicles), [&](shared_ptr<carDetection> b){
 
 		Mat fg	   = prevForeground(b->rect);
 		Mat region = prevFrame(b->rect);
@@ -316,9 +319,9 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 
 		//search overlaping blobs as they are the ones most probable
 
-		vector<shared_ptr<blob>> possibleMatches;
+		vector<shared_ptr<carDetection>> possibleMatches;
 		int minArea = 0.6 * b->rect.area();
-		for_each(begin(detectedBlobs), end(detectedBlobs), [&](shared_ptr<blob> nb)
+		for_each(begin(detectedVehicles), end(detectedVehicles), [&](shared_ptr<carDetection> nb)
 		{
 			//assert(nb->id == ID_UNDEFINED);
 
@@ -332,7 +335,7 @@ void BlobTracker::track( TrackerParam param, MatcherResult* result )
 		});
 		
 		//assert(possibleMatches.size() == 1);
-		for_each(begin(possibleMatches), end(possibleMatches), [&](shared_ptr<blob> match)
+		for_each(begin(possibleMatches), end(possibleMatches), [&](shared_ptr<carDetection> match)
 		{
 			//assert(match->id == ID_UNDEFINED);
 			match->id = b->id;				

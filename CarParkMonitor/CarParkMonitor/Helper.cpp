@@ -176,7 +176,7 @@ void Helper::drawText( const char* text,const Point& origin, Mat& output )
 	putText( output, text, origin, CV_FONT_HERSHEY_PLAIN, 1.2, Scalar(0, 0, 255));
 }
 
-void Helper::drawBlob( const blob* b, Mat& output )
+void Helper::drawBlob( const carDetection* b, Mat& output )
 {
 	Rect rect = b->rect;
 	Scalar color = Scalar( 0, 0, 255 );

@@ -9,7 +9,7 @@ EstimatorCollection::~EstimatorCollection(void)
 {
 }
 
-shared_ptr<KalmanEstimator> EstimatorCollection::add( shared_ptr<blob> b )
+shared_ptr<KalmanEstimator> EstimatorCollection::add( shared_ptr<carDetection> b )
 {
 	int id = b->id;
 	auto it = estimatorsMap.find(id);
@@ -43,7 +43,7 @@ bool EstimatorCollection::contains( int id )
 	return it != estimatorsMap.end();
 }
 
-void EstimatorCollection::update( shared_ptr<blob> b )
+void EstimatorCollection::update( shared_ptr<carDetection> b )
 {
 	auto it = estimatorsMap.find(b->id);
 	if(it == estimatorsMap.end())

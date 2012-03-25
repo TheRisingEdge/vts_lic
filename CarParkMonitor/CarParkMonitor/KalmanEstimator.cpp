@@ -53,9 +53,9 @@ KalmanEstimator::~KalmanEstimator(void)
 {
 }
 
-void KalmanEstimator::init( shared_ptr<blob> b )
+void KalmanEstimator::init( shared_ptr<carDetection> b )
 {
-	this->blodId = b->id;
+	this->vehicleId = b->id;
 
 	auto size = b->rect.size();
 	auto center = b->rect.tl() + Point(size.width/2, size.height/2);
@@ -78,9 +78,9 @@ inline void mapMatToResult(const Mat& m, EstimatorResult& result)
 	result.height  = m.at<float>(3);	
 }
 
-EstimatorResult KalmanEstimator::correct( shared_ptr<blob> b )
+EstimatorResult KalmanEstimator::correct( shared_ptr<carDetection> b )
 {
-	assert(this->blodId == b->id);
+	assert(this->vehicleId == b->id);
 
 	auto size = b->rect.size();
 	auto center = b->rect.tl()+ Point(size.width/2, size.height/2);
@@ -109,7 +109,7 @@ EstimatorResult KalmanEstimator::predict()
 	return result;
 }
 
-EstimatorResult KalmanEstimator::update( shared_ptr<blob> b )
+EstimatorResult KalmanEstimator::update( shared_ptr<carDetection> b )
 {
 	auto prediction = this->predict();
 	this->correct(b);

@@ -21,10 +21,11 @@ typedef struct
 
 typedef struct
 {
+	int id;
 	int blobId;
 	Rect rect;
 
-}vehicleDetection;
+}carDetection;
 
 class IdGenerator
 {

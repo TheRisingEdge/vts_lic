@@ -1,0 +1,17 @@
+﻿Build started 3/24/2012 11:20:29 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "x64\Debug\CpmLib.unsuccessfulbuild".
+       ClCompile:
+         All outputs are up-to-date.
+       Lib:
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\CpmLib.lib" /NOLOGO x64\Debug\Content.obj
+         CpmLib.vcxproj -> E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\CpmLib.lib
+       FinalizeBuildStatus:
+         Deleting file "x64\Debug\CpmLib.unsuccessfulbuild".
+         Touching "x64\Debug\CpmLib.lastbuildstate".
+     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.18

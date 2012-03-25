@@ -34,15 +34,15 @@ private:
 	EstimatorResult lastPrediction;
 
 public:
-	int blodId;
+	int vehicleId;
 
 	KalmanEstimator(void);
 	~KalmanEstimator(void);
 
-	void init(shared_ptr<blob> blob);
+	void init(shared_ptr<carDetection> blob);
 	EstimatorResult predict();
-	EstimatorResult correct(shared_ptr<blob> b);
-	EstimatorResult update(shared_ptr<blob> b);
+	EstimatorResult correct(shared_ptr<carDetection> b);
+	EstimatorResult update(shared_ptr<carDetection> b);
 	EstimatorResult getLastPrediction();
 };
 

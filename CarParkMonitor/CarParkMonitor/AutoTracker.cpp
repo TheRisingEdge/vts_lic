@@ -61,20 +61,19 @@ void AutoTracker::run()
 	DetectorParams detectorParam;
 	TrackerParam matcherParam;
 	TrackParam trackParam;
-	MatcherResult matcherResult;
+	TrackResult trackResult;
 
 	Mat frame;
 	Mat grayFrame;
 	Mat foreground;	
 
-	int trainingFrames = 50;
+	int trainingFrames = 10;
 
 	vector<Mat> frameBuffer;
 	vector<Mat> grayFrameBuffer;
 	vector<Mat> foregroundBuffer;
 	vector<vector<shared_ptr<blob>>> blobBuffer;
-	vector<vector<shared_ptr<vehicleDetection>>> vehicleDetectionBuffer;
-	vector<vector<shared_ptr<vehicleDetection>>> detectionBuffer;
+	vector<vector<shared_ptr<carDetection>>> detectionBuffer;
 	
 	EstimatorCollection estimators;
 
@@ -119,8 +118,8 @@ void AutoTracker::run()
 			classifierParam.blobBuffer = foundBlobs;
 			classifierParam.frame 	   = frameClone;
 			classifierParam.foreground = foregroundClone;
-			vehicleClassifier.detect(classifierParam, classifierResult);
-			detectionBuffer.push_back(classifierResult.detections);
+			vector<shared_ptr<carDetection>> detections = vehicleClassifier.detect(classifierParam);
+			detectionBuffer.push_back(detections);
 
 			if(frameBuffer.size() > frameBufferSize)
 			{			
@@ -137,8 +136,8 @@ void AutoTracker::run()
 
 				foreground = foregroundMask;		
 
-				auto prev = blobBuffer[0];
-				for_each(begin(prev), end(prev), [&](shared_ptr<blob> b)-> void{
+				auto prev = detectionBuffer[0];
+				for_each(begin(prev), end(prev), [&](shared_ptr<carDetection> b)-> void{
 					if(b->id == ID_UNDEFINED)
 						b->id = idGenerator->nextId();
 				});
@@ -152,13 +151,14 @@ void AutoTracker::run()
 				trackerParam.grayFrameBuffer    = grayFrameBuffer;
 				trackerParam.foregroundBuffer   = foregroundBuffer;
 				trackerParam.blobBuffer			= blobBuffer;
+				trackerParam.vehicleDetectionBuffer = detectionBuffer;
 
-				matcherResult.init();
-				blobTracker->track(trackerParam, &matcherResult);
+				trackResult.init();
+				blobTracker->track(trackerParam, &trackResult);
 
 				//** Assign ids for new detected Blobs *********************//
-				auto blobsNew = matcherResult.newBlobs;
-				for_each(begin(blobsNew), end(blobsNew), [&](shared_ptr<blob> b)
+				auto vehiclesNew = trackResult.newVehicleDetections;
+				for_each(begin(vehiclesNew), end(vehiclesNew), [&](shared_ptr<carDetection> b)
 				{
 					assert(b->id == ID_UNDEFINED);
 					b->id = idGenerator->nextId();
@@ -167,28 +167,28 @@ void AutoTracker::run()
 
 				//drawCurrentBlobs
 				auto fclone = frameBuffer[1].clone();
-				auto currentBlobs = blobBuffer[1];
-				//for_each(begin(currentBlobs), end(currentBlobs), [&](shared_ptr<blob> b)
-				//{
+				auto currentDetections = detectionBuffer[1];
+				for_each(begin(currentDetections), end(currentDetections), [&](shared_ptr<carDetection> b)
+				{
 				//	estimators.update(b);
 					//auto est = estimators.get(b->id);
 					//auto lastPrediction = est->getLastPrediction();
 
 					//Helper::drawBlob(b.get(), fclone);
-
+					Helper::drawAnotatedRect(b->id, b->rect, fclone);
 					//Helper::drawAnotatedRect(b->id,lastPrediction.toRect(), fclone);
-				//});
+				});
 
-				auto m = estimators.estimatorsMap;
-				auto it = m.begin();
-				auto stop = m.end();
+				//auto m = estimators.estimatorsMap;
+				//auto it = m.begin();
+				//auto stop = m.end();
 
-				for(;it != stop; it++ )
-				{
-					auto filter = (*it).second;
-					auto predict = filter->getLastPrediction();
-					Helper::drawAnotatedRect(filter->blodId,predict.toRect(), fclone);
-				}
+				//for(;it != stop; it++ )
+				//{
+				//	auto filter = (*it).second;
+				//	auto predict = filter->getLastPrediction();
+				//	Helper::drawAnotatedRect(filter->vehicleId,predict.toRect(), fclone);
+				//}
 
 				imshow("labeled Blobs", fclone);
 				fclone.release();

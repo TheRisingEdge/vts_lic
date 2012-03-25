@@ -1,6 +1,6 @@
 #include "AvgSubtractor.h"
 
-AvgSubtractor::AvgSubtractor():threshold(10), learningRate(0.01)
+AvgSubtractor::AvgSubtractor():threshold(20), learningRate(0.001)
 {
 	this->closeHolesCount = 1;
 
@@ -56,19 +56,19 @@ Mat AvgSubtractor::segment(const Mat& frame )
 	//cv::erode(foreground, foreground, structuringElement);
 	//cv::erode(foreground, foreground, structuringElement);
 		
-	//if (this->closeHolesCount > 0)
-	//{
-	//	Mat temp_foreground_mask;
+	if (this->closeHolesCount > 0)
+	{
+		Mat temp_foreground_mask;
 
-	//	// close holes
-	//	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
-	//	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
+		// close holes
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
+		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
 
-	//	// close gaps
-	//	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
-	//	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
-	//	cv::dilate(temp_foreground_mask, foreground, this->elipseElement, Point(-1,-1), this->closeHolesCount);
-	//}
+		// close gaps
+		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
+		cv::dilate(temp_foreground_mask, foreground, this->elipseElement, Point(-1,-1), this->closeHolesCount);
+	}
 
 #if BG_DRAW
 	imshow("Segmentator", foreground);	

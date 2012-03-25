@@ -10,27 +10,22 @@ VehicleClassifier::~VehicleClassifier(void)
 {
 }
 
-void VehicleClassifier::detect( const Mat& image, vector<Rect>& detections )
-{
-
-}
-
-void VehicleClassifier::detect( const ClassifierParam& param, ClassifierResult& result )
+vector<shared_ptr<carDetection>> VehicleClassifier::detect( const ClassifierParam& param )
 {
 	Mat frame = param.frame;
+	Mat foreground = param.foreground;
 	auto blobs = param.blobBuffer;
 
+	vector<shared_ptr<carDetection>> result;
 	for_each(begin(blobs), end(blobs), [&result](shared_ptr<blob> b){
 
-		auto detection = new vehicleDetection;
+		auto detection = new carDetection;
+		detection->id = ID_UNDEFINED;
 		detection->blobId = b->id;
 		detection->rect = b->rect;
-		auto vehicle = shared_ptr<vehicleDetection>(detection);
-		result.detections.push_back(vehicle);
+		auto vehicle = shared_ptr<carDetection>(detection);
+		result.push_back(vehicle);
 	});
-}
 
-float VehicleClassifier::detectVehicle( const Mat& image,const Mat& mask )
-{
-	return 0.0;
+	return result;
 }

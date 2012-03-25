@@ -1,0 +1,25 @@
+﻿Build started 3/24/2012 11:26:20 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "x64\Debug\CpmImpl.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /IE:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt AvgSubtractor.cpp CodebookSubtractor.cpp Mog2Subtractor.cpp MogSubtractor.cpp
+         MogSubtractor.cpp
+         Mog2Subtractor.cpp
+         CodebookSubtractor.cpp
+         AvgSubtractor.cpp
+         Generating Code...
+       Lib:
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\CpmImpl.lib" /NOLOGO x64\Debug\AvgSubtractor.obj
+         x64\Debug\CodebookSubtractor.obj
+         x64\Debug\Mog2Subtractor.obj
+         x64\Debug\MogSubtractor.obj
+         CpmImpl.vcxproj -> E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\CpmImpl.lib
+       FinalizeBuildStatus:
+         Deleting file "x64\Debug\CpmImpl.unsuccessfulbuild".
+         Touching "x64\Debug\CpmImpl.lastbuildstate".
+     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:03.15

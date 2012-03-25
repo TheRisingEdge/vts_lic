@@ -14,7 +14,7 @@ typedef struct
 
 typedef struct
 {
-	vector<shared_ptr<vehicleDetection>> detections;
+	vector<shared_ptr<carDetection>> detections;
 
 }ClassifierResult;
 
@@ -24,9 +24,6 @@ public:
 	VehicleClassifier(void);
 	~VehicleClassifier(void);
 
-	float detectVehicle(const Mat& image,const Mat& mask);
-	void detect(const Mat& image, vector<Rect>& detections);
-
-	void detect(const ClassifierParam& param, ClassifierResult& result);
+	vector<shared_ptr<carDetection>> detect(const ClassifierParam& param);
 };
 
