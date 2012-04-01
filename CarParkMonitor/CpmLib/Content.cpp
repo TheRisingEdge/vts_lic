@@ -37,3 +37,20 @@ char* Content::videoFile( char* name )
 {
 	return pathTo("./Content/Videos/%s", name);
 }
+
+char* Content::image( char* name )
+{
+	return pathTo("./Content/Images/%s.jpg", name);
+}
+
+FileStorage Content::read(char* file)
+{
+	FileStorage f = FileStorage(file, FileStorage::READ);
+	return f;
+}
+
+FileStorage Content::write(char* file)
+{
+	FileStorage f = FileStorage(file, FileStorage::WRITE);
+	return f;
+}

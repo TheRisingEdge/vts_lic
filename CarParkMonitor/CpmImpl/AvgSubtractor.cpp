@@ -1,23 +1,30 @@
 #include "AvgSubtractor.h"
 
-AvgSubtractor::AvgSubtractor():threshold(20), learningRate(0.001)
+void AvgSubtractor::init( char* windowName )
 {
-	this->closeHolesCount = 1;
+	this->threshold = 20;
+	this->learningRate = 0.01;
 
+	this->closeHolesCount = 0;
 	int erosionType = MORPH_CROSS;
-	int erosionSize = 2;
+	int erosionSize = 4;
 
 	this->structuringElement = getStructuringElement( 
 		erosionType,
 		Size( 2*erosionSize + 1, 2*erosionSize+1 ),
 		Point( erosionSize, erosionSize) 
-		);
+	);
+}
 
-	this->elipseElement = getStructuringElement( 
-		MORPH_RECT,
-		Size( 2*erosionSize + 1, 2*erosionSize+1 ),
-		Point( erosionSize, erosionSize) 
-		);
+
+AvgSubtractor::AvgSubtractor():BgSubtractorBase()
+{
+	init("avg-sub");
+}
+
+AvgSubtractor::AvgSubtractor( char* windowName ):BgSubtractorBase(windowName)
+{
+	init(windowName);
 }
 
 
@@ -53,21 +60,23 @@ Mat AvgSubtractor::segment(const Mat& frame )
 		Mat temp_foreground_mask;
 
 		// close holes
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
-		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 2);
+		
 
-		// close gaps
-		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1), this->closeHolesCount);
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), this->closeHolesCount);
-		cv::dilate(temp_foreground_mask, foreground, this->elipseElement, Point(-1,-1), this->closeHolesCount);
+		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);
+		
+
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),2);
+	
 	}
 
 #if BG_DRAW
-	imshow("Segmentator", foreground);	
+	imshow(BgSubtractorBase::windowName, foreground);	
 #endif
 
 	return foreground;
 }
+
 
 
 

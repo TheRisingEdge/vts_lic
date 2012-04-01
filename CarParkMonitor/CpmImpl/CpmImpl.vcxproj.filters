@@ -19,6 +19,12 @@
     <Filter Include="Source Files\BackgroundSubtraction">
       <UniqueIdentifier>{206242e3-b807-405f-9a62-a48cffb125fa}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\VideoProcessing">
+      <UniqueIdentifier>{8e2d2e95-15ec-44b4-aa48-ad4651f06adc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\VideoProcessing">
+      <UniqueIdentifier>{f1e61af0-dfd6-40d1-b2db-5a8015da1157}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -36,6 +42,15 @@
     <ClInclude Include="Mog2Subtractor.h">
       <Filter>Header Files\BackgroundSubtraction</Filter>
     </ClInclude>
+    <ClInclude Include="CannyFrameProcessor.h">
+      <Filter>Header Files\VideoProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="FeatureTracker.h">
+      <Filter>Header Files\VideoProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="BackgroundSegmentator.h">
+      <Filter>Header Files\VideoProcessing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvgSubtractor.cpp">
@@ -49,6 +64,15 @@
     </ClCompile>
     <ClCompile Include="Mog2Subtractor.cpp">
       <Filter>Source Files\BackgroundSubtraction</Filter>
+    </ClCompile>
+    <ClCompile Include="FeatureTracker.cpp">
+      <Filter>Source Files\VideoProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="CannyFrameProcessor.cpp">
+      <Filter>Source Files\VideoProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="BackgroundSegmentator.cpp">
+      <Filter>Source Files\VideoProcessing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

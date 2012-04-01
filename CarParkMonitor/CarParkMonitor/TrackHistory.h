@@ -34,7 +34,6 @@ private:
 	map<int, TrackInfo*> infos;
 
 public:
-	BlobSeq* prevFrameBlobs;
 	vector<blob*> previousBlobs;
 
 	TrackHistory(int size);

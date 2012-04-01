@@ -1,7 +1,38 @@
 #include <stdio.h>
 #include "Content.h"
+#include "VideoProcessor.h"
+#include "HogFramer.h"
+#include "AvgSubtractor.h"
+#include "Tool.h"
+#include "MogSubtractor.h"
 
-int main()
+using namespace cv;
+
+int main(int argc, char** argv)
 {
+	char* path = new char[100];
+	sprintf(path,"../CarParkMonitor/Content/Videos/%s",argv[1]);
+
+	char* config = new char[100];
+	sprintf(config,"../CarParkMonitor/Content/Config/%s",argv[2]);
+	auto cf = Content::read(config);
+
+	int x, y, width, height = 0;
+	cf["x"] >> x;
+	cf["y"] >> y;
+	cf["width"] >> width;
+	cf["height"] >> height;
+	cf.release();
+
+	auto processor = new VideoProcessor(path);
+
+	HogFramerParams params;
+	params.cropFrame = Rect(0, 0, width, height);
+	Tool::rectToCenter(Point(x,y), params.cropFrame);
+
+	auto hogTrainer = new HogFramer(params);
+	processor->run(hogTrainer);
+
+	delete[] path;
 	return 0;
 }

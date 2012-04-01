@@ -21,8 +21,11 @@ private:
 	Mat structuringElement;
 	Mat elipseElement;
 
+	void init(char* windowName);
+
 public:
 	AvgSubtractor();
+	AvgSubtractor(char* windowName);
 	~AvgSubtractor();
 
 	void learn(const Mat& frame);

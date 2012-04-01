@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Video">
-      <UniqueIdentifier>{1c19a3dd-0a27-4b62-acbb-c0f3e9d9a870}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Video">
-      <UniqueIdentifier>{1b60413f-a72c-47af-b5e3-2a4649e9d98d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\BlobTracking">
       <UniqueIdentifier>{a1f20569-78ef-4648-8613-09126efc1de3}</UniqueIdentifier>
     </Filter>
@@ -31,18 +25,9 @@
     <Filter Include="Source Files\Bow">
       <UniqueIdentifier>{9e30faa9-b439-4cd4-af93-4ff4e57617a4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\BlobTracking\BackgroundSubtraction">
-      <UniqueIdentifier>{78bfe680-a678-42c2-981d-f7ed46a24b15}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\BlobTracking\BackgroundSubtraction">
-      <UniqueIdentifier>{00e27c78-17f1-4701-b010-4ce42afa2318}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Content.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Importer.cpp">
@@ -51,40 +36,16 @@
     <ClCompile Include="Helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BackgroundSegmentator.cpp">
-      <Filter>Source Files\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="CannyFrameProcessor.cpp">
-      <Filter>Source Files\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="FeatureTracker.cpp">
-      <Filter>Source Files\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoProcessor.cpp">
-      <Filter>Source Files\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameProcessor.cpp">
-      <Filter>Source Files\Video</Filter>
-    </ClCompile>
-    <ClCompile Include="BgFgSegmentator.cpp">
-      <Filter>Source Files\Video</Filter>
-    </ClCompile>
     <ClCompile Include="AutoTracker.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
     <ClCompile Include="SyncBuffer.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
-    <ClCompile Include="Blob.cpp">
-      <Filter>Source Files\BlobTracking</Filter>
-    </ClCompile>
     <ClCompile Include="TrackHistory.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
     <ClCompile Include="BlobTracker.cpp">
-      <Filter>Source Files\BlobTracking</Filter>
-    </ClCompile>
-    <ClCompile Include="BlobDetector.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
     <ClCompile Include="AppConfig.cpp">
@@ -120,60 +81,21 @@
     <ClCompile Include="EstimatorCollection.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
-    <ClCompile Include="MogSubtractor.cpp">
-      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClCompile>
-    <ClCompile Include="CodebookSubtractor.cpp">
-      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClCompile>
-    <ClCompile Include="AvgSubtractor.cpp">
-      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClCompile>
-    <ClCompile Include="Mog2Subtractor.cpp">
-      <Filter>Source Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Content.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Importer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BackgroundSegmentator.h">
-      <Filter>Header Files\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameProcessor.h">
-      <Filter>Header Files\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoProcessor.h">
-      <Filter>Header Files\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="FeatureTracker.h">
-      <Filter>Header Files\Video</Filter>
-    </ClInclude>
-    <ClInclude Include="CannyFrameProcessor.h">
-      <Filter>Header Files\Video</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BgFgSegmentator.h">
-      <Filter>Header Files\Video</Filter>
     </ClInclude>
     <ClInclude Include="AutoTracker.h">
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
-    <ClInclude Include="BlobDetector.h">
-      <Filter>Header Files\BlobTracking</Filter>
-    </ClInclude>
     <ClInclude Include="SyncBuffer.h">
-      <Filter>Header Files\BlobTracking</Filter>
-    </ClInclude>
-    <ClInclude Include="Blob.h">
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
     <ClInclude Include="BlobTracker.h">
@@ -214,21 +136,6 @@
     </ClInclude>
     <ClInclude Include="EstimatorCollection.h">
       <Filter>Header Files\BlobTracking</Filter>
-    </ClInclude>
-    <ClInclude Include="MogSubtractor.h">
-      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClInclude>
-    <ClInclude Include="BgSubtractorBase.h">
-      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClInclude>
-    <ClInclude Include="CodebookSubtractor.h">
-      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClInclude>
-    <ClInclude Include="AvgSubtractor.h">
-      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
-    </ClInclude>
-    <ClInclude Include="Mog2Subtractor.h">
-      <Filter>Header Files\BlobTracking\BackgroundSubtraction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

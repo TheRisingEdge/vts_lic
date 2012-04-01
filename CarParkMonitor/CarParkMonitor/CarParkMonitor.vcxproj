@@ -14,6 +14,7 @@
     <ProjectGuid>{9EA27231-77ED-43B1-8188-6281286D6F73}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CarParkMonitor</RootNamespace>
+    <ProjectName>VehicleTrackingMonitor</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -51,6 +52,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib;E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -77,26 +79,14 @@
   <ItemGroup>
     <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="AutoTracker.cpp" />
-    <ClCompile Include="BackgroundSegmentator.cpp" />
-    <ClCompile Include="BgFgSegmentator.cpp" />
-    <ClCompile Include="Blob.cpp" />
-    <ClCompile Include="BlobDetector.cpp" />
     <ClCompile Include="BlobTracker.cpp" />
     <ClCompile Include="BowComponent.cpp" />
-    <ClCompile Include="CannyFrameProcessor.cpp" />
-    <ClCompile Include="CodebookSubtractor.cpp" />
-    <ClCompile Include="Content.cpp" />
     <ClCompile Include="DebugHelper.cpp" />
     <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="EstimatorCollection.cpp" />
-    <ClCompile Include="FeatureTracker.cpp" />
-    <ClCompile Include="AvgSubtractor.cpp" />
-    <ClCompile Include="FrameProcessor.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="KalmanEstimator.cpp" />
     <ClCompile Include="MathHelper.cpp" />
-    <ClCompile Include="Mog2Subtractor.cpp" />
-    <ClCompile Include="MogSubtractor.cpp" />
     <ClCompile Include="TrackHistory.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
@@ -105,32 +95,18 @@
     <ClCompile Include="SyncBuffer.cpp" />
     <ClCompile Include="Tester.cpp" />
     <ClCompile Include="VehicleClassifier.cpp" />
-    <ClCompile Include="VideoProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="AutoTracker.h" />
-    <ClInclude Include="BackgroundSegmentator.h" />
-    <ClInclude Include="BgFgSegmentator.h" />
-    <ClInclude Include="BgSubtractorBase.h" />
-    <ClInclude Include="Blob.h" />
-    <ClInclude Include="BlobDetector.h" />
     <ClInclude Include="BlobTracker.h" />
     <ClInclude Include="BowComponent.h" />
-    <ClInclude Include="CannyFrameProcessor.h" />
-    <ClInclude Include="CodebookSubtractor.h" />
-    <ClInclude Include="Content.h" />
     <ClInclude Include="DebugHelper.h" />
     <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="EstimatorCollection.h" />
-    <ClInclude Include="FeatureTracker.h" />
-    <ClInclude Include="AvgSubtractor.h" />
-    <ClInclude Include="FrameProcessor.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="KalmanEstimator.h" />
     <ClInclude Include="MathHelper.h" />
-    <ClInclude Include="Mog2Subtractor.h" />
-    <ClInclude Include="MogSubtractor.h" />
     <ClInclude Include="TrackHistory.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="PlsaComponent.h" />
@@ -139,10 +115,17 @@
     <ClInclude Include="SyncBuffer.h" />
     <ClInclude Include="Tester.h" />
     <ClInclude Include="VehicleClassifier.h" />
-    <ClInclude Include="VideoProcessor.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CarParkMonitor.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CpmImpl\CpmImpl.vcxproj">
+      <Project>{e32a9054-101f-41c5-b6a5-e3dd185e12f6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\CpmLib\CpmLib.vcxproj">
+      <Project>{6dda55ac-1688-4045-9169-c7188bfceddb}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
