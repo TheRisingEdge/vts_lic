@@ -22,16 +22,16 @@ int main(int argc, char** argv)
 		9
 	);
 
-	Loader::setPosPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext1",2);
-	Loader::setNegPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext1",2);
-	
+	Loader::setPosPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext1", 999);
+	Loader::setNegPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext1",1000);
+
 	ofstream train;
 	train.open("./../CarParkMonitor/Content/Assets/hogtrain.txt");		
 	train.clear();
 
 	vector<float> descriptor;
 	descriptor.reserve(fvectorSize);
-	
+
 	auto positives = Loader::getPositiveSamples();	
 	for_each(begin(positives), end(positives), [&](const Mat& image){
 		descriptor.clear();

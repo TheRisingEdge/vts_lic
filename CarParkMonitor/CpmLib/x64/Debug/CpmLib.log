@@ -1,31 +1,14 @@
-﻿Build started 4/3/2012 7:56:44 PM.
-     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" on node 2 (rebuild target(s)).
+﻿Build started 4/3/2012 8:16:07 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Creating "x64\Debug\VtLib.unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "x64\Debug\VtLib.unsuccessfulbuild".
        ClCompile:
-         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt BgSubtractorBase.cpp BlobDetector.cpp Content.cpp Draw.cpp FrameProcessor.cpp Loader.cpp Tool.cpp VideoProcessor.cpp
-         VideoProcessor.cpp
-     1>VideoProcessor.cpp(32): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
-         Tool.cpp
-     1>Tool.cpp(4): warning C4305: 'initializing' : truncation from 'double' to 'float'
-     1>Tool.cpp(5): warning C4305: 'initializing' : truncation from 'double' to 'float'
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt Loader.cpp
          Loader.cpp
      1>Loader.cpp(27): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
      1>Loader.cpp(49): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
-         FrameProcessor.cpp
-         Draw.cpp
-         Content.cpp
-     1>Content.cpp(15): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
-     1>Content.cpp(22): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
-         BlobDetector.cpp
-     1>e:\workspace\github\cpmlic\carparkmonitor\cpmlib\BlobDetector.h(36): warning C4520: 'BlobDetector' : multiple default constructors specified
-     1>BlobDetector.cpp(45): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-         BgSubtractorBase.cpp
-         Generating Code...
        Lib:
          D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\VtLib.lib" /NOLOGO x64\Debug\BgSubtractorBase.obj
          x64\Debug\BlobDetector.obj
@@ -39,8 +22,8 @@
        FinalizeBuildStatus:
          Deleting file "x64\Debug\VtLib.unsuccessfulbuild".
          Touching "x64\Debug\VtLib.lastbuildstate".
-     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" (rebuild target(s)).
+     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:06.05
+Time Elapsed 00:00:01.16

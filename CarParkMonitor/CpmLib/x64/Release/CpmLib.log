@@ -1,4 +1,4 @@
-﻿Build started 4/3/2012 7:36:45 PM.
+﻿Build started 4/3/2012 8:35:26 PM.
      1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "x64\Release\VtLib.lastbuildstate".
@@ -44,4 +44,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.91
+Time Elapsed 00:00:04.93

@@ -9,8 +9,8 @@ bool Loader::negativesLoaded = false;
 int Loader::positivesCount;
 int Loader::negativesCount;
 
-unique_ptr<char> Loader::positivesPath;
-unique_ptr<char> Loader::negativesPath;
+char* Loader::positivesPath;
+char* Loader::negativesPath;
 
 void Loader::loadPositiveSamples()
 {
@@ -24,7 +24,7 @@ void Loader::loadPositiveSamples()
 
 	for(int i = 1; i < size; i++)
 	{		
-		sprintf(path, "%s/pos-%d.png",positivesPath.get(), i);	
+		sprintf(path, "%s/pos-%d.png",positivesPath, i);	
 		Mat image = imread(path);
 		assert(image.rows > 0 && image.cols > 0);
 		positiveSamples.push_back(image);
@@ -46,7 +46,7 @@ void Loader::loadNegativeSamples()
 
 	for(int i = 1; i < size; i++)
 	{
-		sprintf(path, "%s/neg-%d.png", negativesPath.get(), i);
+		sprintf(path, "%s/neg-%d.png", negativesPath, i);
 		Mat image = imread(path);
 		assert(image.rows > 0 && image.cols > 0);
 		negativeSamples.push_back(image);

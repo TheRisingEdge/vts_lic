@@ -28,8 +28,7 @@ bool Tool::rectInside( const Rect& r, const Rect& container )
 
 bool Tool::isMostlyCircular( const vector<Point>& contour, float treshold )
 {
-	static Mat hull;
-
+	Mat hull;
 	cv::convexHull(contour, hull);
 	double area = cv::contourArea(hull);
 	double perimeter = cv::arcLength(hull, true);
