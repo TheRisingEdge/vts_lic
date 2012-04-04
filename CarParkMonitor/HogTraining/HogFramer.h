@@ -22,39 +22,49 @@ struct DrawingControl
 
 struct RegionExtractor
 {
+	int id;
 	Rect rect;
 	BgSubtractorBase* bgSubtractor;
+	BlobDetector* detector;
 	char* windowName;
+	char* saveWindowName;
 };
 
 class HogFramer:public FrameProcessor
 {
-private: 
+private:
 	HogFramerParams params;
 
 	BgSubtractorBase* bgSubtractor;
 	BlobDetector* blobDetector;
 	int trainingFrames;
 	int frameCount;
+
 	int posCount;
 	int negCount;
+	int whiteCount;
+	int blackCount;
 
-	char* nextPositivePath();
-	char* nextNegativePath();
+	static int** pathCounters;
 
+	unique_ptr<char> nextNegPath(int regId = 0);
+	unique_ptr<char> nextWPath(int regId = 0);
+	unique_ptr<char> nextBPath(int regId = 0);
+	
 	vector<RegionExtractor> regionExtractors;
-	void selectMonitorRegions(const Mat& frame);
+	void selectMonitorRegions(const Mat& frame);	
+	void generateNegativeSamples( const Rect& r, const Mat& frame, int regId = 0);
+
+	void savePositive(const Mat& regionOnRoi, const Mat& regionOnBackground, int regId = 0);
+	void savePositiveAndNegatives( vector<shared_ptr<blob>> blobs,const Rect& crop,const Mat& roi, const Mat& roiForeground, const Mat& frame, int regId = 0);
+	void initPathCounters(int len);
 
 public:
 	static DrawingControl drawingControl;
 	static vector<Rect> monitoredRegions;
 
 	HogFramer(HogFramerParams params);
-	~HogFramer(void);
+	~HogFramer(void){}
 	
-
-	void process(const Mat& in);
-
-	void savePositiveAndNegatives( vector<shared_ptr<blob>> blobs,const Rect& crop, const Mat& frame, const Mat& foreground);
-	void generateNegativeSamples( const Rect& r, const Mat& frame );
+	void process(const Mat& in);	
 };

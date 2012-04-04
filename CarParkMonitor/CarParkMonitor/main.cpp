@@ -16,8 +16,6 @@ int main(int argc, char** argv)
 
 	AutoTrackerParam param;
 	param.videoPath = videoPath;
-	param.foregroundSegmentator = new AvgSubtractor();
-	param.blobDetector = new BlobDetector();
 
 	TrackHistory history(100);
 	param.trackHistory = &history;

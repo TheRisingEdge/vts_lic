@@ -14,6 +14,6 @@ class VideoProcessor
 		VideoProcessor(char* videoPath);	
 		~VideoProcessor(void);
 	
-		void run(FrameProcessor* frameProcessor);
+		void run(FrameProcessor* frameProcessor, float xspeed = 1.0);
 };
 

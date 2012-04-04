@@ -1,22 +1,20 @@
 #include "BlobDetector.h"
 #include "opencv2/opencv.hpp"
 #include <memory>
+#include "Tool.h"
 
 using namespace cv;
-#define MARGIN 3
+static const int MARGIN = 3;
 
-int BlobDetector::instanceNr = 0;
+int BlobDetector::instanceNr = 1;
 
 void BlobDetector::init(int minWidth, int minHeight, char* windowName )
 {
 	instanceNr++;
-
 	this->minWidth = minWidth;
 	this->minHeight = minHeight;
 	this->minArea = minWidth*minHeight;
-
-	this->windowName = new char[50];
-	sprintf(this->windowName, "%d-detector", instanceNr);
+	this->windowName = windowName;
 }
 
 BlobDetector::BlobDetector(int minWidth, int minHeight, char* windowName)
@@ -24,11 +22,15 @@ BlobDetector::BlobDetector(int minWidth, int minHeight, char* windowName)
 	init(minWidth, minHeight, windowName);
 }
 
-BlobDetector::~BlobDetector()
+BlobDetector::BlobDetector(int minWidth, int minHeight)
 {
+	char* windowName = new char[50];
+	sprintf(windowName, "detector %d", instanceNr);
+
+	init(minWidth, minHeight, windowName);
 }
 
-vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )//class SimpleBlobDetector
+vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )
 {
 	Mat foreground = params.foreground;
 	Mat frame 	   = params.frame;
@@ -48,24 +50,19 @@ vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )//class Si
 		Point br = rect.br();
 
 		if(rect.area() > this->minArea &&
-			rect.width > minWidth  &&
-			rect.height > minHeight &&
-			tl.x > MARGIN &&
-			tl.y > MARGIN &&
-
-			(br.x < (frame.cols - MARGIN)) &&
-			(br.y < (frame.rows - MARGIN))
-			)
-		{			
+			rect.width > minWidth  && rect.height > minHeight &&
+			tl.x > MARGIN && tl.y > MARGIN &&
+			(br.x < (frame.cols - MARGIN)) && (br.y < (frame.rows - MARGIN)))
+		{		
 			blob* b = new blob;
 			b->rect = rect;
 			b->detectorId = i;
 			b->contour = contours[i];
 			b->id = ID_UNDEFINED;			
-
 			auto pt = shared_ptr<blob>(b);
-			foundBlobs.push_back(pt);
-	}			
+
+			foundBlobs.push_back(pt);					
+		}			
 	}
 
 	maskCopy.release();
@@ -78,7 +75,6 @@ vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )//class Si
 		Rect rect = b->rect;
 		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 		rectangle( cl, rect.tl(), rect.br(), color);
-
 	});
 	imshow(this->windowName, cl );
 	cl.release();

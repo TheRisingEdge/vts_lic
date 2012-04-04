@@ -37,6 +37,7 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\Testing\Opencv_Release_gpu.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -66,6 +67,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,18 +80,14 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CpmLib\CpmLib.vcxproj">
-      <Project>{6dda55ac-1688-4045-9169-c7188bfceddb}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="AvgSubtractor.h" />
     <ClInclude Include="BackgroundSegmentator.h" />
     <ClInclude Include="CannyFrameProcessor.h" />
     <ClInclude Include="CodebookSubtractor.h" />
     <ClInclude Include="FeatureTracker.h" />
-    <ClInclude Include="Mog2Subtractor.h" />
     <ClInclude Include="MogSubtractor.h" />
+    <ClInclude Include="StableAvgSubtractor.h" />
+    <ClInclude Include="StableMog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvgSubtractor.cpp" />
@@ -99,6 +97,13 @@
     <ClCompile Include="FeatureTracker.cpp" />
     <ClCompile Include="Mog2Subtractor.cpp" />
     <ClCompile Include="MogSubtractor.cpp" />
+    <ClCompile Include="StableAvgSubtractor.cpp" />
+    <ClCompile Include="StableMog.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CpmLib\CpmLib.vcxproj">
+      <Project>{6dda55ac-1688-4045-9169-c7188bfceddb}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

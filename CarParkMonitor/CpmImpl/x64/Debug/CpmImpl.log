@@ -1,11 +1,13 @@
-﻿Build started 3/29/2012 9:20:40 PM.
+﻿Build started 4/3/2012 7:51:03 PM.
      1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "x64\Debug\VtImpl.lastbuildstate".
        InitializeBuildStatus:
          Creating "x64\Debug\VtImpl.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /IE:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt AvgSubtractor.cpp BackgroundSegmentator.cpp CannyFrameProcessor.cpp CodebookSubtractor.cpp FeatureTracker.cpp Mog2Subtractor.cpp MogSubtractor.cpp
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /IE:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt AvgSubtractor.cpp BackgroundSegmentator.cpp CannyFrameProcessor.cpp CodebookSubtractor.cpp FeatureTracker.cpp Mog2Subtractor.cpp MogSubtractor.cpp StableAvgSubtractor.cpp StableMog.cpp
+         StableMog.cpp
+         StableAvgSubtractor.cpp
          MogSubtractor.cpp
          Mog2Subtractor.cpp
          FeatureTracker.cpp
@@ -22,6 +24,8 @@
          x64\Debug\FeatureTracker.obj
          x64\Debug\Mog2Subtractor.obj
          x64\Debug\MogSubtractor.obj
+         x64\Debug\StableAvgSubtractor.obj
+         x64\Debug\StableMog.obj
          CpmImpl.vcxproj -> E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\VtImpl.lib
        FinalizeBuildStatus:
          Deleting file "x64\Debug\VtImpl.unsuccessfulbuild".
@@ -30,4 +34,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.47
+Time Elapsed 00:00:07.11

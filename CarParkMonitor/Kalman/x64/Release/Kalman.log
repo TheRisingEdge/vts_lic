@@ -1,0 +1,13 @@
+﻿Build started 4/3/2012 7:07:56 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\Kalman\Kalman.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Touching "x64\Release\Kalman.unsuccessfulbuild".
+       ClCompile:
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc100.pdb" /Gd /TP /errorReport:prompt main.cpp
+         main.cpp
+     1>main.cpp(5): fatal error C1083: Cannot open include file: 'opencv2/highgui/highgui.hpp': No such file or directory
+     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\Kalman\Kalman.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.41

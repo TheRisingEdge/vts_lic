@@ -1,6 +1,7 @@
 #pragma once
 
 #include <opencv2\opencv.hpp>
+using namespace cv;
 
 class BgSubtractorBase
 {
@@ -27,4 +28,5 @@ public:
 
 	virtual void learn(const cv::Mat& frame) = 0;
 	virtual cv::Mat segment(const cv::Mat& frame) = 0;
+	virtual Mat getBackground(){return Mat();}
 };

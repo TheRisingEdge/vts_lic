@@ -8,10 +8,11 @@ using namespace cv;
 class Loader
 {
 private:
-	static char* basePath;
+	static unique_ptr<char> positivesPath;
+	static unique_ptr<char> negativesPath;
 
-	static const int positivesCount;
-	static const int negativesCount;
+	static int positivesCount;
+	static int negativesCount;
 
 	static bool positivesLoaded;
 	static bool negativesLoaded;
@@ -24,9 +25,19 @@ private:
 public:
 	Loader(void){}
 	~Loader(void){}
-	static void setBasePath(char* path);
 
 	static vector<Mat> getPositiveSamples();
 	static vector<Mat> getNegativeSamples();
+
+	static void setPosPathAndCount(char* path, int posCount)
+	{
+		positivesPath = unique_ptr<char>(path);
+		positivesCount = posCount;
+	}
+	static void setNegPathAndCount(char* path, int negCount)
+	{
+		negativesPath = unique_ptr<char>(path);
+		negativesCount = negCount;
+	}
 };
 

@@ -1,16 +1,10 @@
 #include "Tool.h"
 
 
-Tool::Tool(void)
-{
-}
+float Tool::Pi = 3.1416;
+float Tool::Pi4 = 12.5664;
 
-
-Tool::~Tool(void)
-{
-}
-
-void Tool::rectToCenter(const Point& center, Rect& r )
+void Tool::toCenter(const Point& center, Rect& r )
 {
 	int width = r.width;
 	int height = r.height;
@@ -30,6 +24,20 @@ bool Tool::rectInside( const Rect& r, const Rect& container )
 	auto br = r.br();
 
 	return container.contains(tl) && container.contains(br);
+}
+
+bool Tool::isMostlyCircular( const vector<Point>& contour, float treshold )
+{
+	static Mat hull;
+
+	cv::convexHull(contour, hull);
+	double area = cv::contourArea(hull);
+	double perimeter = cv::arcLength(hull, true);
+	double th = (Pi4*area)/(perimeter*perimeter);
+	if(th < treshold)
+		return true;
+
+	return false;	
 }
 
 

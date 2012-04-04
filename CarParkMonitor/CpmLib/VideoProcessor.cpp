@@ -10,7 +10,7 @@ VideoProcessor::VideoProcessor(char* videoPath)
 VideoProcessor::~VideoProcessor(){}
 
 
-void VideoProcessor::run(FrameProcessor* frameProcessor )
+void VideoProcessor::run(FrameProcessor* frameProcessor, float xspeed )
 {	
 	
 	this->capture.open(this->videoPath);
@@ -21,7 +21,8 @@ void VideoProcessor::run(FrameProcessor* frameProcessor )
 	}
 
 	double fps = capture.get(CV_CAP_PROP_FPS);		
-	
+	fps = fps/xspeed;
+
 	while(capture.read(this->in)){
 
 		//cv::imshow(this->windowName, this->in);

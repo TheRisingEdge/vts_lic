@@ -3,17 +3,16 @@
 #include "Blob.h"
 
 using namespace cv;
-#define MIN_HEIGHT 10
-#define MIN_WIDTH  20
 
-#define BLOB_DRAW 1
+#define BLOB_DRAW 0
 
 typedef struct
 {
 	Mat frame;
 	Mat foreground;
 	Mat prevFrame;
-
+	bool filterToRect;
+	Rect filterRect;
 }DetectorParams;
 
 class BlobDetector
@@ -30,7 +29,8 @@ private:
 
 public:
     BlobDetector(int minWidth = 15, int minHeight = 20, char* windowName = "detector");
-   ~BlobDetector();
+	BlobDetector(int minWidth = 15, int minHeight = 20);
+	~BlobDetector(){}
 
 	vector<shared_ptr<blob>> detect(DetectorParams params);
 };

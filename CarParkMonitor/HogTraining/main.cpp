@@ -28,10 +28,10 @@ int main(int argc, char** argv)
 
 	HogFramerParams params;
 	params.cropFrame = Rect(0, 0, width, height);
-	Tool::rectToCenter(Point(x,y), params.cropFrame);
+	Tool::toCenter(Point(x,y), params.cropFrame);
 
 	auto hogTrainer = new HogFramer(params);
-	processor->run(hogTrainer);
+	processor->run(hogTrainer, 10.0);
 
 	delete[] path;
 	return 0;

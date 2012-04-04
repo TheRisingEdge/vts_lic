@@ -6,10 +6,11 @@ vector<Mat> Loader::negativeSamples;
 bool Loader::positivesLoaded = false;
 bool Loader::negativesLoaded = false;
 
-const int Loader::positivesCount = 800;
-const int Loader::negativesCount = 800;
+int Loader::positivesCount;
+int Loader::negativesCount;
 
-char* Loader::basePath;
+unique_ptr<char> Loader::positivesPath;
+unique_ptr<char> Loader::negativesPath;
 
 void Loader::loadPositiveSamples()
 {
@@ -19,11 +20,11 @@ void Loader::loadPositiveSamples()
 	int size = positivesCount;
 	positiveSamples.reserve(size);
 
-	char* path = new char[50];
+	char* path = new char[100];
 
 	for(int i = 1; i < size; i++)
-	{
-		sprintf(path, "%s/pos-%d.png", basePath, i);
+	{		
+		sprintf(path, "%s/pos-%d.png",positivesPath.get(), i);	
 		Mat image = imread(path);
 		assert(image.rows > 0 && image.cols > 0);
 		positiveSamples.push_back(image);
@@ -41,11 +42,11 @@ void Loader::loadNegativeSamples()
 	int size = negativesCount;
 	negativeSamples.reserve(size);
 
-	char* path = new char[50];
+	char* path = new char[100];
 
 	for(int i = 1; i < size; i++)
 	{
-		sprintf(path, "%s/neg-%d.png", basePath, i);
+		sprintf(path, "%s/neg-%d.png", negativesPath.get(), i);
 		Mat image = imread(path);
 		assert(image.rows > 0 && image.cols > 0);
 		negativeSamples.push_back(image);
@@ -71,14 +72,3 @@ vector<Mat> Loader::getNegativeSamples()
 
 	return negativeSamples;
 }
-
-void Loader::setBasePath( char* path )
-{
-	basePath = path;
-}
-
-
-
-
-
-

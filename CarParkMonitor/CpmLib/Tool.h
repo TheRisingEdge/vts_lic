@@ -5,12 +5,17 @@ using namespace cv;
 
 class Tool
 {
-public:
-	Tool(void);
-	~Tool(void);
+private: 
+	static float Pi;
+	static float Pi4;
 
-	static void rectToCenter(const Point& center, Rect& r);
+	Tool(void){}
+	~Tool(void){}
+public:
+	
+	static void toCenter(const Point& center, Rect& r);
 	static Point rectCenter(const Rect& r);
 	static bool rectInside(const Rect& r, const Rect& container);
+	static bool isMostlyCircular(const vector<Point>& contour, float treshold = 0.6f);
 };
 

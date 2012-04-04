@@ -1,8 +1,10 @@
 #pragma once
 #include "BgSubtractorBase.h"
 #include "opencv2/opencv.hpp"
+#include "opencv2\gpu\gpu.hpp"
 
 using namespace cv;
+using namespace gpu;
 
 class MogSubtractor : public BgSubtractorBase
 {
@@ -11,9 +13,9 @@ private:
 	char* foregroundWindowName;
 
 	BackgroundSubtractorMOG2 bgModel;
-	Mat img;
 	Mat foreground;
 	Mat maskedForeground;
+
 	Mat rectKernel;
 	Mat elipseKernel;
 	Mat crossKernel;
@@ -28,5 +30,6 @@ public:
 
 	void learn(const Mat& frame);
 	Mat segment(const Mat& frame);
+	Mat getBackground();
 };
 

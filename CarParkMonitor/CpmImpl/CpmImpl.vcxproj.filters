@@ -39,9 +39,6 @@
     <ClInclude Include="MogSubtractor.h">
       <Filter>Header Files\BackgroundSubtraction</Filter>
     </ClInclude>
-    <ClInclude Include="Mog2Subtractor.h">
-      <Filter>Header Files\BackgroundSubtraction</Filter>
-    </ClInclude>
     <ClInclude Include="CannyFrameProcessor.h">
       <Filter>Header Files\VideoProcessing</Filter>
     </ClInclude>
@@ -50,6 +47,12 @@
     </ClInclude>
     <ClInclude Include="BackgroundSegmentator.h">
       <Filter>Header Files\VideoProcessing</Filter>
+    </ClInclude>
+    <ClInclude Include="StableMog.h">
+      <Filter>Header Files\BackgroundSubtraction</Filter>
+    </ClInclude>
+    <ClInclude Include="StableAvgSubtractor.h">
+      <Filter>Header Files\BackgroundSubtraction</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +76,12 @@
     </ClCompile>
     <ClCompile Include="BackgroundSegmentator.cpp">
       <Filter>Source Files\VideoProcessing</Filter>
+    </ClCompile>
+    <ClCompile Include="StableMog.cpp">
+      <Filter>Source Files\BackgroundSubtraction</Filter>
+    </ClCompile>
+    <ClCompile Include="StableAvgSubtractor.cpp">
+      <Filter>Source Files\BackgroundSubtraction</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

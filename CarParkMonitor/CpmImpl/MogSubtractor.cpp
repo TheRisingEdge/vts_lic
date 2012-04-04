@@ -36,10 +36,10 @@ cv::Mat MogSubtractor::segment( const Mat& frame )
 	//cv::dilate(foreground, foreground, elipseKernel, Point(-1,-1),1);	
 	//cv::erode(foreground, foreground, elipseKernel, Point(-1,-1),2);	
 
-	imshow(foregroundWindowName, foreground);
+	//imshow(foregroundWindowName, foreground);
 	
-	if(!background.empty())
-		imshow(meanWindowName, background );
+	//if(!background.empty())
+	//	imshow(meanWindowName, background );
 
 	return foreground;
 }
@@ -86,4 +86,11 @@ void MogSubtractor::init( char* windowName )
 		Point( erosionSize, erosionSize) 
 	);
 
+}
+
+cv::Mat MogSubtractor::getBackground()
+{
+	Mat background;
+	bgModel.getBackgroundImage(background);
+	return background;
 }
