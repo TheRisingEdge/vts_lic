@@ -1,8 +1,6 @@
-﻿Build started 4/3/2012 8:31:40 PM.
-     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" on node 2 (rebuild target(s)).
-     1>_PrepareForClean:
-         Deleting file "x64\Release\VtImpl.lastbuildstate".
-       InitializeBuildStatus:
+﻿Build started 4/3/2012 8:50:49 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
          Creating "x64\Release\VtImpl.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /IE:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib /ID:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc100.pdb" /Gd /TP /errorReport:prompt AvgSubtractor.cpp BackgroundSegmentator.cpp CannyFrameProcessor.cpp CodebookSubtractor.cpp FeatureTracker.cpp Mog2Subtractor.cpp MogSubtractor.cpp StableAvgSubtractor.cpp StableMog.cpp
@@ -29,8 +27,8 @@
        FinalizeBuildStatus:
          Deleting file "x64\Release\VtImpl.unsuccessfulbuild".
          Touching "x64\Release\VtImpl.lastbuildstate".
-     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" (rebuild target(s)).
+     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:05.57
+Time Elapsed 00:00:05.53

@@ -25,6 +25,9 @@
     <Filter Include="Source Files\Bow">
       <UniqueIdentifier>{9e30faa9-b439-4cd4-af93-4ff4e57617a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ParallelTracking">
+      <UniqueIdentifier>{8d11a959-01ed-4a20-bde1-10950df96a79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
