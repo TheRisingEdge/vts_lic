@@ -85,6 +85,7 @@
     <ClInclude Include="CannyFrameProcessor.h" />
     <ClInclude Include="CodebookSubtractor.h" />
     <ClInclude Include="FeatureTracker.h" />
+    <ClInclude Include="HogClassifier.h" />
     <ClInclude Include="MogSubtractor.h" />
     <ClInclude Include="StableAvgSubtractor.h" />
     <ClInclude Include="StableMog.h" />
@@ -95,6 +96,7 @@
     <ClCompile Include="CannyFrameProcessor.cpp" />
     <ClCompile Include="CodebookSubtractor.cpp" />
     <ClCompile Include="FeatureTracker.cpp" />
+    <ClCompile Include="HogClassifier.cpp" />
     <ClCompile Include="Mog2Subtractor.cpp" />
     <ClCompile Include="MogSubtractor.cpp" />
     <ClCompile Include="StableAvgSubtractor.cpp" />

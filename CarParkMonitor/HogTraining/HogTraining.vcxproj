@@ -89,6 +89,11 @@
   <ItemGroup>
     <ProjectReference Include="..\CpmImpl\CpmImpl.vcxproj">
       <Project>{e32a9054-101f-41c5-b6a5-e3dd185e12f6}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\CpmLib\CpmLib.vcxproj">
       <Project>{6dda55ac-1688-4045-9169-c7188bfceddb}</Project>

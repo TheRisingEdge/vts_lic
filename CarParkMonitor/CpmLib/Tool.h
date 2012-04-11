@@ -13,6 +13,7 @@ private:
 	~Tool(void){}
 public:
 	
+	static void extend(Rect& r, Point dims);
 	static void toCenter(const Point& center, Rect& r);
 	static Point rectCenter(const Rect& r);
 	static bool rectInside(const Rect& r, const Rect& container);

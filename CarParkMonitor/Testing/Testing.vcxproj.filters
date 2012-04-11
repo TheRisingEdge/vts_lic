@@ -27,5 +27,8 @@
     <ClCompile Include="matTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

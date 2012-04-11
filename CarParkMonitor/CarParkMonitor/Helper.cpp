@@ -1,4 +1,5 @@
 #include "Helper.h"
+#include "Draw.h"
 
 
 Helper::Helper(void)
@@ -198,11 +199,27 @@ void Helper::drawAnotatedRect(int nr, const Rect& r, Mat& output )
 {
 	char* s = new char[23];
 	sprintf(s,"%d", nr);
-
+	
 	drawRect(r, output);
 	drawText(s, r.br(), output);
 
 	delete[] s;
+}
+
+void Helper::drawTracks( const vector<track>& tracks, Mat& image )
+{
+	auto it = tracks.begin();
+	auto end = tracks.end();
+	for(;it != end; ++it)
+		drawAnotatedRect(it->id, it->rect, image);		
+}
+
+void Helper::drawDetections( const vector<detection>& detections, Mat& image )
+{
+	auto it = detections.begin();
+	auto end = detections.end();
+	for(;it != end; ++it)
+		drawAnotatedRect(it->id, it->rect, image);		
 }
 
 #pragma endregion converters

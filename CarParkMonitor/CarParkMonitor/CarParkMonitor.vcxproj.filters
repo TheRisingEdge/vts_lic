@@ -25,25 +25,22 @@
     <Filter Include="Source Files\Bow">
       <UniqueIdentifier>{9e30faa9-b439-4cd4-af93-4ff4e57617a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ParallelTracking">
+      <UniqueIdentifier>{e4c8daa6-4ca1-4a33-a2f1-9471690c7064}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Header Files\ParallelTracking">
       <UniqueIdentifier>{8d11a959-01ed-4a20-bde1-10950df96a79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lib">
+      <UniqueIdentifier>{9c2c199b-f538-4453-a9d5-10eb69b609b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lib">
+      <UniqueIdentifier>{0aff8a2d-c7db-4a10-a64e-946a59c1a457}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Importer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Helper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AutoTracker.cpp">
-      <Filter>Source Files\BlobTracking</Filter>
-    </ClCompile>
-    <ClCompile Include="SyncBuffer.cpp">
-      <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
     <ClCompile Include="TrackHistory.cpp">
       <Filter>Source Files\BlobTracking</Filter>
@@ -69,37 +66,43 @@
     <ClCompile Include="Tester.cpp">
       <Filter>Source Files\Bow</Filter>
     </ClCompile>
-    <ClCompile Include="MathHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VehicleClassifier.cpp">
-      <Filter>Source Files\BlobTracking</Filter>
-    </ClCompile>
     <ClCompile Include="KalmanEstimator.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
     <ClCompile Include="EstimatorCollection.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
+    <ClCompile Include="PSubtractor.cpp">
+      <Filter>Source Files\ParallelTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="PDetector.cpp">
+      <Filter>Source Files\ParallelTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="PClassifier.cpp">
+      <Filter>Source Files\ParallelTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="PTracker.cpp">
+      <Filter>Source Files\ParallelTracking</Filter>
+    </ClCompile>
+    <ClCompile Include="Video.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugHelper.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="AutoTracker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Importer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AutoTracker.h">
-      <Filter>Header Files\BlobTracking</Filter>
-    </ClInclude>
-    <ClInclude Include="SyncBuffer.h">
-      <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
     <ClInclude Include="BlobTracker.h">
       <Filter>Header Files\BlobTracking</Filter>
@@ -125,20 +128,38 @@
     <ClInclude Include="Tester.h">
       <Filter>Header Files\Bow</Filter>
     </ClInclude>
-    <ClInclude Include="MathHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VehicleClassifier.h">
-      <Filter>Header Files\BlobTracking</Filter>
-    </ClInclude>
     <ClInclude Include="KalmanEstimator.h">
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
     <ClInclude Include="EstimatorCollection.h">
       <Filter>Header Files\BlobTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="PSubtractor.h">
+      <Filter>Header Files\ParallelTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="PDetector.h">
+      <Filter>Header Files\ParallelTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="PClassifier.h">
+      <Filter>Header Files\ParallelTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="PTracker.h">
+      <Filter>Header Files\ParallelTracking</Filter>
+    </ClInclude>
+    <ClInclude Include="Video.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugHelper.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Importer.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoTracker.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

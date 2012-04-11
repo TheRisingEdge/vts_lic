@@ -39,4 +39,13 @@ bool Tool::isMostlyCircular( const vector<Point>& contour, float treshold )
 	return false;	
 }
 
+void Tool::extend( Rect& r, Point dims )
+{
+	auto tl = r.tl();
+	Point halfSize = Point(dims.x/2, dims.y/2);
+	tl = tl - halfSize;
+
+	r = Rect(tl.x, tl.y, r.width + halfSize.x, r.height + halfSize.y);
+}
+
 

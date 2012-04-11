@@ -25,6 +25,12 @@
     <Filter Include="Source Files\VideoProcessing">
       <UniqueIdentifier>{f1e61af0-dfd6-40d1-b2db-5a8015da1157}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Classifiers">
+      <UniqueIdentifier>{fc5fec3a-e016-466a-a9bd-bec7615fde22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Classifiers">
+      <UniqueIdentifier>{18b8f23f-973e-41e6-ad59-bacd0babe342}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -54,6 +60,9 @@
     <ClInclude Include="StableAvgSubtractor.h">
       <Filter>Header Files\BackgroundSubtraction</Filter>
     </ClInclude>
+    <ClInclude Include="HogClassifier.h">
+      <Filter>Header Files\Classifiers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvgSubtractor.cpp">
@@ -82,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="StableAvgSubtractor.cpp">
       <Filter>Source Files\BackgroundSubtraction</Filter>
+    </ClCompile>
+    <ClCompile Include="HogClassifier.cpp">
+      <Filter>Source Files\Classifiers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

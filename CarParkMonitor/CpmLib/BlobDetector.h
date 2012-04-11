@@ -4,16 +4,14 @@
 
 using namespace cv;
 
-#define BLOB_DRAW 0
+#define BLOB_DRAW 1
 
-typedef struct
+struct DetectorParams
 {
 	Mat frame;
 	Mat foreground;
 	Mat prevFrame;
-	bool filterToRect;
-	Rect filterRect;
-}DetectorParams;
+};
 
 class BlobDetector
 {
@@ -32,5 +30,5 @@ public:
 	BlobDetector(int minWidth = 15, int minHeight = 20);
 	~BlobDetector(){}
 
-	vector<shared_ptr<blob>> detect(DetectorParams params);
+	vector<blob> detect(DetectorParams params);
 };

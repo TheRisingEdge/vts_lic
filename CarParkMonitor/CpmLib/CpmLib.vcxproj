@@ -78,7 +78,9 @@
     <ClInclude Include="BgSubtractorBase.h" />
     <ClInclude Include="Blob.h" />
     <ClInclude Include="BlobDetector.h" />
+    <ClInclude Include="ClassifierBase.h" />
     <ClInclude Include="Content.h" />
+    <ClInclude Include="DisjSets.h" />
     <ClInclude Include="Draw.h" />
     <ClInclude Include="FrameProcessor.h" />
     <ClInclude Include="Loader.h" />

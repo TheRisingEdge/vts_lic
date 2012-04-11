@@ -30,7 +30,7 @@ BlobDetector::BlobDetector(int minWidth, int minHeight)
 	init(minWidth, minHeight, windowName);
 }
 
-vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )
+vector<blob> BlobDetector::detect( DetectorParams params )
 {
 	Mat foreground = params.foreground;
 	Mat frame 	   = params.frame;
@@ -41,7 +41,7 @@ vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )
 
 	findContours( maskCopy, contours, hierarchy, CV_RETR_EXTERNAL , CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );		
 
-	vector<shared_ptr<blob>> foundBlobs;	
+	vector<blob> foundBlobs;	
 	int size = contours.size();
 	for( int i = 0; i < size; i++ )
 	{     
@@ -54,14 +54,12 @@ vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )
 			tl.x > MARGIN && tl.y > MARGIN &&
 			(br.x < (frame.cols - MARGIN)) && (br.y < (frame.rows - MARGIN)))
 		{		
-			blob* b = new blob;
-			b->rect = rect;
-			b->detectorId = i;
-			b->contour = contours[i];
-			b->id = ID_UNDEFINED;			
-			auto pt = shared_ptr<blob>(b);
-
-			foundBlobs.push_back(pt);					
+			blob b;
+			b.rect = rect;
+			b.detectorId = i;
+			b.contour = contours[i];
+			b.id = ID_UNDEFINED;					
+			foundBlobs.push_back(b);					
 		}			
 	}
 
@@ -70,9 +68,9 @@ vector<shared_ptr<blob>> BlobDetector::detect( DetectorParams params )
 #if BLOB_DRAW
 	Mat cl = frame.clone();
 	RNG rng(12345);	
-	for_each(begin(foundBlobs), end(foundBlobs), [&](shared_ptr<blob> b)
+	for_each(begin(foundBlobs), end(foundBlobs), [&](blob& b)
 	{
-		Rect rect = b->rect;
+		Rect rect = b.rect;
 		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
 		rectangle( cl, rect.tl(), rect.br(), color);
 	});

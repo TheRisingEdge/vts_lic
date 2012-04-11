@@ -5,39 +5,35 @@
 
 using namespace cv;
 
-#define FRAME_DRAW 1
+#define FRAME_DRAW    1
 
-typedef struct
+struct AutoTrackerParam
 {
-	char* videoPath;
-	int trainingFrames;
+   char             *videoPath;
+   int              trainingFrames;
 
-	BgSubtractorBase* foregroundSegmentator;
-	BlobDetector* blobDetector;
-	BlobTracker* blobTracker;
-	TrackHistory* trackHistory;
+   BgSubtractorBase *foregroundSegmentator;
+   BlobDetector     *blobDetector;
+   BlobTracker      *blobTracker;
+   TrackHistory     *trackHistory;
+};
 
-}AutoTrackerParam;
-
-class AutoTracker
-{
-
+class AutoTracker {
 private:
-	char* videoPath;
-	BgSubtractorBase* foregroungSegmentator;
-	BlobDetector* blobDetector;
-	BlobTracker* blobTracker;
-	TrackHistory* trackHistory;
+   char             *videoPath;
+   BgSubtractorBase *foregroungSegmentator;
+   BlobDetector     *blobDetector;
+   BlobTracker      *blobTracker;
+   TrackHistory     *trackHistory;
 
-	TrackerParam trackerParam;
+   TrackerParam trackerParam;
 
-	VideoCapture capture;	
-	bool openVideoCapture(int& fps, double& frameDelay);
+   VideoCapture capture;
+   bool openVideoCapture(int& fps, double& frameDelay);
 
 public:
-	AutoTracker(AutoTrackerParam param);
-    ~AutoTracker();
-
-	void run();
-
+	~AutoTracker();
+   AutoTracker(AutoTrackerParam param);
+   
+   void run();
 };

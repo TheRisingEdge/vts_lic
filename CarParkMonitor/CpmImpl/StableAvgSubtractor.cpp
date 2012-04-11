@@ -53,10 +53,12 @@ Mat StableAvgSubtractor::segment(const Mat& frame )
 	cv::accumulateWeighted(grayFrame, background, learningRate, foreground);	//can also pass mask to ignore stationary cars
 
 	Mat temp_foreground_mask;
+	//cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 1);
+	//cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);
 	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 1);
-	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);		
+	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);
 
-#if BG_DRAW
+#if 1
 	imshow(BgSubtractorBase::windowName, foreground);	
 #endif
 

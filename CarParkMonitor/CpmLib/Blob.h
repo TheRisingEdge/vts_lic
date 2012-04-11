@@ -8,24 +8,20 @@ using namespace std;
 
 #define ID_UNDEFINED -1
 
-typedef struct
+struct blob
 {
 	int id;
 	int detectorId;		
 	Rect rect;	
 	vector<Point> contour;
+};
 
-	//vector<int> inferedIds;
-	//vector<Point2f> trackedPoints;
-}blob;
-
-typedef struct
+struct carDetection
 {
 	int id;
 	int blobId;
 	Rect rect;
-
-}carDetection;
+};
 
 class IdGenerator
 {
@@ -39,8 +35,8 @@ public:
 
 	int nextId()
 	{
-		current++;
-		return current;
+		int next = current++;
+		return next;
 	}
 
 	void releaseId(int id){}

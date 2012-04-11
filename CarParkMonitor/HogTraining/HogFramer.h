@@ -56,8 +56,9 @@ private:
 	void generateNegativeSamples( const Rect& r, const Mat& frame, int regId = 0);
 
 	void savePositive(const Mat& regionOnRoi, const Mat& regionOnBackground, int regId = 0);
-	void savePositiveAndNegatives( vector<shared_ptr<blob>> blobs,const Rect& crop,const Mat& roi, const Mat& roiForeground, const Mat& frame, int regId = 0);
+	void savePositiveAndNegatives( vector<blob> blobs,const Rect& crop,const Mat& roi, const Mat& roiForeground, const Mat& frame, int regId = 0);
 	void initPathCounters(int len);
+	void saveLastRunConfig();
 
 public:
 	static DrawingControl drawingControl;

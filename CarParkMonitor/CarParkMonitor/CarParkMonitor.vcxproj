@@ -86,15 +86,17 @@
     <ClCompile Include="EstimatorCollection.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="KalmanEstimator.cpp" />
-    <ClCompile Include="MathHelper.cpp" />
+    <ClCompile Include="PClassifier.cpp" />
+    <ClCompile Include="PDetector.cpp" />
+    <ClCompile Include="PSubtractor.cpp" />
+    <ClCompile Include="PTracker.cpp" />
     <ClCompile Include="TrackHistory.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PlsaComponent.cpp" />
     <ClCompile Include="SvmComponent.cpp" />
-    <ClCompile Include="SyncBuffer.cpp" />
     <ClCompile Include="Tester.cpp" />
-    <ClCompile Include="VehicleClassifier.cpp" />
+    <ClCompile Include="Video.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
@@ -106,15 +108,17 @@
     <ClInclude Include="EstimatorCollection.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="KalmanEstimator.h" />
-    <ClInclude Include="MathHelper.h" />
+    <ClInclude Include="PClassifier.h" />
+    <ClInclude Include="PDetector.h" />
+    <ClInclude Include="PSubtractor.h" />
+    <ClInclude Include="PTracker.h" />
     <ClInclude Include="TrackHistory.h" />
     <ClInclude Include="Importer.h" />
     <ClInclude Include="PlsaComponent.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SvmComponent.h" />
-    <ClInclude Include="SyncBuffer.h" />
     <ClInclude Include="Tester.h" />
-    <ClInclude Include="VehicleClassifier.h" />
+    <ClInclude Include="Video.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CarParkMonitor.rc" />

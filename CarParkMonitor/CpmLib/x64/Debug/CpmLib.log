@@ -1,4 +1,4 @@
-﻿Build started 4/3/2012 9:15:01 PM.
+﻿Build started 4/12/2012 1:46:34 AM.
      1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "x64\Debug\VtLib.lastbuildstate".
@@ -24,7 +24,7 @@
      1>Content.cpp(22): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
          BlobDetector.cpp
-     1>e:\workspace\github\cpmlic\carparkmonitor\cpmlib\BlobDetector.h(36): warning C4520: 'BlobDetector' : multiple default constructors specified
+     1>e:\workspace\github\cpmlic\carparkmonitor\cpmlib\BlobDetector.h(34): warning C4520: 'BlobDetector' : multiple default constructors specified
      1>BlobDetector.cpp(45): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
          BgSubtractorBase.cpp
          Generating Code...
@@ -45,4 +45,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.93
+Time Elapsed 00:00:06.03

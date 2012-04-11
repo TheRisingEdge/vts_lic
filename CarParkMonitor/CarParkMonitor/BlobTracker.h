@@ -2,66 +2,69 @@
 #include "Blob.h"
 #include "TrackHistory.h"
 
-#define NO_MATCH -1
+#define NO_MATCH    -1
 
-typedef struct
+struct TrackerParam
 {
-	int frameCount;
+   int                                        frameCount;
 
-	Mat frame;
-	Mat grayFrame;	
-	Mat foreground;
-				
-	IdGenerator* generator;
-	vector<blob*> detectedBlobs;
+   Mat                                        frame;
+   Mat                                        grayFrame;
+   Mat                                        foreground;
 
-	int frameBufferSize;
-	vector<Mat> frameBuffer;
-	vector<Mat> grayFrameBuffer;
-	vector<Mat> foregroundBuffer;
-	vector<vector<shared_ptr<blob>>> blobBuffer;
-	vector<vector<shared_ptr<carDetection>>> vehicleDetectionBuffer;
+   IdGenerator                                *generator;
+   vector<blob *>                             detectedBlobs;
 
-}TrackerParam;
+   int                                        frameBufferSize;
+   vector<Mat>                                frameBuffer;
+   vector<Mat>                                grayFrameBuffer;
+   vector<Mat>                                foregroundBuffer;
+   vector<vector<shared_ptr<blob> > >         blobBuffer;
+   vector<vector<shared_ptr<carDetection> > > vehicleDetectionBuffer;
+};
 
-typedef struct
+struct TrackResult
 {
-	vector<shared_ptr<blob>> newBlobs;
-	vector<shared_ptr<blob>> prevLostBlobs;
+   vector<shared_ptr<blob> >         newBlobs;
+   vector<shared_ptr<blob> >         prevLostBlobs;
 
-	vector<shared_ptr<carDetection>> prevLostVehicleDetections;
-	vector<shared_ptr<carDetection>> newVehicleDetections;
+   vector<shared_ptr<carDetection> > prevLostVehicleDetections;
+   vector<shared_ptr<carDetection> > newVehicleDetections;
 
-	void init()
-	{
-		newBlobs.clear();
-		prevLostBlobs.clear();
-		prevLostVehicleDetections.clear();
-		newVehicleDetections.clear();
-	}
+   void init()
+   {
+      newBlobs.clear();
+      prevLostBlobs.clear();
+      prevLostVehicleDetections.clear();
+      newVehicleDetections.clear();
+   }
+};
 
-}TrackResult;
-
-class BlobTracker
-{
+class BlobTracker {
 private:
-	TrackHistory* trackHistory;
-	FeatureDetector* featureDetector;
-	DescriptorExtractor* descriptorExtractor;
-	TrackerParam trackerParam;
-	
-	void forewardBackwardTrack(Rect r, vector<Mat> frames);
-	void forewardTrack(vector<Point2f> points, vector<Mat> frames, vector<Point2f>* result);
-	void trackBackward(vector<Point2f> futurePoints, vector<Mat> frames, vector<Point2f>* result);
-	void filterInliers(vector<Point2f> startPoints, vector<Point2f> backTrackedPoints, vector<Point2f>& result);
-	vector<Point2f> getGoodFeatures(Mat image, Mat mask);
+   TrackHistory        *trackHistory;
+   FeatureDetector     *featureDetector;
+   DescriptorExtractor *descriptorExtractor;
+   TrackerParam        trackerParam;
 
-	void debugDraw(const char* message, vector<Point2f> points, const Mat& output);
+   void forewardBackwardTrack(Rect r, vector<Mat> frames);
+   void forewardTrack(vector<Point2f> points, vector<Mat> frames,
+                      vector<Point2f> *result);
+   void trackBackward(vector<Point2f> futurePoints, vector<Mat> frames,
+                      vector<Point2f> *result);
+   void filterInliers(vector<Point2f>  startPoints,
+                      vector<Point2f>  backTrackedPoints,
+                      vector<Point2f>& result);
+
+   vector<Point2f> getGoodFeatures(Mat image, Mat mask);
+
+   void debugDraw(const char *message, vector<Point2f> points,
+                  const Mat& output);
 
 public:
-	BlobTracker(void);
-	BlobTracker(TrackHistory* trackHistory);
-	~BlobTracker(void);	
+   BlobTracker(void);
+   BlobTracker(TrackHistory *trackHistory);
+   ~BlobTracker(void);
 
-	void track(TrackerParam params, TrackResult* result);	
+   void track(TrackerParam params, TrackResult *result);
 };

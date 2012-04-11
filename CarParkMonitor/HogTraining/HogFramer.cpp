@@ -19,10 +19,9 @@ vector<Rect> HogFramer::monitoredRegions;
 static const double pi = 3.1416;	
 const char* frameWindowName = "frame";
 
-static const int width = 80;
+static const int width = 64;
 static const int height = 64;
-
-static const int cropHeight = 90;
+static const int cropHeight = 80;
 
 static const int NEG_INDEX = 0;
 static const int POSW_INDEX = 1;
@@ -31,12 +30,12 @@ static const int POSB_INDEX = 2;
 int** HogFramer::pathCounters;
 
 
-bool isNonCircular(shared_ptr<blob> b)
+bool isNonCircular(const blob& b)
 {	
-	if(!b || b->contour.size() < 20)
+	if(b.contour.size() < 20) 
 		return true;
 
-	return Tool::isMostlyCircular(b->contour);
+	return Tool::isMostlyCircular(b.contour);
 }
 
 HogFramer::HogFramer( HogFramerParams params ):FrameProcessor("Hog Extractor")
@@ -52,6 +51,8 @@ HogFramer::HogFramer( HogFramerParams params ):FrameProcessor("Hog Extractor")
 	negCount = 0;
 	whiteCount = 0;
 	blackCount = 0;
+
+	saveLastRunConfig();
 }
 
 void HogFramer::process( const Mat& frame )
@@ -108,7 +109,7 @@ void HogFramer::process( const Mat& frame )
 				DetectorParams detParam;
 				detParam.foreground = foreground;
 				detParam.frame = roi;				
-				vector<shared_ptr<blob>> blobs =  ext.detector->detect(detParam);
+				vector<blob> blobs =  ext.detector->detect(detParam);
 				
 				std::remove_if(begin(blobs), end(blobs),isNonCircular);				
 				savePositiveAndNegatives(blobs,ext.rect, roi, background, frame, ext.id);
@@ -120,38 +121,37 @@ void HogFramer::process( const Mat& frame )
 	frameClone.release();
 }
 
-void HogFramer::savePositiveAndNegatives( vector<shared_ptr<blob>> blobs,const Rect& crop,const Mat& roi, const Mat& roiBackground ,const Mat& frame, int regId)
+void HogFramer::savePositiveAndNegatives( vector<blob> blobs,const Rect& crop,const Mat& roi, const Mat& roiBackground ,const Mat& frame, int regId)
 {
-	for_each(begin(blobs), end(blobs), [&](shared_ptr<blob> b)
+	for_each(begin(blobs), end(blobs), [&](const blob& b)
 	{				
-		if(b){
-			Point cropTopLeft = crop.tl();
-			Rect blobRect = b->rect;
-			Point centerOnCrop = Tool::rectCenter(blobRect);
-			Point centerOnFrame = cropTopLeft + centerOnCrop;
+		
+		Point cropTopLeft = crop.tl();
+		Rect blobRect = b.rect;
+		Point centerOnCrop = Tool::rectCenter(blobRect);
+		Point centerOnFrame = cropTopLeft + centerOnCrop;
 
-			Rect cropRect = Rect(0,0, width, height);
-			Tool::toCenter(centerOnFrame, cropRect);
+		Rect cropRect = Rect(0,0, width, height);
+		Tool::toCenter(centerOnFrame, cropRect);
 
-			if(Tool::rectInside(cropRect, crop))
-			{
-				Point centerOnRoi = Tool::rectCenter(blobRect);
-				Rect rectOnRoi = Rect(0, 0, width, height);
-				Tool::toCenter(centerOnRoi, rectOnRoi);
+		if(Tool::rectInside(cropRect, crop))
+		{
+			Point centerOnRoi = Tool::rectCenter(blobRect);
+			Rect rectOnRoi = Rect(0, 0, width, height);
+			Tool::toCenter(centerOnRoi, rectOnRoi);
 
-				Mat regionOnRoi = roi(rectOnRoi);
-				//Mat regionOnBackground = roiBackground(rectOnRoi);
+			Mat regionOnRoi = roi(rectOnRoi);
+			//Mat regionOnBackground = roiBackground(rectOnRoi);
 
-				//savePositive(regionOnRoi, regionOnBackground);
-				savePositive(regionOnRoi, Mat(), regId);
+			//savePositive(regionOnRoi, regionOnBackground);
+			savePositive(regionOnRoi, Mat(), regId);
 
-				//imshow("saving", regionOnRoi);
-				//imshow("bb", regionOnBackground);
+			//imshow("saving", regionOnRoi);
+			//imshow("bb", regionOnBackground);
 
-				//generating negative samples centered in the corners of the car detection
-				generateNegativeSamples(cropRect, frame);		
-			}		
-		}		
+			//generating negative samples centered in the corners of the car detection
+			generateNegativeSamples(cropRect, frame);		
+		}					
 	});
 }
 
@@ -242,7 +242,7 @@ void HogFramer::selectMonitorRegions(const Mat& frame)
 		});	
 
 		if(cv::waitKey(100) > 0)
-			break;
+		break;
 	}
 
 	clone.release();
@@ -302,6 +302,15 @@ void HogFramer::initPathCounters( int len )
 		for(int j = 0 ; j < 3; j++)
 			pathCounters[i][j] = 0;
 	}
+}
+
+void HogFramer::saveLastRunConfig()
+{
+	char* path = "./../CarParkMonitor/Content/Assets/lastExtractionConfig.yml";
+	FileStorage f = FileStorage(path, FileStorage::WRITE);
+	f << "width" << width;
+	f << "height" << height;
+	f.release();
 }
 
 
