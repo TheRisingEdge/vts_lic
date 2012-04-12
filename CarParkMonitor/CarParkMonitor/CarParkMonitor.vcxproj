@@ -80,9 +80,7 @@
     <ClCompile Include="AppConfig.cpp" />
     <ClCompile Include="AutoTracker.cpp" />
     <ClCompile Include="BlobTracker.cpp" />
-    <ClCompile Include="BowComponent.cpp" />
     <ClCompile Include="DebugHelper.cpp" />
-    <ClCompile Include="DrawComponent.cpp" />
     <ClCompile Include="EstimatorCollection.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="KalmanEstimator.cpp" />
@@ -93,18 +91,13 @@
     <ClCompile Include="TrackHistory.cpp" />
     <ClCompile Include="Importer.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PlsaComponent.cpp" />
-    <ClCompile Include="SvmComponent.cpp" />
-    <ClCompile Include="Tester.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AppConfig.h" />
     <ClInclude Include="AutoTracker.h" />
     <ClInclude Include="BlobTracker.h" />
-    <ClInclude Include="BowComponent.h" />
     <ClInclude Include="DebugHelper.h" />
-    <ClInclude Include="DrawComponent.h" />
     <ClInclude Include="EstimatorCollection.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="KalmanEstimator.h" />
@@ -114,10 +107,7 @@
     <ClInclude Include="PTracker.h" />
     <ClInclude Include="TrackHistory.h" />
     <ClInclude Include="Importer.h" />
-    <ClInclude Include="PlsaComponent.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="SvmComponent.h" />
-    <ClInclude Include="Tester.h" />
     <ClInclude Include="Video.h" />
   </ItemGroup>
   <ItemGroup>

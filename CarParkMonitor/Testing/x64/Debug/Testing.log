@@ -1,4 +1,4 @@
-﻿Build started 4/12/2012 1:47:13 AM.
+﻿Build started 4/12/2012 2:55:08 PM.
      1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\Testing\Testing.vcxproj" on node 3 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\Testing.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -28,4 +28,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.67
+Time Elapsed 00:00:01.66

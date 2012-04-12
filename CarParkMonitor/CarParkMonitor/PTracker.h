@@ -23,6 +23,7 @@ private:
 	BgSubtractorBase* subtractor;
 	ClassifierBase* classifier;	
 	track initTrackFromDetection(const detection& d,IdGenerator& gen);
+	void trackLK(track& tr, vector<Mat> frames, vector<Mat> foregrounds);
 
 public:
 	~PTracker(){};

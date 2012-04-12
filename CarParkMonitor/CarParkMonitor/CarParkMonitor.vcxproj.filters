@@ -51,21 +51,6 @@
     <ClCompile Include="AppConfig.cpp">
       <Filter>Source Files\Bow</Filter>
     </ClCompile>
-    <ClCompile Include="BowComponent.cpp">
-      <Filter>Source Files\Bow</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawComponent.cpp">
-      <Filter>Source Files\Bow</Filter>
-    </ClCompile>
-    <ClCompile Include="PlsaComponent.cpp">
-      <Filter>Source Files\Bow</Filter>
-    </ClCompile>
-    <ClCompile Include="SvmComponent.cpp">
-      <Filter>Source Files\Bow</Filter>
-    </ClCompile>
-    <ClCompile Include="Tester.cpp">
-      <Filter>Source Files\Bow</Filter>
-    </ClCompile>
     <ClCompile Include="KalmanEstimator.cpp">
       <Filter>Source Files\BlobTracking</Filter>
     </ClCompile>
@@ -111,21 +96,6 @@
       <Filter>Header Files\BlobTracking</Filter>
     </ClInclude>
     <ClInclude Include="AppConfig.h">
-      <Filter>Header Files\Bow</Filter>
-    </ClInclude>
-    <ClInclude Include="BowComponent.h">
-      <Filter>Header Files\Bow</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawComponent.h">
-      <Filter>Header Files\Bow</Filter>
-    </ClInclude>
-    <ClInclude Include="PlsaComponent.h">
-      <Filter>Header Files\Bow</Filter>
-    </ClInclude>
-    <ClInclude Include="SvmComponent.h">
-      <Filter>Header Files\Bow</Filter>
-    </ClInclude>
-    <ClInclude Include="Tester.h">
       <Filter>Header Files\Bow</Filter>
     </ClInclude>
     <ClInclude Include="KalmanEstimator.h">

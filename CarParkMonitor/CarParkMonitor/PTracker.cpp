@@ -77,11 +77,17 @@ void PTracker::start()
 			//merge detection(if exists) with short term tracker, thus providing measurement for Kalman filter
 			//if short term tracker is unreliable then use Kalman to track
 
+			auto it = tracks.begin();
+			auto end = tracks.end();
+			for(; it != end; ++it)
+			{
+				trackLK(*(it), frameBuffer, foregroundBuffer);
+			}
+
 			std::map<int, vector<int>> trMatches; 
 			std::map<int, vector<int>> detMatches;
-			std::map<int, bool> matches;
 
-			for_each(begin(tracks), end(tracks), [&](track& tr){
+			for_each(begin(tracks), std::end(tracks), [&](track& tr){
 				int minArea = 0.5 * tr.rect.area();
 
 				auto dit = detections.begin();
@@ -101,7 +107,7 @@ void PTracker::start()
 				}					
 			});
 
-			for_each(begin(detections), end(detections), [&](detection& d){
+			for_each(begin(detections), std::end(detections), [&](detection& d){
 				auto it = detMatches.find(d.id);
 				if(it == detMatches.end())
 				{
@@ -147,4 +153,52 @@ track PTracker::initTrackFromDetection( const detection& d,IdGenerator& gen )
 {
 	track t = {gen.nextId(), d.rect};
 	return t;
+}
+
+const int XCount = 15;
+const int YCount = 15;
+
+void PTracker::trackLK( track& tr, vector<Mat> frames, vector<Mat> foregrounds )
+{
+
+	Mat currentFrame = frames[0];
+	Mat currentForeground = foregrounds[0];
+	Mat trackForeground = currentForeground(tr.rect);
+
+	//Mat currentGray;
+	//Mat nextGray;	
+	//cv::cvtColor(frames[0], currentGray, CV_BGR2GRAY);
+	//cv::cvtColor(frames[1], nextGray, CV_BGR2GRAY);
+
+	//get points in grid pattern from foreground
+	int xoffset = tr.rect.width / XCount;
+	int yoffset = tr.rect.height/ YCount;
+
+	vector<Point> trackedPoints; 
+	//for(int i = 0; i < XCount; i++)
+	//	for(int j = 0; j < YCount; j++)
+	//	{
+	//		int x = xoffset*i;
+	//		int y = yoffset*j;
+	//		char value = trackForeground.at<char>(x,y);
+	//		if( value == 255)
+	//			trackedPoints.push_back(Point(x,y));			
+	//	}
+
+	for(int i = 0; i < trackForeground.rows; i++)
+		for(int j = 0; j < trackForeground.cols; j++)
+		{
+			char value = trackForeground.at<char>(i,j);
+			if( value == 255)
+				trackedPoints.push_back(Point(i,j));			
+		}
+
+	cout << trackForeground << endl;
+
+	Mat fclone = currentFrame(tr.rect).clone();
+	Helper::drawPoints(trackedPoints, fclone);
+	imshow("tracked points", fclone);
+	imshow("track foreground", trackForeground);
+	cv::waitKey();
+	fclone.release();
 }

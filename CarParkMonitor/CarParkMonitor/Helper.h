@@ -8,29 +8,15 @@ using namespace cv;
 class Helper
 {
 public:
-	Helper(void);
-	~Helper(void);
+	Helper(){};
+	~Helper(){};
 
-	static Mat_<float> filterColumns(Mat_<float> origin, int* columnsKept, int count);
-
-	static float** MatToFloats(Mat_<float> m);
-	static Mat_<float> floatsToMat(float** data, int cols, int rows);		
-
-	static Mat_<int> intArrayToMat(int* arr, int len);
-	static int* MatToIntArray(Mat_<int> mat, int* len);
-
-	static void writeMatVec( FileStorage f, const char* baseKey, vector<Mat> carDescriptors );
-	static void readMatVec( FileStorage f, const char* baseKey, vector<Mat>* carDescriptors );
-
-	static void writeKeypointCollectionVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>> carKeypoints );
-	static void readKeypointCollectionVec( FileStorage f,const char* sizeKey, const char* baseKey, vector<vector<KeyPoint>>* carKeypoints );
-	
 	static Mat concatImages(Mat img1, Mat img2);
 	static void drawText(const char* text,const Point& origin, Mat& output);
 	static void drawBlob(const carDetection* b, Mat& output);
 	static void drawRect(const Rect& r, Mat& output);
 	static void drawAnotatedRect(int nr,const Rect& r, Mat& output);
-
+	static void drawPoints(const vector<Point> points, Mat& output);
 	static void drawTracks(const vector<track>& tracks, Mat& image);
 	static void drawDetections(const vector<detection>& detections, Mat& image);
 };
