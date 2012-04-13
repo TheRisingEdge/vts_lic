@@ -48,4 +48,21 @@ void Tool::extend( Rect& r, Point dims )
 	r = Rect(tl.x, tl.y, r.width + halfSize.x, r.height + halfSize.y);
 }
 
+float Tool::median( float* A, int length )
+{
+	int index = (int)(length / 2);
+	std::sort(A, A + length);
 
+	if (length % 2 == 0) {
+		return (A[index] + A[index + 1]) / 2;
+	}
+	else {
+		return A[index];
+	}
+}
+
+void Tool::moveRect( Rect& r, float x, float y )
+{
+	auto tl = r.tl();
+	r = Rect(tl.x + x, tl.y + y, r.width, r.height);
+}

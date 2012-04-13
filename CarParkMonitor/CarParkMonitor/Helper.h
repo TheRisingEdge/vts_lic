@@ -17,6 +17,7 @@ public:
 	static void drawRect(const Rect& r, Mat& output);
 	static void drawAnotatedRect(int nr,const Rect& r, Mat& output);
 	static void drawPoints(const vector<Point> points, Mat& output);
+	static void drawFPoints(const vector<Point2f> points, Mat& output);
 	static void drawTracks(const vector<track>& tracks, Mat& image);
-	static void drawDetections(const vector<detection>& detections, Mat& image);
+	static void drawDetections(const vector<detection>& detections, Mat& image);	
 };

@@ -13,6 +13,8 @@ private:
 	~Tool(void){}
 public:
 	
+	static void moveRect(Rect& r, float x, float y);
+	static float median(float* arr, int len);
 	static void extend(Rect& r, Point dims);
 	static void toCenter(const Point& center, Rect& r);
 	static Point rectCenter(const Rect& r);

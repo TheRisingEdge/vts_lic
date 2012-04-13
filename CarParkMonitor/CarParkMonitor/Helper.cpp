@@ -72,7 +72,16 @@ void Helper::drawDetections( const vector<detection>& detections, Mat& image )
 		drawAnotatedRect(it->id, it->rect, image);		
 }
 
+
 void Helper::drawPoints( const vector<Point> points, Mat& output )
+{
+	auto it = points.begin();
+	auto end = points.end();
+	for(; it != end ; ++it)
+		cv::circle(output, *it, 2, Scalar(255,0,0));
+}
+
+void Helper::drawFPoints( const vector<Point2f> points, Mat& output )
 {
 	auto it = points.begin();
 	auto end = points.end();

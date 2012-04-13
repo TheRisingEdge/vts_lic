@@ -23,7 +23,13 @@ private:
 	BgSubtractorBase* subtractor;
 	ClassifierBase* classifier;	
 	track initTrackFromDetection(const detection& d,IdGenerator& gen);
-	void trackLK(track& tr, vector<Mat> frames, vector<Mat> foregrounds);
+	vector<Point2f> secondFrameTrackedPoints;
+
+	void trackLK(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds);	
+	vector<Point2f> forewardTrack(vector<Point2f> points, vector<Mat> frames);
+	vector<Point2f> filterInliers(const vector<Point2f>& startPoints,const vector<Point2f>& backTrackedPoints, float treshold = 1.0);
+
+	
 
 public:
 	~PTracker(){};
