@@ -12,8 +12,19 @@ struct model
 struct track
 {
 	int id;
-	Rect rect;
+	Rect_<float> rectf;
 	model model;
+
+	void assign(Rect rect)
+	{
+		Point2f tl = rect.tl();
+		rectf = Rect_<float>(tl.x, tl.y, rect.width, rect.height);
+	}
+
+	Rect asRecti()
+	{
+		return Rect(rectf.x, rectf.y, rectf.width, rectf.height);
+	}
 };
 
 class PTracker

@@ -66,3 +66,25 @@ void Tool::moveRect( Rect& r, float x, float y )
 	auto tl = r.tl();
 	r = Rect(tl.x + x, tl.y + y, r.width, r.height);
 }
+
+void Tool::moveRectf( Rect_<float>& r, float x, float y )
+{
+	auto tl = r.tl();
+	r = Rect(tl.x + x, tl.y + y, r.width, r.height);
+}
+
+void Tool::scaleRectf( Rect_<float>& r, float xscale, float yscale )
+{
+	Point2f center = r.tl() + Point2f(r.width/2, r.height/2);
+	r = Rect_<float>(0,0, r.width*xscale, r.height*yscale);
+	toCenterf(center, r);
+}
+
+void Tool::toCenterf(const Point2f& center, Rect_<float>& r)
+{
+	float width = r.width;
+	float height = r.height;
+
+	Point2f tl = Point2f(center.x - width/2, center.y - height/2);
+	r = Rect(tl.x, tl.y, width, height);	
+}

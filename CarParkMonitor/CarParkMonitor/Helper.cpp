@@ -22,9 +22,9 @@ cv::Mat Helper::concatImages( Mat img1, Mat img2 )
 	return imgResult;
 }
 
-void Helper::drawText( const char* text,const Point& origin, Mat& output )
+void Helper::drawText( const char* text,const Point& origin, Mat& output, Scalar color)
 {	
-	putText( output, text, origin, CV_FONT_HERSHEY_PLAIN, 1.2, Scalar(0, 0, 255));
+	putText( output, text, origin, CV_FONT_HERSHEY_PLAIN, 1.2, color);
 }
 
 void Helper::drawBlob( const carDetection* b, Mat& output )
@@ -39,29 +39,36 @@ void Helper::drawBlob( const carDetection* b, Mat& output )
 	drawText(data,b->rect.tl(), output);
 }
 
-void Helper::drawRect( const Rect& r, Mat& output )
+void Helper::drawRect( const Rect& r, Mat& output, Scalar color)
 {
-	Scalar color = Scalar( 0, 255, 0 );
 	rectangle( output, r.tl(), r.br(), color);
 }
 
-void Helper::drawAnotatedRect(int nr, const Rect& r, Mat& output )
+void Helper::drawAnotatedRect(int nr, const Rect& r, Mat& output, Scalar color )
 {
 	char* s = new char[20];
 	sprintf(s,"%d", nr);
 	
-	drawRect(r, output);
-	drawText(s, r.br(), output);
+	drawRect(r, output, color);
+	drawText(s, r.br(), output, color);
 
 	delete[] s;
 }
 
-void Helper::drawTracks( const vector<track>& tracks, Mat& image )
+void Helper::drawTracks(vector<track>& tracks, Mat& output, Scalar color )
 {
 	auto it = tracks.begin();
 	auto end = tracks.end();
 	for(;it != end; ++it)
-		drawAnotatedRect(it->id, it->rect, image);		
+	{
+		auto rect = it->asRecti();
+		drawRect(rect, output, color);
+
+		char* text = new char[50];
+		itoa(it->id, text, 10);		
+		drawText(text, rect.tl(), output, color);
+		delete[] text;
+	}		
 }
 
 void Helper::drawDetections( const vector<detection>& detections, Mat& image )
@@ -87,6 +94,12 @@ void Helper::drawFPoints( const vector<Point2f> points, Mat& output )
 	auto end = points.end();
 	for(; it != end ; ++it)
 		cv::circle(output, *it, 2, Scalar(255,0,0));
+}
+
+void Helper::drawRectF( const Rect_<float>& r, Mat& output )
+{
+	Scalar color = Scalar( 0, 255, 0 );
+	rectangle( output, r.tl(), r.br(), color);
 }
 
 #pragma endregion converters

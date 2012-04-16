@@ -24,3 +24,8 @@ void Draw::rectVector( const vector<Rect>& rects, Mat& image, Scalar color /*= S
 		Draw::rect(*it, image, color);
 	}
 }
+
+void Draw::rectf( const Rect_<float>& r, Mat& image, Scalar color /*= Scalar(0,255,0)*/ )
+{
+	rectangle( image, r.tl(), r.br(), color);
+}

@@ -39,9 +39,6 @@
     <ClInclude Include="Blob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Draw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -52,6 +49,9 @@
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
     <ClInclude Include="DisjSets.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Draw.h">
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
   </ItemGroup>
