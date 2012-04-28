@@ -79,32 +79,26 @@
   <ItemGroup>
     <ClCompile Include="AutoTracker.cpp" />
     <ClCompile Include="DebugHelper.cpp" />
-    <ClCompile Include="EstimatorCollection.cpp" />
     <ClCompile Include="Helper.cpp" />
-    <ClCompile Include="KalmanEstimator.cpp" />
     <ClCompile Include="KalmanFilter2D.cpp" />
     <ClCompile Include="Matcher2D.cpp" />
     <ClCompile Include="PClassifier.cpp" />
     <ClCompile Include="PDetector.cpp" />
     <ClCompile Include="PSubtractor.cpp" />
     <ClCompile Include="PTracker.cpp" />
-    <ClCompile Include="TrackHistory.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AutoTracker.h" />
     <ClInclude Include="DebugHelper.h" />
-    <ClInclude Include="EstimatorCollection.h" />
     <ClInclude Include="Helper.h" />
-    <ClInclude Include="KalmanEstimator.h" />
     <ClInclude Include="KalmanFilter2D.h" />
     <ClInclude Include="Matcher2D.h" />
     <ClInclude Include="PClassifier.h" />
     <ClInclude Include="PDetector.h" />
     <ClInclude Include="PSubtractor.h" />
     <ClInclude Include="PTracker.h" />
-    <ClInclude Include="TrackHistory.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TrackMatcher.h" />
     <ClInclude Include="Video.h" />

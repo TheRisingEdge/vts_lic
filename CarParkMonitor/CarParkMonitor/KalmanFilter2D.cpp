@@ -72,6 +72,7 @@ KalmanResult2D KalmanFilter2D::predict()
 	Mat estimation = filter.predict();
 	KalmanResult2D result;
 	mapMatToResult(estimation, result);
+	lastState = result;
 	return result;
 }
 
@@ -96,6 +97,7 @@ KalmanResult2D KalmanFilter2D::update( KalmanInput2D& input )
 {
 	predict();
 	auto estimation = correct(input);
+	lastState = estimation;
 	return estimation;
 }
 

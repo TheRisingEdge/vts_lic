@@ -14,6 +14,7 @@ private:
 public:
 	
 	static void scaleRectf(Rect_<float>& r, float xscale, float yscale);
+	static void scaleRect(Rect& r, float xscale, float yscale);
 	static void moveRectf(Rect_<float>& r, float x, float y);
 	static void moveRect(Rect& r, float x, float y);
 	static float median(float* arr, int len);

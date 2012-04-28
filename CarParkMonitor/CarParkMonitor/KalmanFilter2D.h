@@ -28,9 +28,8 @@ struct KalmanResult2D
 	float wy;
 
 	Rect asRect() const
-	{
-		
-		Rect r(centerX - width / 2 + 0.5 , centerY - height / 2, width, height + 0.5);
+	{		
+		Rect r(centerX - width/2, centerY - height/2, width, height);
 		return r;
 	}
 };
@@ -46,6 +45,7 @@ public:
 	~KalmanFilter2D(){}
 
 	void init(KalmanInput2D& input);
+	KalmanResult2D lastState;
 
 	KalmanResult2D predict();
 	KalmanResult2D correct(KalmanInput2D& input);

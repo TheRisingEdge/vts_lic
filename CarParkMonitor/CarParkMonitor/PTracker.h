@@ -8,6 +8,7 @@
 class PTracker
 {
 private:
+	Rect frameRect;
 	int frameCount;
 	Video& video;
 	BgSubtractorBase* subtractor;
@@ -17,8 +18,8 @@ private:
 	vector<track> tracks;	
 	std::map<int, shared_ptr<KalmanFilter2D> > kalmanFilters;
 
-	track initTrackFromDetection(const detection& d,IdGenerator& gen);
-	track initializeTrack(detection& det, IdGenerator& idGenerator);
+	track initTrackFromDetection(const detection& d,IdGenerator& gen, Mat& frame);
+	track initializeTrack(detection& det, IdGenerator& idGenerator, Mat& grayFrame);
 	void deleteTrack(track& tr);
 
 	vector<Mat> frameBuffer;
@@ -28,9 +29,11 @@ private:
 	bool shiftBuffers(Mat frame);
 	bool trackLucasKanade(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect, Mat& output);		
 	bool predictKalman(track& tr, Rect& predictedRect);
-	void forwardTrack(track& tr,Rect& lkRect,Rect& kalmanRect,vector<Mat> frameBuffer);
+	void forwardKalman(track& tr);
+	void mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr,Rect& lkRect,Rect& kalmanRect,vector<Mat> frameBuffer);
+	Mat lbpHist(Mat& grayFrame);
 
-	void updateKalman(track& tr);
+	void correctKalman(track& tr);
 	bool trackHasExited(track& tr, Mat frame);
 
 public:

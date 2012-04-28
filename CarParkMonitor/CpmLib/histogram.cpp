@@ -36,13 +36,13 @@ void lbp::spatial_histogram(const Mat& src, Mat& hist, int numPatterns, const Si
 	int width = src.cols;
 	int height = src.rows;
 	vector<Mat> histograms;
-	for(int x=0; x < width - window.width; x+=(window.width-overlap)) {
-		for(int y=0; y < height-window.height; y+=(window.height-overlap)) {
+	for(int x=0; x <= width - window.width; x+=(window.width-overlap)) {
+		for(int y=0; y <= height-window.height; y+=(window.height-overlap)) {
 			Mat cell = Mat(src, Rect(x,y,window.width, window.height));
 			histograms.push_back(histogram(cell, numPatterns));
 		}
 	}
-	hist.create(1, histograms.size()*numPatterns, CV_32SC1);
+	hist = Mat_<int>(1, histograms.size()*numPatterns);
 	// i know this is a bit lame now... feel free to make this a bit more efficient...
 	for(int histIdx=0; histIdx < histograms.size(); histIdx++) {
 		for(int valIdx = 0; valIdx < numPatterns; valIdx++) {

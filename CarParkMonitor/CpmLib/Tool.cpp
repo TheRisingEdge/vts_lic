@@ -82,6 +82,14 @@ void Tool::scaleRectf( Rect_<float>& r, float xscale, float yscale )
 	toCenterf(center, r);
 }
 
+void Tool::scaleRect( Rect& r, float xscale, float yscale )
+{
+	Point center = r.tl() + Point(r.width/2, r.height/2);
+	r = Rect(0,0, r.width*xscale, r.height*yscale);
+	toCenter(center, r);
+}
+
+
 void Tool::toCenterf(const Point2f& center, Rect_<float>& r)
 {
 	float width = r.width;
@@ -90,3 +98,4 @@ void Tool::toCenterf(const Point2f& center, Rect_<float>& r)
 	Point2f tl = Point2f(center.x - width/2, center.y - height/2);
 	r = Rect(tl.x, tl.y, width, height);	
 }
+
