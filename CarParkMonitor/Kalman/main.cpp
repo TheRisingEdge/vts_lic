@@ -8,7 +8,7 @@
 
 using namespace cv;
 using namespace std;
-
+bool onlyPred = false;
 
 struct mouse_info_struct { int x,y; };
 struct mouse_info_struct mouse_info = {-1,-1}, last_mouse;
@@ -28,10 +28,10 @@ void on_mouse(int event, int x, int y, int flags, void* param) {
 
 // plot points
 #define drawCross( rectCenter, color, d )                                 \
-	line( img, Point( rectCenter.centerX - d, rectCenter.centerY - d ),                \
-	Point( rectCenter.centerX + d, rectCenter.centerY + d ), color, 2, CV_AA, 0); \
-	line( img, Point( rectCenter.centerX + d, rectCenter.centerY - d ),                \
-	Point( rectCenter.centerX - d, rectCenter.centerY + d ), color, 2, CV_AA, 0 )
+	line( img, Point( rectCenter.x - d, rectCenter.y - d ),                \
+	Point( rectCenter.x + d, rectCenter.y + d ), color, 2, CV_AA, 0); \
+	line( img, Point( rectCenter.x + d, rectCenter.y - d ),                \
+	Point( rectCenter.x- d, rectCenter.y + d ), color, 2, CV_AA, 0 )
 
 
 int main (int argc, char * const argv[]) {
@@ -57,7 +57,6 @@ int main (int argc, char * const argv[]) {
 			waitKey(30);
 			continue;
 		}
-
 		
 		KF.statePost.at<float>(0) = mouse_info.x;
 		KF.statePost.at<float>(1) = mouse_info.y;
@@ -66,30 +65,19 @@ int main (int argc, char * const argv[]) {
 		KF.statePost.at<float>(4) = 0;
 		KF.statePost.at<float>(5) = 0;
 
-		//KF.statePre.at<float>(0) = mouse_info.x;
-		//KF.statePre.at<float>(1) = mouse_info.y;
-		//KF.statePre.at<float>(2) = 0;
-		//KF.statePre.at<float>(3) = 0;
-		//KF.statePre.at<float>(4) = 0;
-		//KF.statePre.at<float>(5) = 0;
-
-		//KF.transitionMatrix = (Mat_<float>(6, 6) << 
-		//	1,0,1,0,0.5,0,
-		//	0,1,0,1,0,0.5,
-		//	0,0,1,0,1,0,
-		//	0,0,0,1,0,1,
-		//	0,0,0,0,0,0,
-		//	0,0,0,0,0,0);
-
 		KF.transitionMatrix = (Mat_<float>(6, 6) << 
-			1,0,1,0,0,0,
-			0,1,0,1,0,0,
-			0,0,1,0,0,0,
-			0,0,0,1,0,0,
+			1,0,1,0,0.5,0,
+			0,1,0,1,0,0.5,
+			0,0,1,0,1,0,
+			0,0,0,1,0,1,
 			0,0,0,0,1,0,
 			0,0,0,0,0,1);
 
-		setIdentity(KF.measurementMatrix);
+		KF.measurementMatrix = (Mat_<float>(2,6) <<
+			1,0,0,0,0,0,
+			0,1,0,0,0,0
+		);
+
 
 		setIdentity(KF.processNoiseCov, Scalar::all(1e-4));
 		setIdentity(KF.measurementNoiseCov, Scalar::all(1e-1));
@@ -97,33 +85,48 @@ int main (int argc, char * const argv[]) {
 
 		mousev.clear();
 		kalmanv.clear();
-		//randn(KF.statePost, Scalar::all(0), Scalar::all(0.1));
-
+		Point lastPrediction;
+		
 		for(;;)
 		{
 			//            Point statePt(state(0),state(1));
 
-			Mat prediction = KF.predict(); //PREDICTION
+			if(onlyPred)
+			{
+				int a;
+				a = 34;
+			}
+
+			KF.predict(); //PREDICTION
+			Mat prediction = KF.statePre;
 			Point predictPt(prediction.at<float>(0),prediction.at<float>(1));
+			float vx = prediction.at<float>(2);
+			float vy = prediction.at<float>(3);
 
-			measurement(0) = mouse_info.x; //MEASUREMENT
-			measurement(1) = mouse_info.y;
+			lastPrediction = predictPt;
+	
+			if(!onlyPred)
+			{
+				measurement(0) = mouse_info.x; //MEASUREMENT
+				measurement(1) = mouse_info.y;
 
-			Point measPt(measurement(0),measurement(1));
-			mousev.push_back(measPt);
-			// generate measurement
-			//measurement += KF.measurementMatrix*state;
+				Point measPt(measurement(0),measurement(1));
+				mousev.push_back(measPt);
 
-			Mat estimated = KF.correct(measurement);//CORRECT
-			Point statePt(estimated.at<float>(0),estimated.at<float>(1));
-			kalmanv.push_back(statePt);
+				Mat estimated = KF.correct(measurement);//CORRECT
+				Point statePt(estimated.at<float>(0),estimated.at<float>(1));
+				kalmanv.push_back(statePt);
+				drawCross( statePt, Scalar(255,255,255), 5 );
+				line( img, statePt, measPt, Scalar(0,0,255), 3, CV_AA, 0 );
+				line( img, statePt, predictPt, Scalar(0,255,255), 3, CV_AA, 0 );
 
+				drawCross( measPt, Scalar(0,0,255), 5 );
+			}
 			img = Scalar::all(0);
-			drawCross( statePt, Scalar(255,255,255), 5 );
-			drawCross( measPt, Scalar(0,0,255), 5 );
-			            drawCross( predictPt, Scalar(0,255,0), 3 );
-						line( img, statePt, measPt, Scalar(0,0,255), 3, CV_AA, 0 );
-						line( img, statePt, predictPt, Scalar(0,255,255), 3, CV_AA, 0 );
+			drawCross( predictPt, Scalar(0,255,0), 3 );
+			
+			
+	
 
 			for (int i = 0; i < mousev.size()-1; i++) {
 				line(img, mousev[i], mousev[i+1], Scalar(255,255,0), 1);
@@ -133,14 +136,10 @@ int main (int argc, char * const argv[]) {
 			}
 
 
-			//            randn( processNoise, Scalar(0), Scalar::all(sqrt(KF.processNoiseCov.at<float>(0, 0))));
-			//            state = KF.transitionMatrix*state + processNoise;
-
 			imshow( "mouse kalman", img );
 			code = (char)waitKey(100);
-
-			if( code > 0 )
-				break;
+			if(code == 'r')
+				onlyPred = !onlyPred;
 		}
 		if( code == 27 || code == 'q' || code == 'Q' )
 			break;

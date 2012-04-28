@@ -1,4 +1,5 @@
 #include "KalmanEstimator.h"
+#include "Tool.h"
 
 /*======================= KALMAN FILTER =========================*/
 /* State vector is (x,y,w,h,dx,dy,dw,dh). */
@@ -58,8 +59,8 @@ void KalmanEstimator::init( shared_ptr<carDetection> b )
 	this->vehicleId = b->id;
 
 	auto size = b->rect.size();
-	auto center = b->rect.tl() + Point(size.width/2, size.height/2);
-
+	auto center = Tool::rectCenter(b->rect);
+		
 	filter->statePost.at<float>(0) = center.x;
 	filter->statePost.at<float>(1) = center.y;
 	filter->statePost.at<float>(2) = size.width;

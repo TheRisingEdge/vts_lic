@@ -9,7 +9,6 @@ private:
 	char* videoPath;	
 	VideoCapture capture;
 	
-
 public:
 	~Video(){};
 	Video(char* pathToVideo):

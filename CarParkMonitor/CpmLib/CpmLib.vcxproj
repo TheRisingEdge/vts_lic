@@ -83,6 +83,8 @@
     <ClInclude Include="DisjSets.h" />
     <ClInclude Include="Draw.h" />
     <ClInclude Include="FrameProcessor.h" />
+    <ClInclude Include="histogram.h" />
+    <ClInclude Include="lbp.h" />
     <ClInclude Include="Loader.h" />
     <ClInclude Include="Tool.h" />
     <ClInclude Include="VideoProcessor.h" />
@@ -93,6 +95,8 @@
     <ClCompile Include="Content.cpp" />
     <ClCompile Include="Draw.cpp" />
     <ClCompile Include="FrameProcessor.cpp" />
+    <ClCompile Include="histogram.cpp" />
+    <ClCompile Include="lbp.cpp" />
     <ClCompile Include="Loader.cpp" />
     <ClCompile Include="Tool.cpp" />
     <ClCompile Include="VideoProcessor.cpp" />

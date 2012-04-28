@@ -1,55 +1,44 @@
 #pragma once
+#include "Video.h"
 #include "BgSubtractorBase.h"
 #include "ClassifierBase.h"
-#include "Video.h"
-
-
-struct model
-{
-
-};
-
-struct track
-{
-	int id;
-	Rect_<float> rectf;
-	model model;
-
-	void assign(Rect rect)
-	{
-		Point2f tl = rect.tl();
-		rectf = Rect_<float>(tl.x, tl.y, rect.width, rect.height);
-	}
-
-	Rect asRecti()
-	{
-		return Rect(rectf.x, rectf.y, rectf.width, rectf.height);
-	}
-};
+#include "TrackMatcher.h"
+#include "KalmanFilter2D.h"
 
 class PTracker
 {
 private:
+	int frameCount;
 	Video& video;
 	BgSubtractorBase* subtractor;
-	ClassifierBase* classifier;	
+	ClassifierBase* classifier;
+	TrackMatcher* matcher;
+
+	vector<track> tracks;	
+	std::map<int, shared_ptr<KalmanFilter2D> > kalmanFilters;
+
 	track initTrackFromDetection(const detection& d,IdGenerator& gen);
-	vector<Point2f> secondFrameTrackedPoints;
+	track initializeTrack(detection& det, IdGenerator& idGenerator);
+	void deleteTrack(track& tr);
 
-	void trackLK(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds);	
-	vector<Point2f> forewardTrack(vector<Point2f> points, vector<Mat> frames);
-	vector<Point2f> filterInliers(const vector<Point2f>& startPoints,const vector<Point2f>& backTrackedPoints, float treshold = 1.0);
-
-	
+	vector<Mat> frameBuffer;
+	vector<Mat> grayFrameBuffer;
+	vector<Mat> foregroundBuffer;
+	vector<vector<detection>> detectionBuffer;
+	bool shiftBuffers(Mat frame);
+	bool trackLucasKanade(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds, Mat& output);		
+	bool predictKalman(track& tr);
+	void updateKalman(track& tr);
+	bool trackHasExited(track& tr, Mat frame);
 
 public:
 	~PTracker(){};
-	PTracker(Video& vid, BgSubtractorBase* subtr, ClassifierBase* cls):
+	PTracker(Video& vid, BgSubtractorBase* subtr, ClassifierBase* cls, TrackMatcher* mat):
 		video(vid),
 		subtractor(subtr),
-		classifier(cls)	
+		classifier(cls),
+		matcher(mat)
 	{};
-
+	
 	void start();
 };
-

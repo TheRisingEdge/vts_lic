@@ -30,5 +30,8 @@
     <ClCompile Include="main4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="testLBP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

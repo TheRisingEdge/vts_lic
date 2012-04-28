@@ -22,6 +22,8 @@ public:
 	static void drawRect(const Rect& r, Mat& output, Scalar color = Scalar(0,255,0));
 	static void drawAnotatedRect(int nr,const Rect& r, Mat& output, Scalar color = Scalar(0,255,0));
 	
+	static void drawBlobs(vector<blob>& blobs, Mat& output);
+
 	static void drawTracks(vector<track>& tracks, Mat& image, Scalar color = Scalar(255,0,0));
 	static void drawDetections(const vector<detection>& detections, Mat& image);	
 };

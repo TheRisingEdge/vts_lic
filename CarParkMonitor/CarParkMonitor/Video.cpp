@@ -14,9 +14,15 @@ bool Video::openCapture( int& fps, double& frameDelay )
 	return true;
 }
 
+static const Rect crop = Rect(0,105, 480, 268);
 bool Video::read( Mat& frame )
 {
 	frameCount++;
-	return capture.read(frame);
+	if(capture.read(frame))
+	{
+		frame = frame(crop);
+		return true;
+	}		
+	return false;
 }
 

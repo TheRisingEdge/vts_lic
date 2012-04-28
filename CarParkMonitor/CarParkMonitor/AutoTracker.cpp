@@ -13,6 +13,7 @@
 #include "HogClassifier.h"
 #include "Video.h"
 #include "PTracker.h"
+#include "Matcher2D.h"
 
 using namespace Concurrency;
 
@@ -23,14 +24,10 @@ AutoTracker::AutoTracker( AutoTrackerParam param )
 	this->videoPath = param.videoPath;
 	this->foregroungSegmentator = param.foregroundSegmentator;
 	this->blobDetector = param.blobDetector;
-	this->blobTracker = param.blobTracker;
-	this->trackHistory = param.trackHistory;
 
 	assert(this->videoPath);
 	assert(this->foregroungSegmentator);
 	assert(this->blobDetector);
-	assert(this->blobTracker);
-	assert(this->trackHistory);
 }
 
 AutoTracker::~AutoTracker()
@@ -78,7 +75,8 @@ void AutoTracker::run()
 	//agent::wait(&pdetector);
 	//agent::wait(&pclassifier);
 
+	//subtractor = new AvgSubtractor();
 	Video vid = Video(videoPath);
-	PTracker tracker = PTracker(vid, subtractor, classifier);
+	PTracker tracker = PTracker(vid, subtractor, classifier, new Matcher2D());
 	tracker.start();
 }

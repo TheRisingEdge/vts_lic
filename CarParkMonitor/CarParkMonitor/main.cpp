@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "AutoTracker.h"
 #include "Content.h"
-#include "AppConfig.h"
 #include "MogSubtractor.h"
 #include "CodebookSubtractor.h"
 #include "AvgSubtractor.h"
@@ -10,18 +9,12 @@
 #pragma region mymain
 int main(int argc, char** argv)
 {
-	AppConfig::load();
-
 	char* videoPath = Content::videoFile(argv[1]);
 
 	AutoTrackerParam param;
 	param.videoPath = videoPath;
 	param.foregroundSegmentator = new MogSubtractor();//new AvgSubtractor("avg-subtractor");
 	param.blobDetector = new BlobDetector(15,20,"detector");
-
-	TrackHistory history(100);
-	param.trackHistory = &history;
-	param.blobTracker = new BlobTracker(&history);		
 
 	AutoTracker tracker(param);
 	tracker.run();

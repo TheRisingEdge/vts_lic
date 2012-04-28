@@ -27,45 +27,56 @@ void HogClassifier::load()
 	hogGpu.setSVMDetector(hplane);	
 }
 
+static const int KEEP = 0;
+static const int DISCARD = 1;
+
 vector<detection> HogClassifier::detect( ClassifierParams& params )
 {
-	auto blobs = params.blobs;
 	Mat frame = params.frame;
 	vector<Rect> rectDetections;
 	vector<detection> detectionsToReturn;
 
-	//Rect frameRect = Rect(0, 0, frame.cols, frame.rows);
-
-	//Point extension = Point(width, height);
 	int detectionId = 0;
 	Mat fclone;
 	cv::cvtColor(frame, fclone, CV_BGR2GRAY);
 	gpuMat.upload(fclone);
 	hogGpu.detectMultiScale(gpuMat,rectDetections);
-	for_each(begin(rectDetections), end(rectDetections), [&](Rect r){
-		detection d = {detectionId++, r}; 
-		detectionsToReturn.push_back(d);
-	});
-
-	//for_each(begin(blobs), end(blobs), [&](const blob& b){
-	//	Rect rect = b.rect;
-	//	//Tool::extend(rect, extension);
-	//	if(Tool::rectInside(rect, frameRect))
-	//	{
-	//		Mat region = fclone(rect);
-	//		gpuMat.upload(region);			
-	//		rectDetections.clear();
-	//		hogGpu.detectMultiScale(gpuMat,rectDetections);
-	//		
-	//		for_each(begin(rectDetections), end(rectDetections), [&](Rect r){
-	//			detection d = {0, r}; 
-	//			detectionsToReturn.push_back(d);
-	//		});
-	//	}		
-	//});
-
 	fclone.release();
-	//frame.release();
+
+	int size = rectDetections.size();
+	int* status = new int[size]; 	
+	memset(status, KEEP, size*sizeof(int));
+
+	for(int i = 0; i < size - 1; i++)
+	{		
+		for(int j = i+1; j < size; j++)
+		{
+			if(status[i] == KEEP && status[j] == KEEP)
+			{
+				int min;
+				if(rectDetections[i].area() < rectDetections[j].area())
+					min = i;
+				else
+					min = j;
+
+				Rect intersection = rectDetections[i] & rectDetections[j];
+				if(intersection.area() > 0.4*rectDetections[min].area())
+				{
+					status[min] = DISCARD;
+				}
+			}			
+		}
+	}
+
+	for(int i = 0; i < size; i++)	
+		if(status[i] == KEEP)
+		{
+			detection det = {detectionId++, rectDetections[i]}; 
+			detectionsToReturn.push_back(det);
+		}
+	
+	delete[] status;	
+	
 	return detectionsToReturn;
 }
 

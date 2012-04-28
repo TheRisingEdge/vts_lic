@@ -102,6 +102,14 @@ void Helper::drawRectF( const Rect_<float>& r, Mat& output )
 	rectangle( output, r.tl(), r.br(), color);
 }
 
+void Helper::drawBlobs( vector<blob>& blobs, Mat& output )
+{
+	auto it = blobs.begin();
+	auto end = blobs.end();
+	for(; it != end ; ++it)
+		rectangle( output, it->rect.tl(), it->rect.br(), Scalar(255,0,0));		
+}
+
 #pragma endregion converters
 
 

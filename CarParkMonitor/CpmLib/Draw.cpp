@@ -15,7 +15,7 @@ void Draw::rect( const Rect& r, Mat& image , Scalar color)
 	rectangle( image, r.tl(), r.br(), color);
 }
 
-void Draw::rectVector( const vector<Rect>& rects, Mat& image, Scalar color /*= Scalar(0,255,0)*/ )
+void Draw::rects( const vector<Rect>& rects, Mat& image, Scalar color /*= Scalar(0,255,0)*/ )
 {
 	auto it = rects.begin();
 	auto end = rects.end();

@@ -1,20 +1,13 @@
-﻿Build started 4/3/2012 8:50:44 PM.
+﻿Build started 4/20/2012 9:30:38 AM.
      1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Release\VtLib.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /ID:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc100.pdb" /Gd /TP /errorReport:prompt BgSubtractorBase.cpp BlobDetector.cpp Content.cpp Draw.cpp FrameProcessor.cpp Loader.cpp Tool.cpp VideoProcessor.cpp
-         BgSubtractorBase.cpp
+         D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /ID:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _LIB /D _UNICODE /D UNICODE /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc100.pdb" /Gd /TP /errorReport:prompt BlobDetector.cpp Draw.cpp Loader.cpp Tool.cpp
          BlobDetector.cpp
-     1>e:\workspace\github\cpmlic\carparkmonitor\cpmlib\BlobDetector.h(36): warning C4520: 'BlobDetector' : multiple default constructors specified
+     1>e:\workspace\github\cpmlic\carparkmonitor\cpmlib\BlobDetector.h(34): warning C4520: 'BlobDetector' : multiple default constructors specified
      1>BlobDetector.cpp(45): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
-         Content.cpp
-     1>Content.cpp(15): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
-     1>Content.cpp(22): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-                 D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
          Draw.cpp
-         FrameProcessor.cpp
          Loader.cpp
      1>Loader.cpp(27): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
                  D:\Programs\Visual Studio 2010\VC\include\stdio.h(371) : see declaration of 'sprintf'
@@ -23,8 +16,16 @@
          Tool.cpp
      1>Tool.cpp(4): warning C4305: 'initializing' : truncation from 'double' to 'float'
      1>Tool.cpp(5): warning C4305: 'initializing' : truncation from 'double' to 'float'
-         VideoProcessor.cpp
-     1>VideoProcessor.cpp(32): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+     1>Tool.cpp(67): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(67): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(73): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(73): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(73): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(73): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(89): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(89): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(89): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(89): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
        Lib:
          D:\Programs\Visual Studio 2010\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Release\VtLib.lib" /NOLOGO /LTCG x64\Release\BgSubtractorBase.obj
          x64\Release\BlobDetector.obj
@@ -42,4 +43,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:05.02
+Time Elapsed 00:00:03.24
