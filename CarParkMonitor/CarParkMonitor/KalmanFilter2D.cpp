@@ -87,7 +87,6 @@ KalmanResult2D KalmanFilter2D::correct( KalmanInput2D& input )
 
 	//apply measurement
 	Mat estimation = filter.correct(measurement);
-
 	KalmanResult2D result;
 	mapMatToResult(estimation, result);
 	return result;

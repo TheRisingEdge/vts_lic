@@ -1,68 +1,24 @@
-﻿Build started 4/28/2012 12:10:15 PM.
+﻿Build started 4/28/2012 2:41:32 PM.
      1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib\CpmLib.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Touching "x64\Debug\VtLib.unsuccessfulbuild".
+         Creating "x64\Debug\VtLib.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         d:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt lbp.cpp
-         lbp.cpp
-     1>lbp.cpp(37): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(121) : see reference to function template instantiation 'void lbp::ELBP_<char>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(38): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(37): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(122) : see reference to function template instantiation 'void lbp::ELBP_<unsigned char>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(38): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(37): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(123) : see reference to function template instantiation 'void lbp::ELBP_<short>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(38): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(37): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(124) : see reference to function template instantiation 'void lbp::ELBP_<unsigned short>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(38): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(37): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(125) : see reference to function template instantiation 'void lbp::ELBP_<int>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(38): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(37): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(126) : see reference to function template instantiation 'void lbp::ELBP_<float>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(38): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(37): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(127) : see reference to function template instantiation 'void lbp::ELBP_<double>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(38): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(55): warning C4244: 'initializing' : conversion from 'const double' to 'float', possible loss of data
-     1>lbp.cpp(73): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(133) : see reference to function template instantiation 'void lbp::VARLBP_<char>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(74): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(93): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(101): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(73): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(134) : see reference to function template instantiation 'void lbp::VARLBP_<unsigned char>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(74): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(93): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(101): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(73): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(135) : see reference to function template instantiation 'void lbp::VARLBP_<short>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(74): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(93): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(101): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(73): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(136) : see reference to function template instantiation 'void lbp::VARLBP_<unsigned short>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(74): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(93): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(101): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(73): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(137) : see reference to function template instantiation 'void lbp::VARLBP_<int>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(74): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(93): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(101): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(73): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(138) : see reference to function template instantiation 'void lbp::VARLBP_<float>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(74): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(93): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(101): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(73): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-                 lbp.cpp(139) : see reference to function template instantiation 'void lbp::VARLBP_<double>(const cv::Mat &,cv::Mat &,int,int)' being compiled
-     1>lbp.cpp(74): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(91): warning C4244: 'initializing' : conversion from 'const double' to 'float', possible loss of data
-     1>lbp.cpp(93): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>lbp.cpp(101): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+         d:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt Tool.cpp
+         Tool.cpp
+     1>Tool.cpp(4): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>Tool.cpp(5): warning C4305: 'initializing' : truncation from 'double' to 'float'
+     1>Tool.cpp(67): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>Tool.cpp(68): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+     1>Tool.cpp(69): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(69): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(75): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(75): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(75): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(75): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(91): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(91): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(91): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
+     1>Tool.cpp(91): warning C4244: 'argument' : conversion from 'float' to 'int', possible loss of data
        Lib:
          d:\Programs\Visual Studio 2010\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\VtLib.lib" /NOLOGO x64\Debug\BgSubtractorBase.obj
          x64\Debug\BlobDetector.obj
@@ -82,4 +38,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.97
+Time Elapsed 00:00:01.52

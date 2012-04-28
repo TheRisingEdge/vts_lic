@@ -26,8 +26,10 @@ private:
 	vector<Mat> foregroundBuffer;
 	vector<vector<detection>> detectionBuffer;
 	bool shiftBuffers(Mat frame);
-	bool trackLucasKanade(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds, Mat& output);		
-	bool predictKalman(track& tr);
+	bool trackLucasKanade(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect, Mat& output);		
+	bool predictKalman(track& tr, Rect& predictedRect);
+	void forwardTrack(track& tr,Rect& lkRect,Rect& kalmanRect,vector<Mat> frameBuffer);
+
 	void updateKalman(track& tr);
 	bool trackHasExited(track& tr, Mat frame);
 

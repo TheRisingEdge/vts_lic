@@ -106,9 +106,10 @@ void PTracker::start()
 					continue;
 				}
 					
-				bool trackedSuccessfully = trackLucasKanade(*it, frameBuffer, grayFrameBuffer, foregroundBuffer, lkoutput);				
-				if(!trackedSuccessfully)					
-					predictKalman(*it);				
+				Rect lkRect, kalmanRect;
+				bool lkSuccess = trackLucasKanade(*it, frameBuffer, grayFrameBuffer, foregroundBuffer,lkRect,lkoutput);				
+				bool kalmanSuccess = predictKalman(*it, kalmanRect);
+				forwardTrack(*it, lkRect, kalmanRect, frameBuffer);
 			}
 			
 			for_each(begin(tracksToErase), end(tracksToErase), [&](track tr){
@@ -166,15 +167,6 @@ void PTracker::start()
 					trMatches[inited.id] = m;					
 				}
 			});
-			
-			printf("frame %d ================================================\n", video.frameCount);
-			for_each(begin(tracks), end(tracks), [&](track& tr){
-				if(trMatches.find(tr.id) != trMatches.end())
-					printf("track %d: detection %d\n", tr.id, trMatches[tr.id].detectionId);		
-				else
-					printf("track %d: detection NONE\n", tr.id);		
-
-			});
 
 			imshow("foreground", currentForeground);
 			imshow("lk", lkoutput);
@@ -215,7 +207,7 @@ const int XCount = 15;
 const int YCount = 15;
 const float treshold = 0.3;
 
-bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds, Mat& output )
+bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect ,Mat& output )
 {	
 	auto trackRect = tr.asRecti();
 	Mat currentForeground = foregrounds[0];
@@ -309,32 +301,6 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 	delete[] xdiffs;
 	delete[] ydiffs;
 
-	//float *scales = new float[size*(size-1)/2];
-	//int comparisons = 0;
-	//for (int i = 0; i < size - 1; i++) {
-	//	for (int j = i + 1; j < size; j++) {
-	//		if (fstatus[i] == 1 && fstatus[j] == 1) {
-
-	//			float dxPrev = trackedPoints[j].x - trackedPoints[i].x;
-	//			float dyPrev = trackedPoints[j].y - trackedPoints[i].y;
-
-	//			float dxNext = ftracked[j].x - ftracked[i].x;
-	//			float dyNext = ftracked[j].y - ftracked[i].y;
-
-	//			float sPrev = sqrt(dxPrev * dxPrev + dyPrev * dyPrev);
-	//			float sNext = sqrt(dxNext * dxNext + dyNext * dyNext);
-
-	//			if (sPrev != 0 && sNext != 0) {					
-	//				scales[comparisons] = sNext / sPrev;
-	//				comparisons++;
-	//			}
-	//		}
-	//	}
-	//}
-
-	//float scale = Tool::median(scales, comparisons);
-	//assert(scale > 0.0001);
-
 	auto fclone = currentFrame.clone();
 	Helper::drawFPoints(inliers, fclone);
 	Helper::drawFPoints(inliers, output);
@@ -352,12 +318,12 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 	imshow("next frame inliers", fclone);
 	fclone.release();
 
-	Tool::moveRectf(tr.rectf, xmedian, ymedian);
-	//Tool::scaleRectf(tr.rectf, scale, scale);
+	predictedRect = tr.asRecti();
+	Tool::moveRect(predictedRect, xmedian, ymedian);
 	return true;
 }
 
-bool PTracker::predictKalman( track& tr )
+bool PTracker::predictKalman( track& tr, Rect& predictedRect)
 {
 	if(kalmanFilters.find(tr.id) != kalmanFilters.end())
 	{
@@ -367,12 +333,17 @@ bool PTracker::predictKalman( track& tr )
 		float vx = kalmanResult.vx;
 		float vy = kalmanResult.vy;
 
+		vx = floor(vx + 0.5);
+		vy = floor(vy + 0.5);
+
+		auto oldRect = tr.model.kalmanRect;
+		predictedRect = Rect(oldrect.x + vx, oldrect.y + vy, oldrect.width, oldrect.height);
+
 		auto oldrect = tr.model.kalmanRect;
 		tr.rectf = Rect_<float>(floor(oldrect.x + vx + 0.5), floor(oldrect.y + vy + 0.5), oldrect.width, oldrect.height);
 		tr.model.kalmanRect = tr.rectf;
 		
 	}else
-		//this should not happen
 		assert(false);
 
 	return true;
@@ -424,4 +395,9 @@ bool PTracker::trackHasExited( track& tr, Mat frame )
 {
 	Rect frameRect = Rect(0,0, frame.cols, frame.rows);
 	return !Tool::rectInside(tr.asRecti(), frameRect);
+}
+
+void PTracker::forwardTrack( track& tr, Rect& lkRect, Rect& kalmanRect, vector<Mat> frameBuffer )
+{
+
 }
