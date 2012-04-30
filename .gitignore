@@ -16,4 +16,6 @@
 *.png
 *.log
 *.idb
+*.suo
+*.user
 /CarParkMonitor/Converter/x64/

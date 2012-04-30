@@ -1,9 +1,16 @@
-﻿Build started 4/29/2012 6:24:34 PM.
-     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\Testing\Testing.vcxproj" on node 3 (build target(s)).
+﻿Build started 4/30/2012 9:05:27 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\Testing\Testing.vcxproj" on node 4 (build target(s)).
      1>InitializeBuildStatus:
          Creating "x64\Debug\Testing.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         All outputs are up-to-date.
+         d:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /IE:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt main.cpp main2.cpp main4.cpp matTest.cpp testLBP.cpp
+         testLBP.cpp
+     1>testLBP.cpp(66): warning C4244: 'argument' : conversion from 'double' to 'int', possible loss of data
+         matTest.cpp
+         main4.cpp
+         main2.cpp
+         main.cpp
+         Generating Code...
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -29,4 +36,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.17
+Time Elapsed 00:00:02.17

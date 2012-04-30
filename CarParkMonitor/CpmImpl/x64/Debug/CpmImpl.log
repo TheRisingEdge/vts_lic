@@ -1,23 +1,22 @@
-﻿Build started 4/29/2012 6:24:12 PM.
-     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" on node 2 (rebuild target(s)).
-     1>_PrepareForClean:
-         Deleting file "x64\Debug\VtImpl.lastbuildstate".
-       InitializeBuildStatus:
+﻿Build started 4/30/2012 9:05:26 PM.
+     1>Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
          Creating "x64\Debug\VtImpl.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
          d:\Programs\Visual Studio 2010\VC\bin\x86_amd64\CL.exe /c /IE:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmLib /Id:\Programs\Libs\opencv\build\include /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /Gd /TP /errorReport:prompt AvgSubtractor.cpp BackgroundSegmentator.cpp CannyFrameProcessor.cpp CodebookSubtractor.cpp FeatureTracker.cpp HogClassifier.cpp Mog2Subtractor.cpp MogSubtractor.cpp StableAvgSubtractor.cpp StableMog.cpp
          StableMog.cpp
          StableAvgSubtractor.cpp
          MogSubtractor.cpp
-         Mog2Subtractor.cpp
          HogClassifier.cpp
      1>HogClassifier.cpp(46): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
          FeatureTracker.cpp
-         CodebookSubtractor.cpp
          CannyFrameProcessor.cpp
          BackgroundSegmentator.cpp
          AvgSubtractor.cpp
          Generating Code...
+         Skipping... (no relevant changes detected)
+         Mog2Subtractor.cpp
+         CodebookSubtractor.cpp
        Lib:
          d:\Programs\Visual Studio 2010\VC\bin\x86_amd64\Lib.exe /OUT:"E:\Workspace\gitHub\cpmlic\CarParkMonitor\x64\Debug\VtImpl.lib" /NOLOGO x64\Debug\AvgSubtractor.obj
          x64\Debug\BackgroundSegmentator.obj
@@ -33,8 +32,8 @@
        FinalizeBuildStatus:
          Deleting file "x64\Debug\VtImpl.unsuccessfulbuild".
          Touching "x64\Debug\VtImpl.lastbuildstate".
-     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" (rebuild target(s)).
+     1>Done Building Project "E:\Workspace\gitHub\cpmlic\CarParkMonitor\CpmImpl\CpmImpl.vcxproj" (build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:07.45
+Time Elapsed 00:00:08.02
