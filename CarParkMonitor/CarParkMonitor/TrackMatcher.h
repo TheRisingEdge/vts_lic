@@ -6,6 +6,7 @@ struct model
 	Rect kalmanRect;
 	Mat lbpHist;
 	Mat elbp;
+	Mat nccModel;
 };
 
 struct track

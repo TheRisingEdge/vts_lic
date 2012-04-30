@@ -83,6 +83,7 @@
     <ClCompile Include="KalmanFilter2D.cpp" />
     <ClCompile Include="LbpMatcher.cpp" />
     <ClCompile Include="Matcher2D.cpp" />
+    <ClCompile Include="NccMatcher.cpp" />
     <ClCompile Include="PClassifier.cpp" />
     <ClCompile Include="PDetector.cpp" />
     <ClCompile Include="PSubtractor.cpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="KalmanFilter2D.h" />
     <ClInclude Include="LbpMatcher.h" />
     <ClInclude Include="Matcher2D.h" />
+    <ClInclude Include="NccMatcher.h" />
     <ClInclude Include="PClassifier.h" />
     <ClInclude Include="PDetector.h" />
     <ClInclude Include="PSubtractor.h" />

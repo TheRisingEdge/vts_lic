@@ -154,10 +154,14 @@ void PTracker::start()
 					//auto dhist = detectionHists[dit->id];
 					//double dist = lbp::chi_square(tr.model.lbpHist, dhist);
 
-					//float dist = secMatcher->match(tr, *dit, currentGrayFrame);
-					//if(dist > 2000)
-						//continue;
-
+					float dist = secMatcher->match(tr, *dit, currentGrayFrame);
+					if(dist > 2500)
+					{
+						cv::waitKey();
+						continue;
+					}
+						
+					
 					//imshow("track", tr.model.elbp);
 					//imshow("det", currentFrame(dit->rect));
 					//printf("%g\n", dist);
@@ -516,6 +520,10 @@ void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, R
 		{
 			tr.assign(kalmanRect);			
 		}				
+
+		//imshow("lk-match",lkSrc);
+		//imshow("kalman-match", kalmanSrc);
+		//cv::waitKey();
 	}		
 	else
 	{

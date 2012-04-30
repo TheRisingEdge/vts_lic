@@ -6,6 +6,7 @@
 #include "KalmanFilter2D.h"
 #include "LbpMatcher.h"
 #include "Validator.h"
+#include "NccMatcher.h"
 
 class PTracker
 {
@@ -18,7 +19,7 @@ private:
 	BgSubtractorBase* subtractor;
 	ClassifierBase* classifier;
 	TrackMatcher* matcher;
-	LbpMatcher* secMatcher;
+	NccMatcher* secMatcher;
 
 	vector<track> tracks;	
 	std::map<int, shared_ptr<KalmanFilter2D> > kalmanFilters;
@@ -54,7 +55,8 @@ public:
 		matcher(mat),
 		carCount(0)
 	{
-		secMatcher = new LbpMatcher();
+		//secMatcher = new LbpMatcher();
+		secMatcher = new NccMatcher();
 	};
 	
 	void start();
