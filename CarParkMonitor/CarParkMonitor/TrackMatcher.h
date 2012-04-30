@@ -32,9 +32,10 @@ public:
 	TrackMatcher(){};
 	~TrackMatcher(){};
 
-	virtual void begin(){};
-	virtual void end(){};
-	virtual float match(track& tr, detection& dt) = 0;
-	virtual float compare(track& tr, Mat region){ return 0; };
-	virtual void inferModel(track& tr, detection& dt) = 0;
+	virtual void begin(){};	
+	virtual float match(track& tr, detection& dt, Mat& frame) = 0;
+	virtual float distance(track& tr, Mat& region) { return 0; };
+	virtual float distance(track& tr, Mat& region, Mat& descriptor) { return 0; };
+
+	virtual void inferModel(track& tr, detection& dt, Mat& frame) = 0;
 };

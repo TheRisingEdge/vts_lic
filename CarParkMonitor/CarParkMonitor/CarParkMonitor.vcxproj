@@ -81,12 +81,14 @@
     <ClCompile Include="DebugHelper.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="KalmanFilter2D.cpp" />
+    <ClCompile Include="LbpMatcher.cpp" />
     <ClCompile Include="Matcher2D.cpp" />
     <ClCompile Include="PClassifier.cpp" />
     <ClCompile Include="PDetector.cpp" />
     <ClCompile Include="PSubtractor.cpp" />
     <ClCompile Include="PTracker.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Validator.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -94,6 +96,7 @@
     <ClInclude Include="DebugHelper.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="KalmanFilter2D.h" />
+    <ClInclude Include="LbpMatcher.h" />
     <ClInclude Include="Matcher2D.h" />
     <ClInclude Include="PClassifier.h" />
     <ClInclude Include="PDetector.h" />
@@ -101,6 +104,7 @@
     <ClInclude Include="PTracker.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TrackMatcher.h" />
+    <ClInclude Include="Validator.h" />
     <ClInclude Include="Video.h" />
   </ItemGroup>
   <ItemGroup>

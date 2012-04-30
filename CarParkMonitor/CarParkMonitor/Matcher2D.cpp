@@ -3,7 +3,7 @@
 
 using namespace cv;
 
-float Matcher2D::match( track& tr, detection& dt )
+float Matcher2D::match( track& tr, detection& dt, Mat& frame )
 {
 
 	cv::Rect rects[2] = {tr.asRecti(), dt.rect};	
@@ -24,7 +24,7 @@ float Matcher2D::match( track& tr, detection& dt )
 	return -1;
 }
 
-void Matcher2D::inferModel( track& tr, detection& dt )
+void Matcher2D::inferModel( track& tr, detection& dt, Mat& frame )
 {
 	tr.assign(dt.rect);
 }

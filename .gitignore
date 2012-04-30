@@ -15,4 +15,5 @@
 *.avi
 *.png
 *.log
+*.idb
 /CarParkMonitor/Converter/x64/

@@ -134,16 +134,16 @@ void PTracker::start()
 			{int a; a = 3;}
 
 			matcher->begin();
+			secMatcher->begin();
 			for_each(begin(tracks), end(tracks), [&](track& tr){													
 				auto dit = detections.begin();
 				auto dend = detections.end();
 				for(;dit != dend; ++dit)
 				{
-
-
-					float score = matcher->match(tr, *(dit));
+					float score = matcher->match(tr, *dit, currentGrayFrame);
 					if(score < 0)
 					continue;
+					
 					
 					//if(detectionHists.find(dit->id) == detectionHists.end())
 					//{
@@ -154,8 +154,9 @@ void PTracker::start()
 					//auto dhist = detectionHists[dit->id];
 					//double dist = lbp::chi_square(tr.model.lbpHist, dhist);
 
+					//float dist = secMatcher->match(tr, *dit, currentGrayFrame);
 					//if(dist > 2000)
-					//	continue;
+						//continue;
 
 					//imshow("track", tr.model.elbp);
 					//imshow("det", currentFrame(dit->rect));
@@ -179,22 +180,21 @@ void PTracker::start()
 						detMatches[dit->id] = dMatch;												
 					}
 				}							
-			});
-			matcher->end();
+			});			
 
 #pragma region update_tracks_and_kalman_from_detections
 			for_each(begin(tracks), end(tracks), [&](track& tr){
 				if(trMatches.find(tr.id) != trMatches.end())//matched detection with track
 				{
 					auto m = trMatches[tr.id];
-					matcher->inferModel(tr, detections[m.detectionId]);
-					correctKalman(tr);
+					matcher->inferModel(tr, detections[m.detectionId], currentGrayFrame);
+					secMatcher->inferModel(tr, detections[m.detectionId], currentGrayFrame);
+					validators[tr.id].tick(true);
 
-					auto detection = detections[m.detectionId];
-					tr.model.lbpHist = lbpHist(currentGrayFrame(detection.rect));
-					
+					correctKalman(tr);					
 				}else
 				{//detection not found for track
+					validators[tr.id].tick(false);
 					forwardKalman(tr);
 				}
 			});
@@ -242,15 +242,13 @@ void PTracker::start()
 	}
 }
 
-track PTracker::initTrackFromDetection( const detection& d,IdGenerator& gen, Mat& frame)
+track PTracker::createFromDetection( detection& d,IdGenerator& gen, Mat& frame)
 {
 	Point tl = d.rect.tl();
 	auto rectf = Rect_<float>(tl.x, tl.y, d.rect.width, d.rect.height);
 	track t = { gen.nextId(), rectf };
 	
-	auto src = frame(d.rect);
-	//imshow("src", src);
-	t.model.lbpHist = lbpHist(src);
+	secMatcher->inferModel(t, d, frame);
 	return t;
 }
 
@@ -460,14 +458,17 @@ void PTracker::forwardKalman( track& tr )
 
 track PTracker::initializeTrack( detection& det, IdGenerator& idGenerator, Mat& grayFrame)
 {
-	auto track = initTrackFromDetection(det, idGenerator, grayFrame);
+	auto track = createFromDetection(det, idGenerator, grayFrame);
 	tracks.push_back(track);
 
 	auto filter = shared_ptr<KalmanFilter2D>(new KalmanFilter2D());
 	KalmanInput2D input = {det.rect};
 	filter->init(input);
-
 	kalmanFilters[track.id] = filter;
+
+	Validator v = Validator();
+	validators[track.id] = v;
+	validators[track.id].tick(true);
 	return track;
 }
 
@@ -482,12 +483,19 @@ void PTracker::deleteTrack( track& tr )
 			tracks.erase(it);
 			break;
 		}
+
+	if(!validators[tr.id].isLost() && validators[tr.id].score() > validators[tr.id].minScore)
+	{
+		carCount++;		
+	}
+
+	validators.erase(tr.id);
 }
 
 bool PTracker::trackHasExited( track& tr, Mat frame )
 {
 	Rect frameRect = Rect(0,0, frame.cols, frame.rows);
-	return !Tool::rectInside(tr.asRecti(), frameRect);
+	return (!Tool::rectInside(tr.asRecti(), frameRect))||(validators[tr.id].isLost());
 }
 
 void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, Rect& lkRect, Rect& kalmanRect, vector<Mat> grayBuffer )
@@ -497,32 +505,17 @@ void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, R
 	{
 		Mat lkSrc = grayFrame(lkRect);
 		Mat kalmanSrc = grayFrame(kalmanRect);				
-		//waitKey();
 
-		Mat lkHist = lbpHist(lkSrc);
-		Mat kalmanHist = lbpHist(kalmanSrc);
+		float dist0 = secMatcher->distance(tr, lkSrc);
+		float dist1 = secMatcher->distance(tr, kalmanSrc);
 
-		auto proc0 = lbp::ELBP(lkSrc,8,8);
-		auto proc1 = lbp::ELBP(kalmanSrc,8,8);
-	
-		normalize(proc0, proc0, 0, 255, NORM_MINMAX, CV_8UC1);
-		normalize(proc1, proc1, 0, 255, NORM_MINMAX, CV_8UC1);
-
-		//imshow("lk-lbp", proc0);
-		//imshow("klm-lbp",proc1);
-		
-		double lkDist = lbp::chi_square(tr.model.lbpHist, lkHist);
-		double kalmanDist = lbp::chi_square(tr.model.lbpHist, kalmanHist);
-
-		if(lkDist < kalmanDist)
+		if(dist0 < dist1)
 		{
-			tr.assign(lkRect);
-			tr.model.elbp = proc0;
+			tr.assign(lkRect);			
 		}else
 		{
-			tr.assign(kalmanRect);
-			tr.model.elbp = proc1;
-		}			
+			tr.assign(kalmanRect);			
+		}				
 	}		
 	else
 	{
@@ -530,11 +523,3 @@ void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, R
 	}
 		
 }
-
-cv::Mat PTracker::lbpHist( Mat& src )
-{	
-	auto processed = lbp::ELBP(src,8,8);
-	auto hist = lbp::spatial_histogram(processed, 256, 3, 3);
-	return hist;
-}
-
