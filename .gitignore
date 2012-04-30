@@ -5,6 +5,7 @@
 /CarParkMonitor/CarParkMonitor/Content/
 /CarParkMonitor/CarParkMonitor/x64/
 /OpenCVDemos/
+/CarParkMonitor/Converter/x64/
 *.dll
 *.exe
 *.obj
@@ -18,4 +19,3 @@
 *.idb
 *.suo
 *.user
-/CarParkMonitor/Converter/x64/
