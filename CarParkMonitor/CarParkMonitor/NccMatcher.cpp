@@ -10,8 +10,8 @@ float NccMatcher::match( track& tr, detection& dt, Mat& frame )
 
 float NccMatcher::distance( track& tr, Mat& region )
 {
-	auto detectionImg = region;
-	auto trackImg = tr.model.nccModel;
+	auto detectionImg = region.clone();
+	auto trackImg = tr.model.nccModel.clone();
 
 	Mat resizedDetection;
 	Mat resizedTrack;
@@ -26,8 +26,14 @@ float NccMatcher::distance( track& tr, Mat& region )
 		cv::resize(trackImg, resizedTrack, detectionImg.size(), 0,0);
 	}
 
-	GaussianBlur(resizedDetection, resizedDetection, Size(7,7), 5, 3, BORDER_CONSTANT); 
-	GaussianBlur(resizedTrack, resizedTrack, Size(7,7), 5, 3, BORDER_CONSTANT); 
+	//imshow("track bb", resizedTrack);
+	//imshow("detection bb", resizedDetection);
+
+	//GaussianBlur(resizedDetection, resizedDetection, Size(7,7), 5, 3, BORDER_CONSTANT); 
+	//GaussianBlur(resizedTrack, resizedTrack, Size(7,7), 5, 3, BORDER_CONSTANT); 
+	//imshow("track", resizedTrack);
+	//imshow("detection", resizedDetection);
+	//cv::waitKey();
 
 	Mat_<float> result = Mat_<float>(1,1);
 	cv::matchTemplate( resizedDetection, resizedTrack, result, CV_TM_CCOEFF_NORMED);

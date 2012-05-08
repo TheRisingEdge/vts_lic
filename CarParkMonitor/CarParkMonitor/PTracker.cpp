@@ -143,29 +143,13 @@ void PTracker::start()
 					float score = matcher->match(tr, *dit, currentGrayFrame);
 					if(score < 0)
 					continue;
-					
-					
-					//if(detectionHists.find(dit->id) == detectionHists.end())
-					//{
-					//	auto detHist = lbpHist(currentGrayFrame(dit->rect));
-					//	detectionHists[dit->id] = detHist;
-					//}
-
-					//auto dhist = detectionHists[dit->id];
-					//double dist = lbp::chi_square(tr.model.lbpHist, dhist);
 
 					float dist = secMatcher->match(tr, *dit, currentGrayFrame);
-					if(dist > 2500)
+					if(dist > secMatcher->goodMaxDist)
 					{
-						cv::waitKey();
+						//cv::waitKey();
 						continue;
 					}
-						
-					
-					//imshow("track", tr.model.elbp);
-					//imshow("det", currentFrame(dit->rect));
-					//printf("%g\n", dist);
-					////cv::waitKey();
 
 					trackMatch trMatch = {dit->id, 0, score};
 					detectionMatch dMatch = {tr.id, score};
@@ -232,11 +216,16 @@ void PTracker::start()
 				Helper::drawRect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
 			});
 
-			imshow("kalman", fclone);
 			
+			
+			std::stringstream str;
+			str << carCount;			
+			Helper::drawText(str.str(), Point(10,20), fclone, Scalar(255,255,0));
+			//delete[] str;
 			//if(frameCount == 272)
 				//waitKey();
 
+			imshow("kalman", fclone);
 			fclone.release();
 			lkoutput.release();
 #pragma endregion
@@ -258,8 +247,10 @@ track PTracker::createFromDetection( detection& d,IdGenerator& gen, Mat& frame)
 
 
 #pragma region lucasKanade_Kalman_predictors
+
 const int XCount = 15;
 const int YCount = 15;
+const int minTrackedPoints = 10;
 const float treshold = 0.3;
 bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect ,Mat& output )
 {	
@@ -294,7 +285,7 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 		}
 	}
 
-	if(trackedPoints.size() < 5)
+	if(trackedPoints.size() < minTrackedPoints)
 		return false;
 
 	vector<Point2f> inliers;
@@ -347,7 +338,7 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 		}
 	}
 
-	if(inliers.size() < 5)
+	if(inliers.size() < minTrackedPoints)
 		return false;
 
 	float xmedian = Tool::median(xdiffs, successCount);
@@ -513,17 +504,10 @@ void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, R
 		float dist0 = secMatcher->distance(tr, lkSrc);
 		float dist1 = secMatcher->distance(tr, kalmanSrc);
 
-		if(dist0 < dist1)
-		{
+		if(dist0 <= dist1)		
 			tr.assign(lkRect);			
-		}else
-		{
-			tr.assign(kalmanRect);			
-		}				
-
-		//imshow("lk-match",lkSrc);
-		//imshow("kalman-match", kalmanSrc);
-		//cv::waitKey();
+		else		
+			tr.assign(kalmanRect);									
 	}		
 	else
 	{

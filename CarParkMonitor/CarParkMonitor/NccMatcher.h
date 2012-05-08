@@ -9,7 +9,7 @@ using namespace cv;
 class NccMatcher:public TrackMatcher
 {
 public:
-	NccMatcher(){};
+	NccMatcher(){TrackMatcher::goodMaxDist = 2500;};
 	~NccMatcher(){};
 	
 	float match( track& tr, detection& dt, Mat& frame );

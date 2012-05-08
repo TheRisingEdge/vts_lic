@@ -13,7 +13,7 @@ private:
 	Mat lbpHist(Mat& src);
 
 public:
-	LbpMatcher(){}
+	LbpMatcher(){ TrackMatcher::goodMaxDist = 2500;}
 	~LbpMatcher(){}
 
 	void begin() { detectionHists.clear(); }

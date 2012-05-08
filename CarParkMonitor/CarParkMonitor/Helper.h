@@ -18,6 +18,8 @@ public:
 	static void drawFPoints(const vector<Point2f> points, Mat& output);
 
 	static void drawText(const char* text,const Point& origin, Mat& output, Scalar color = Scalar(0,255,0));	
+	static void drawText(string text,const Point& origin, Mat& output, Scalar color = Scalar(0,255,0));	
+
 	static void drawRectF(const Rect_<float>& r, Mat& output);
 	static void drawRect(const Rect& r, Mat& output, Scalar color = Scalar(0,255,0));
 	static void drawAnotatedRect(int nr,const Rect& r, Mat& output, Scalar color = Scalar(0,255,0));
