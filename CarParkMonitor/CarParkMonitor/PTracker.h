@@ -19,7 +19,7 @@ private:
 	BgSubtractorBase* subtractor;
 	ClassifierBase* classifier;
 	TrackMatcher* matcher;
-	NccMatcher* secMatcher;
+	LbpMatcher* secMatcher;
 
 	vector<track> tracks;	
 	std::map<int, shared_ptr<KalmanFilter2D> > kalmanFilters;
@@ -55,8 +55,8 @@ public:
 		matcher(mat),
 		carCount(0)
 	{
-		//secMatcher = new LbpMatcher();
-		secMatcher = new NccMatcher();
+		secMatcher = new LbpMatcher();
+		//secMatcher = new NccMatcher();
 	};
 	
 	void start();

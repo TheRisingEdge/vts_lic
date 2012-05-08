@@ -200,31 +200,18 @@ void PTracker::start()
 #pragma endregion 
 
 #pragma region drawing_results
-			auto fclone = currentFrame.clone();			
-			 
-			//imshow("foreground", currentForeground);
-			//imshow("lk", lkoutput);
-
-			
-			Helper::drawDetections(detections, fclone);
-			//imshow("detections", fclone);			
-			//		
+			auto fclone = currentFrame.clone();								
+			Helper::drawDetections(detections, fclone);			
 			Helper::drawTracks(tracks, fclone, Scalar(255,0,0));
-			//imshow("tracks", fclone);
 
 			for_each(begin(tracks), end(tracks), [&](track& tr){
 				Helper::drawRect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
 			});
-
-			
-			
+						
 			std::stringstream str;
 			str << carCount;			
 			Helper::drawText(str.str(), Point(10,20), fclone, Scalar(255,255,0));
-			//delete[] str;
-			//if(frameCount == 272)
-				//waitKey();
-
+		
 			imshow("kalman", fclone);
 			fclone.release();
 			lkoutput.release();
@@ -423,8 +410,7 @@ void PTracker::correctKalman( track& tr )
 		auto rect = result.asRect();
 		tr.model.kalmanRect = rect;
 
-	}else
-		//this should not happen
+	}else		
 		assert(false);	
 }
 
@@ -439,13 +425,12 @@ void PTracker::forwardKalman( track& tr )
 		int vy = floor(lastPrediction.vy);
 
 		auto lastRect = lastPrediction.asRect();
-		Rect fakeRect = lastRect;//Rect(lastRect.x + vx, lastRect.y + vy, lastRect.width, lastRect.height);
+		Rect fakeRect = lastRect;
 		KalmanInput2D fakeInput = {fakeRect};
 		auto fakeResult = filter->correct(fakeInput); 
 		
 		tr.model.kalmanRect = fakeResult.asRect();
-	}else
-		//this should not happen
+	}else	
 		assert(false);	
 }
 #pragma endregion
