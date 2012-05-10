@@ -10,7 +10,7 @@ class LbpMatcher: public TrackMatcher
 {
 private:	
 	map<int, Mat> detectionHists;	
-	Mat lbpHist(Mat& src);
+	bool lbpHist(Mat& src, Mat& hist);
 
 public:
 	LbpMatcher(){ TrackMatcher::goodMaxDist = 5000/*2500*/;}

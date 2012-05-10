@@ -5,25 +5,25 @@
 
 using namespace Concurrency;
 
-struct ClasifierFrame {};
+struct ClasifierFrame 
+{
+	vector<detection> detections;
+};
 
 class PClassifier : public agent
 {
+	int trainingFrames;
 	ClassifierBase *classifier;
-	ISource<DetectionFrame>& source;
-	ITarget<ClasifierFrame>& target;
-	
-	char* videoPath;
-	VideoCapture capture;		
-	bool openVideoCapture(int& fps, double& frameDelay);
-
+	ISource<Mat>& frameBuffer;
+	ITarget<ClasifierFrame>& targetBuffer;	
+			
 public:	
-	void setVideo(char *videoPath);
-	PClassifier(ClassifierBase *cls, ISource<DetectionFrame>& src, ITarget<ClasifierFrame>& dst) :
-		source(src),
-		target(dst),
-		classifier(cls){}
-
+	PClassifier(ClassifierBase *cls, ISource<Mat>& frameBuff, ITarget<ClasifierFrame>& targetBuff, int tframes) 
+		:classifier(cls),
+		frameBuffer(frameBuff),
+		targetBuffer(targetBuff),		
+		trainingFrames(tframes)
+	{}
 	~PClassifier(){}
 
 protected:

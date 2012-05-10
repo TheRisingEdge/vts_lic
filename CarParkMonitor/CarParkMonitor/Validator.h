@@ -3,7 +3,6 @@ class Validator
 {
 private:
 	long totalScore;
-
 	long successiveGoodFrames;
 	long maxBadFrames;
 	long succesiveBadFrames;
@@ -20,15 +19,10 @@ public:
 		consideredLost(false),
 		minScore(300)		
 	{};
-
 	~Validator(){};
 		
-	long score()
-	{ return totalScore; }
-
-	bool isLost()
-	{return consideredLost;}
-
+	long score() { return totalScore; }
+	bool isLost() {return consideredLost;}
 	void tick(bool detectionOccured);	
 };
 

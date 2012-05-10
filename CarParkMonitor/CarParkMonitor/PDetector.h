@@ -14,19 +14,17 @@ struct DetectionFrame
 
 class PDetector : public agent
 {
-private:
-   ISource<SubFrame>&       source;
-   ITarget<DetectionFrame>& target;
-
+private:   
+   ISource<Mat>& frameBuffer;
+   ITarget<DetectionFrame>& targetBuffer;
    BlobDetector *detector;
 
 public:
-   PDetector(BlobDetector *bdetector, ISource<SubFrame>& src, ITarget<DetectionFrame>& trg) :
-      source(src),
-      target(trg)
-   {
-      this->detector = bdetector;
-   }
+   PDetector(BlobDetector *blobDetector, ISource<Mat>& frameBuff, ITarget<DetectionFrame>& targetBuff) 
+	   :frameBuffer(frameBuff),
+		targetBuffer(targetBuff),
+		detector(blobDetector)
+	{}
 
    ~PDetector() {}
 

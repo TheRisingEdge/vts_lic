@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 	param.blobDetector = new BlobDetector(15,20,"detector");
 
 	AutoTracker tracker(param);
-	tracker.run();
+	tracker.start();
 
 	return 0;
 }

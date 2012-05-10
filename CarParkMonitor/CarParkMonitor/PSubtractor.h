@@ -15,25 +15,20 @@ struct SubFrame
 class PSubtractor : public agent
 {
 private:
-   BgSubtractorBase   *subtractor;
-   ITarget<SubFrame>& target;
-   int                trainingFrames;
-
-   char   *videoPath;
-   VideoCapture capture;
-   bool openVideoCapture(int& fps, double& frameDelay);
+	int _trainingFrames;
+	BgSubtractorBase   *_subtractor;		
+	ISource<Mat>& _vidInput;   
+	ITarget<SubFrame>& _target;         
 
 public:
-   PSubtractor(BgSubtractorBase *subtractor, ITarget<SubFrame>& tbuffer, char *videoPath, int trainingFrames) :
-      target(tbuffer)
-   {
-      this->subtractor     = subtractor;
-      this->target         = target;
-      this->videoPath      = videoPath;
-      this->trainingFrames = trainingFrames;
-   }
-
+   PSubtractor(BgSubtractorBase *subtractor,ISource<Mat>& videoInput, ITarget<SubFrame>& tbuffer, char *videoPath, int trainingFrames) 
+	   :_target(tbuffer),
+		_vidInput(videoInput),
+		_subtractor(subtractor),
+		_trainingFrames(trainingFrames)		
+   {}
    ~PSubtractor() {}
+   ITarget<int>* SyncBuffer;
 
 protected:
    void run();

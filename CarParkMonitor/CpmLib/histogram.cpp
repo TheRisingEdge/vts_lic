@@ -33,23 +33,29 @@ double lbp::chi_square_(const Mat& histogram0, const Mat& histogram1) {
 
 
 void lbp::spatial_histogram(const Mat& src, Mat& hist, int numPatterns, const Size& window, int overlap) {
-	int width = src.cols;
-	int height = src.rows;
+
+	int xtimes = window.width;
+	int ytimes = window.height;
+	int width = src.cols/window.width;
+	int height = src.rows/window.height;	
+
 	vector<Mat> histograms;
-	for(int x=0; x <= width - window.width; x+=(window.width-overlap)) {
-		for(int y=0; y <= height-window.height; y+=(window.height-overlap)) {
-			Mat cell = Mat(src, Rect(x,y,window.width, window.height));
+	for(int i = 0; i < xtimes; i++)
+		for(int j = 0; j < ytimes; j++)
+		{			
+			Mat cell = src(Rect(i*width , j*height, width, height));
 			histograms.push_back(histogram(cell, numPatterns));
 		}
-	}
+
 	hist = Mat_<int>(1, histograms.size()*numPatterns);
+	assert(hist.cols == 2304);
 	// i know this is a bit lame now... feel free to make this a bit more efficient...
 	for(int histIdx=0; histIdx < histograms.size(); histIdx++) {
 		for(int valIdx = 0; valIdx < numPatterns; valIdx++) {
 			int y = histIdx*numPatterns+valIdx;
 			hist.at<int>(0,y) = histograms[histIdx].at<int>(valIdx);
 		}
-	}
+	}	
 }
 
 // wrappers
@@ -74,9 +80,9 @@ double lbp::chi_square(const Mat& histogram0, const Mat& histogram1) {
 }
 
 void lbp::spatial_histogram(const Mat& src, Mat& dst, int numPatterns, int gridx, int gridy, int overlap) {
-	int width = src.cols/gridx;
-	int height =src.rows / gridy;
-	spatial_histogram(src, dst, numPatterns, Size_<int>(width, height), overlap);
+	//int width = src.cols/gridx;
+	//int height =src.rows / gridy;
+	spatial_histogram(src, dst, numPatterns, Size_<int>(gridx, gridy), overlap);
 }
 
 // Mat return type functions
@@ -96,6 +102,6 @@ Mat lbp::spatial_histogram(const Mat& src, int numPatterns, const Size& window, 
 
 Mat lbp::spatial_histogram(const Mat& src, int numPatterns, int gridx, int gridy, int overlap) {
 	Mat hist;
-	spatial_histogram(src, hist, numPatterns, gridx, gridy);
+	spatial_histogram(src, hist, numPatterns, gridx, gridy);	
 	return hist;
 }

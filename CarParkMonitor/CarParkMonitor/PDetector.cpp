@@ -4,14 +4,16 @@
 void PDetector::run()
 {
    while (true)
-   {
-      SubFrame sframe = receive(source);
+   {	
+		Mat frame = receive(frameBuffer);
+
+      //SubFrame sframe = receive(source);
 
       //imshow("frame", sframe.frame);
       //imshow("foreground", sframe.foreground);
 
-      DetectionFrame dframe = { sframe.frame };
-      send(target, dframe);
+      //DetectionFrame dframe = { sframe.frame };
+      //send(targetBuffer, dframe);
 
 /*		DetectorParams params;
  *              params.frame = sframe.frame;

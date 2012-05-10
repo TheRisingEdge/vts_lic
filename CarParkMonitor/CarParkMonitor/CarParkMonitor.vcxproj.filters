@@ -75,6 +75,9 @@
     <ClCompile Include="NccMatcher.cpp">
       <Filter>Source Files\ParallelTracking\Matchers</Filter>
     </ClCompile>
+    <ClCompile Include="PVideoReader.cpp">
+      <Filter>Source Files\ParallelTracking</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="NccMatcher.h">
       <Filter>Header Files\ParallelTracking\Matchers</Filter>
+    </ClInclude>
+    <ClInclude Include="PVideoReader.h">
+      <Filter>Header Files\ParallelTracking</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

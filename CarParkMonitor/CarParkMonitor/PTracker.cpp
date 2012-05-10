@@ -22,19 +22,19 @@ struct detectionMatch
 
 static const int bufferSize = 3;
 
-bool PTracker::shiftBuffers( Mat frame )
+bool PTracker::shiftBuffers( SubFrame subResult, ClasifierFrame classifierResult )
 {
+	Mat frame = subResult.frame;	
+	Mat foreground = subResult.foreground;
+	frameRect = Rect(0,0, frame.cols, frame.rows);
 
 	Mat grayFrame;
 	cv::cvtColor(frame, grayFrame, CV_BGR2GRAY);
+	
+	auto frameDetections = classifierResult.detections;
 
-	Mat foreground = subtractor->segment(frame);
-
-	ClassifierParams cparam = {frame};
-	auto frameDetections = classifier->detect(cparam);
-
-	frameBuffer.push_back(frame.clone());
-	foregroundBuffer.push_back(foreground.clone());
+	frameBuffer.push_back(frame);
+	foregroundBuffer.push_back(foreground);
 	detectionBuffer.push_back(frameDetections);	
 	grayFrameBuffer.push_back(grayFrame);
 
@@ -55,173 +55,6 @@ bool PTracker::shiftBuffers( Mat frame )
 	return true;
 }
 
-void PTracker::start()
-{
-	long trainingFrames = 100;
-	int fps;
-	double frameDelay;
-	
-
-	if(!video.openCapture(fps, frameDelay))
-		return;
-
-	IdGenerator idGenerator(0);
-		
-	Mat frame;
-	while(video.read(frame))
-	{				
-		frameCount = video.frameCount;
-		frameRect = Rect(0,0, frame.cols, frame.rows);
-		if(video.frameCount < trainingFrames)
-		{
-			subtractor->learn(frame);
-		}else{
-			
-			bool buffersFull = shiftBuffers(frame);
-			if(!buffersFull)
-				continue;
-	
-#pragma region getting_frames
-			auto detections = detectionBuffer[1];
-			auto currentFrame = frameBuffer[1];
-			auto currentGrayFrame = grayFrameBuffer[1];
-			auto prevFrame = frameBuffer[0];
-			auto currentForeground = foregroundBuffer[1];			
-#pragma endregion 
-
-#pragma region fist_init_from_detections
-			if(tracks.size() == 0 && detections.size() > 0)
-			{
-				tracks.clear();
-				tracks.reserve(detections.size());
-				for_each(begin(detections), end(detections), [&](detection& d){
-					initializeTrack(d, idGenerator, grayFrameBuffer[1]);
-				});
-				continue;
-			}
-#pragma endregion
-
-#pragma region prediction_tracks_positions
-			vector<track> tracksToErase;
-			auto lkoutput = currentFrame.clone();
-
-			auto it = tracks.begin();
-			auto tend = tracks.end();
-			for(; it != tend; ++it)
-			{				
-				if(trackHasExited(*it, frame))				
-				{
-					tracksToErase.push_back(*it);
-					continue;
-				}
-					
-				Rect lkRect, kalmanRect;
-				bool lkSuccess = trackLucasKanade(*it, frameBuffer, grayFrameBuffer, foregroundBuffer,lkRect,lkoutput);				
-				bool kalmanSuccess = predictKalman(*it, kalmanRect);
-				mergePredictions(lkSuccess, kalmanSuccess ,*it, lkRect, kalmanRect, grayFrameBuffer);
-			}
-			
-			for_each(begin(tracksToErase), end(tracksToErase), [&](track tr){
-				deleteTrack(tr);
-			});	
-#pragma endregion
-
-			std::map<int, trackMatch> trMatches; 
-			std::map<int, detectionMatch> detMatches;
-			std::map<int, Mat> detectionHists;
-
-			if(video.frameCount == 273)
-			{int a; a = 3;}
-
-			matcher->begin();
-			secMatcher->begin();
-			for_each(begin(tracks), end(tracks), [&](track& tr){													
-				auto dit = detections.begin();
-				auto dend = detections.end();
-				for(;dit != dend; ++dit)
-				{
-					float score = matcher->match(tr, *dit, currentGrayFrame);
-					if(score < 0)
-					continue;
-
-					float dist = secMatcher->match(tr, *dit, currentGrayFrame);
-					if(dist > secMatcher->goodMaxDist)
-					{
-						//cv::waitKey();
-						continue;
-					}
-
-					trackMatch trMatch = {dit->id, 0, score};
-					detectionMatch dMatch = {tr.id, score};
-
-					if(trMatches.find(tr.id) == trMatches.end())
-					{
-						trMatches[tr.id] = trMatch;
-						detMatches[dit->id] = dMatch;																	
-						
-					}else if(trMatches[tr.id].score < score)
-					{			
-						auto prevTMatch = detMatches[dit->id];						
-						trMatches.erase(prevTMatch.trackId);
-
-						trMatches[tr.id] = trMatch;
-						detMatches[dit->id] = dMatch;												
-					}
-				}							
-			});			
-
-#pragma region update_tracks_and_kalman_from_detections
-			for_each(begin(tracks), end(tracks), [&](track& tr){
-				if(trMatches.find(tr.id) != trMatches.end())//matched detection with track
-				{
-					auto m = trMatches[tr.id];
-					matcher->inferModel(tr, detections[m.detectionId], currentGrayFrame);
-					secMatcher->inferModel(tr, detections[m.detectionId], currentGrayFrame);
-					validators[tr.id].tick(true);
-
-					correctKalman(tr);					
-				}else
-				{//detection not found for track
-					validators[tr.id].tick(false);
-					forwardKalman(tr);
-				}
-			});
-#pragma endregion
-
-#pragma region track_initiation_from_detections
-			for_each(begin(detections), end(detections), [&](detection& mockdet){
-				auto it = detMatches.find(mockdet.id);
-				if(it == detMatches.end()){				
-					auto inited = initializeTrack(mockdet, idGenerator, currentGrayFrame);
-					trackMatch m = {mockdet.id, 1, 1};
-					trMatches[inited.id] = m;					
-				}
-			});
-#pragma endregion 
-
-#pragma region drawing_results
-			auto fclone = currentFrame.clone();								
-			Helper::drawDetections(detections, fclone);			
-			Helper::drawTracks(tracks, fclone, Scalar(255,0,0));
-
-			for_each(begin(tracks), end(tracks), [&](track& tr){
-				Helper::drawRect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
-			});
-						
-			std::stringstream str;
-			str << carCount;			
-			Helper::drawText(str.str(), Point(10,20), fclone, Scalar(255,255,0));
-		
-			imshow("kalman", fclone);
-			fclone.release();
-			lkoutput.release();
-#pragma endregion
-		}
-
-		cv::waitKey(frameDelay);	
-	}
-}
-
 track PTracker::createFromDetection( detection& d,IdGenerator& gen, Mat& frame)
 {
 	Point tl = d.rect.tl();
@@ -231,7 +64,6 @@ track PTracker::createFromDetection( detection& d,IdGenerator& gen, Mat& frame)
 	secMatcher->inferModel(t, d, frame);
 	return t;
 }
-
 
 #pragma region lucasKanade_Kalman_predictors
 
@@ -248,11 +80,9 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 		return false;
 
 	Mat trackForeground = currentForeground(trackRect);
-	Mat currentFrame = frames[0];
-	Mat nextFrame = frames[1];
 
 	int xoffset = trackRect.width / XCount;
-	int yoffset = trackRect.height/ YCount;
+	int yoffset = trackRect.height / YCount;
 	Point tl = trackRect.tl();
 
 	vector<Point2f> trackedPoints; 
@@ -260,12 +90,8 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 	{
 		for(int j = 0; j < YCount; j++)
 		{
-			int line = xoffset*i;
-			int col = yoffset*j;
-			
-			if(line >= trackForeground.rows || col >= trackForeground.cols)
-				continue;
-
+			int line = yoffset*j;
+			int col = xoffset*i;						
 			uchar value = trackForeground.at<uchar>(line,col);
 			if( value == 255)
 				trackedPoints.push_back(Point2f(tl.x, tl.y) + Point2f(col,line));			
@@ -435,7 +261,6 @@ void PTracker::forwardKalman( track& tr )
 }
 #pragma endregion
 
-
 track PTracker::initializeTrack( detection& det, IdGenerator& idGenerator, Mat& grayFrame)
 {
 	auto track = createFromDetection(det, idGenerator, grayFrame);
@@ -497,6 +322,156 @@ void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, R
 	else
 	{
 		tr.assign(kalmanRect);
+	}		
+}
+
+void PTracker::run()
+{
+	IdGenerator idGenerator(0);
+
+	while(true)
+	{
+		SubFrame subResult = receive(subtractorBuffer);
+		ClasifierFrame classifierResult = receive(classifierBuffer);
+
+		bool buffersFull = shiftBuffers(subResult, classifierResult);
+		if(!buffersFull)
+			continue;
+
+#pragma region setting data for time t
+		auto detections = detectionBuffer[1];
+		auto currentFrame = frameBuffer[1];
+		auto currentGrayFrame = grayFrameBuffer[1];
+		auto prevFrame = frameBuffer[0];
+		auto currentForeground = foregroundBuffer[1];			
+#pragma endregion 
+
+#pragma region init tracks from first detections
+		if(tracks.size() == 0 && detections.size() > 0)
+		{
+			tracks.clear();
+			tracks.reserve(detections.size());
+			for_each(begin(detections), end(detections), [&](detection& d){
+				initializeTrack(d, idGenerator, currentGrayFrame);
+			});
+			continue;
+		}
+#pragma endregion
+
+#pragma region predict track positions for time t
+		vector<track> tracksToErase;
+		auto lkoutput = currentFrame.clone();
+
+		auto it = tracks.begin();
+		auto tend = tracks.end();
+		for(; it != tend; ++it)
+		{				
+			if(trackHasExited(*it, currentFrame))				
+			{
+				tracksToErase.push_back(*it);
+				continue;
+			}
+
+			Rect lkRect, kalmanRect;
+			bool lkSuccess = trackLucasKanade(*it, frameBuffer, grayFrameBuffer, foregroundBuffer,lkRect,lkoutput);				
+			bool kalmanSuccess = predictKalman(*it, kalmanRect);
+			mergePredictions(lkSuccess, kalmanSuccess ,*it, lkRect, kalmanRect, grayFrameBuffer);
+		}
+
+		for_each(begin(tracksToErase), end(tracksToErase), [&](track tr){
+			deleteTrack(tr);
+		});	
+#pragma endregion
+
+		std::map<int, trackMatch> trMatches; 
+		std::map<int, detectionMatch> detMatches;	
+
+		matcher->begin();
+		secMatcher->begin();
+		for_each(begin(tracks), end(tracks), [&](track& tr){													
+			auto dit = detections.begin();
+			auto dend = detections.end();
+			for(;dit != dend; ++dit)
+			{
+				float score = matcher->match(tr, *dit, currentGrayFrame);
+				if(score < 0)
+					continue;
+
+				float dist = secMatcher->match(tr, *dit, currentGrayFrame);
+				if(dist > secMatcher->goodMaxDist)
+				{
+					//cv::waitKey();
+					continue;
+				}
+
+				trackMatch trMatch = {dit->id, 0, score};
+				detectionMatch dMatch = {tr.id, score};
+
+				if(trMatches.find(tr.id) == trMatches.end())
+				{
+					trMatches[tr.id] = trMatch;
+					detMatches[dit->id] = dMatch;																	
+
+				}else if(trMatches[tr.id].score < score)
+				{			
+					auto prevTMatch = detMatches[dit->id];						
+					trMatches.erase(prevTMatch.trackId);
+
+					trMatches[tr.id] = trMatch;
+					detMatches[dit->id] = dMatch;												
+				}
+			}							
+		});			
+
+#pragma region update track models and kalman
+		for_each(begin(tracks), end(tracks), [&](track& tr){
+			if(trMatches.find(tr.id) != trMatches.end())//matched detection with track
+			{
+				auto m = trMatches[tr.id];
+				matcher->inferModel(tr, detections[m.detectionId], currentGrayFrame);
+				secMatcher->inferModel(tr, detections[m.detectionId], currentGrayFrame);
+				validators[tr.id].tick(true);
+
+				correctKalman(tr);					
+			}else
+			{//detection not found for track
+				validators[tr.id].tick(false);
+				forwardKalman(tr);
+			}
+		});
+#pragma endregion
+
+#pragma region init new tracks from unmatched detections
+		for_each(begin(detections), end(detections), [&](detection& mockdet){
+			auto it = detMatches.find(mockdet.id);
+			if(it == detMatches.end()){				
+				auto inited = initializeTrack(mockdet, idGenerator, currentGrayFrame);
+				trackMatch m = {mockdet.id, 1, 1};
+				trMatches[inited.id] = m;					
+			}
+		});
+#pragma endregion 
+
+#pragma region drawing_results
+		auto fclone = currentFrame.clone();								
+		Helper::drawDetections(detections, fclone);			
+
+		Helper::drawTracks(tracks, fclone, Scalar(255,0,0));
+
+		for_each(begin(tracks), end(tracks), [&](track& tr){
+			Helper::drawRect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
+		});
+
+		std::stringstream str;
+		str << carCount;			
+		Helper::drawText(str.str(), Point(10,20), fclone, Scalar(255,255,0));
+
+		imshow("kalman", fclone);
+		fclone.release();
+		lkoutput.release();
+#pragma endregion
+
+		cv::waitKey(1.);
+		send(syncBuffer,1);
 	}
-		
 }

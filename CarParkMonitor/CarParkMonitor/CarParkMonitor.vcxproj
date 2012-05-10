@@ -89,6 +89,7 @@
     <ClCompile Include="PSubtractor.cpp" />
     <ClCompile Include="PTracker.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PVideoReader.cpp" />
     <ClCompile Include="Validator.cpp" />
     <ClCompile Include="Video.cpp" />
   </ItemGroup>
@@ -104,6 +105,7 @@
     <ClInclude Include="PDetector.h" />
     <ClInclude Include="PSubtractor.h" />
     <ClInclude Include="PTracker.h" />
+    <ClInclude Include="PVideoReader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TrackMatcher.h" />
     <ClInclude Include="Validator.h" />

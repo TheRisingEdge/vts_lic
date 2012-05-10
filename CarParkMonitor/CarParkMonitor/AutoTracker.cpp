@@ -14,6 +14,7 @@
 #include "Video.h"
 #include "PTracker.h"
 #include "Matcher2D.h"
+#include "PVideoReader.h"
 
 using namespace Concurrency;
 
@@ -30,53 +31,38 @@ AutoTracker::AutoTracker( AutoTrackerParam param )
 	assert(this->blobDetector);
 }
 
-AutoTracker::~AutoTracker()
+void AutoTracker::start()
 {
+	int trainingFrames = 100;
+	unbounded_buffer<int> syncBuffer;
 
-}
-
-bool AutoTracker::openVideoCapture(int& fps, double& frameDelay)
-{
-	this->capture.open(this->videoPath);
-
-	if(!capture.isOpened())
-	{
-		capture.release();
-		return false;
-	}
-	
-	fps = capture.get(CV_CAP_PROP_FPS);		
-	frameDelay = 1000.0/(double)(fps);
-
-	return true;
-}
-
-void AutoTracker::run()
-{
 	BgSubtractorBase* subtractor = new MogSubtractor("mog");//new StableAvgSubtractor();	
 	BlobDetector* detector = new BlobDetector(15,20,"detector");
-	ClassifierBase* classifier = new HogClassifier();
+	ClassifierBase* hogClassifier = new HogClassifier();
 
-	//unbounded_buffer<SubFrame> subtractorOut;	
-	//PSubtractor psubtractor = PSubtractor(subtractor, subtractorOut, videoPath, 100);
-	//
-	//unbounded_buffer<DetectionFrame> detectorOut;
-	//
-	//PDetector pdetector = PDetector(detector, subtractorOut, detectorOut);
-	//unbounded_buffer<ClasifierFrame> classifierOut;
-	//
-	//PClassifier pclassifier = PClassifier(classifier, detectorOut, classifierOut);
+	unbounded_buffer<Mat> vidOut0;
+	unbounded_buffer<Mat> vidOut1;
+	PVideoReader vidthread = PVideoReader(videoPath, vidOut0, vidOut1, syncBuffer);
 
-	//psubtractor.start();
-	//pdetector.start();
-	//pclassifier.start();
+	unbounded_buffer<SubFrame> subtractorOut;	
+	PSubtractor psubtractor = PSubtractor(subtractor, vidOut0, subtractorOut, videoPath, trainingFrames);
+	psubtractor.SyncBuffer = &syncBuffer;
+	
+	unbounded_buffer<ClasifierFrame> classifierOut;
+	PClassifier parallelClassifier = PClassifier(hogClassifier, vidOut1, classifierOut, trainingFrames);
 
-	//agent::wait(&psubtractor);
-	//agent::wait(&pdetector);
-	//agent::wait(&pclassifier);
+	PTracker tracker = PTracker(subtractorOut, classifierOut, new Matcher2D(), syncBuffer);
 
-	//subtractor = new AvgSubtractor();
-	Video vid = Video(videoPath);
-	PTracker tracker = PTracker(vid, subtractor, classifier, new Matcher2D());
+	for(int i = 0; i < 120; i++)
+		send(syncBuffer, 1);
+
+	vidthread.start();
+	psubtractor.start();
+	parallelClassifier.start();
 	tracker.start();
+	
+	agent::wait(&vidthread);
+	agent::wait(&psubtractor);
+	agent::wait(&parallelClassifier);
+	agent::wait(&tracker);
 }

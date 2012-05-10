@@ -1,6 +1,5 @@
 #include "Validator.h"
 
-
 void Validator::tick( bool detectionOccured )
 {
 	if(!consideredLost)

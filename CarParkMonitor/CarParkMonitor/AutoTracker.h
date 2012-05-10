@@ -19,14 +19,11 @@ class AutoTracker {
 private:
    char             *videoPath;
    BgSubtractorBase *foregroungSegmentator;
-   BlobDetector     *blobDetector;
+   BlobDetector     *blobDetector;   
 
-   VideoCapture capture;
-   bool openVideoCapture(int& fps, double& frameDelay);
-
-public:
-	~AutoTracker();
+public:	
    AutoTracker(AutoTrackerParam param);
+   ~AutoTracker(){}
    
-   void run();
+   void start();
 };

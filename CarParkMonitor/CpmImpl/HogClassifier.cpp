@@ -37,11 +37,12 @@ vector<detection> HogClassifier::detect( ClassifierParams& params )
 	vector<detection> detectionsToReturn;
 
 	int detectionId = 0;
-	Mat fclone;
-	cv::cvtColor(frame, fclone, CV_BGR2GRAY);
-	gpuMat.upload(fclone);
+	Mat grayClone;
+	cv::cvtColor(frame, grayClone, CV_BGR2GRAY);
+	gpuMat.upload(grayClone);
 	hogGpu.detectMultiScale(gpuMat,rectDetections);
-	fclone.release();
+	gpuMat.release();
+	grayClone.release();
 
 	int size = rectDetections.size();
 	int* status = new int[size]; 	

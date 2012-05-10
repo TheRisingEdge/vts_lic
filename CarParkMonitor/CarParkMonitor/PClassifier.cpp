@@ -1,49 +1,26 @@
 #include "PClassifier.h"
 #include "ClassifierBase.h"
 #include "Draw.h"
-
-bool PClassifier::openVideoCapture(int& fps, double& frameDelay)
-{
-	this->capture.open(videoPath);
-	if (!capture.isOpened())
-	{
-		capture.release();
-		return false;
-	}
-
-	fps        = capture.get(CV_CAP_PROP_FPS);
-	frameDelay = 1000.0 / (double)(fps);
-	return true;
-}
-
-void PClassifier::setVideo( char *videoPath )
-{
-	this->videoPath = videoPath;
-}
+#include "Helper.h"
 
 void PClassifier::run()
-{
-   vector<detection> detections;
-   while (true)
-   {
-      auto detFrame = receive(source);
-      auto blobs = detFrame.blobs;
-      Mat  frame = detFrame.frame;
+{   
+		
+	long long frameCount = 0;		 		 
+	while (true)
+	{		
+		Mat frame = receive(frameBuffer);      
 
-      detections.clear();
-      ClassifierParams param = { frame, blobs };
-      auto detections  = classifier->detect(param);
-
-      if (detections.size() > 0)
-      {
-         auto fclone = frame.clone();
-         for_each(begin(detections), end(detections), [&](const detection &d) {
-            Draw::rect(d.rect, fclone);
-         });
-
-         imshow("classifier", fclone);
-         fclone.release();
-      }
-      cv::waitKey(5);
+		if(frameCount < trainingFrames)
+		{
+			frameCount++;
+			continue;
+		}
+			
+		ClassifierParams param = {frame};	  
+		auto detections  = classifier->detect(param);
+		ClasifierFrame result = {detections};
+	 
+		send(targetBuffer, result);		
    }
 }
