@@ -14,6 +14,7 @@ struct track
 	int id;
 	Rect_<float> rectf;	
 	model model;
+	int lkId;
 
 	void assign(Rect rect)
 	{

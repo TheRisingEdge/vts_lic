@@ -22,7 +22,7 @@
 	0, 0, 0, 1, 0, 0, 0, 0
 
 
-KalmanFilter2D::KalmanFilter2D(void)
+KalmanFilter2D::KalmanFilter2D()
 {
 	filter = KalmanFilter(8,4);
 

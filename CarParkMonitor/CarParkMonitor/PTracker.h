@@ -13,6 +13,14 @@
 
 using namespace Concurrency;
 
+struct trackEntry
+{
+	int begin;
+	int end;
+	int id;
+};
+
+
 class PTracker: public agent
 {
 private:
@@ -50,6 +58,20 @@ private:
 
 	void correctKalman(track& tr);
 	bool trackHasExited(track& tr, Mat frame);
+	
+	vector<Point2f> allRegisteredPoints;
+	map<int, trackEntry> registeredTracks;
+	map<int, bool> registeredStatuses;	
+	map<int, float> xmedianForTracks;
+	map<int, float> ymedianForTracks;
+	map<int, float> scaleForTracks;
+	int trackKey;
+	
+	void beginTracking();
+	int registerForLucasKanade(track& tr);
+	void performTracking();
+	bool unregister(track& tr, Rect& newRect);
+
 #pragma endregion
 
 	ISource<ClasifierFrame>& classifierBuffer;

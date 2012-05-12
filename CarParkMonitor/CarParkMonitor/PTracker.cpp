@@ -69,8 +69,8 @@ track PTracker::createFromDetection( detection& d,IdGenerator& gen, Mat& frame)
 
 #pragma region lucasKanade_Kalman_predictors
 
-const int XCount = 15;
-const int YCount = 15;
+const int XCount = 9;
+const int YCount = 9;
 const int minTrackedPoints = 10;
 const float treshold = 0.3;
 bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect ,Mat& output )
@@ -338,6 +338,10 @@ void PTracker::run()
 		SubFrame subResult = receive(subtractorBuffer);
 		ClasifierFrame classifierResult = receive(classifierBuffer);
 	
+		//imshow("frame", subResult.frame);
+		//imshow("fg", subResult.foreground);
+		//waitKey();
+
 		bool buffersFull = shiftBuffers(subResult, classifierResult);
 		if(!buffersFull)
 			continue;
@@ -351,6 +355,7 @@ void PTracker::run()
 		auto prevFrame = frameBuffer[0];
 		auto currentForeground = foregroundBuffer[1];			
 #pragma endregion 
+
 
 #pragma region init tracks from first detections
 		if(tracks.size() == 0 && detections.size() > 0)
@@ -378,15 +383,31 @@ void PTracker::run()
 				continue;
 			}
 
-			Rect lkRect, kalmanRect;
-			bool lkSuccess = trackLucasKanade(*it, frameBuffer, grayFrameBuffer, foregroundBuffer,lkRect,lkoutput);				
-			bool kalmanSuccess = predictKalman(*it, kalmanRect);
-			mergePredictions(lkSuccess, kalmanSuccess ,*it, lkRect, kalmanRect, grayFrameBuffer);
+			//Rect lkRect, kalmanRect;
+			//bool lkSuccess = trackLucasKanade(*it, frameBuffer, grayFrameBuffer, foregroundBuffer,lkRect,lkoutput);				
+			//bool kalmanSuccess = predictKalman(*it, kalmanRect);
+			//mergePredictions(lkSuccess, kalmanSuccess ,*it, lkRect, kalmanRect, grayFrameBuffer);
 		}
 
 		for_each(begin(tracksToErase), end(tracksToErase), [&](track tr){
 			deleteTrack(tr);
 		});	
+
+		beginTracking();
+		for(auto it = begin(tracks); it != end(tracks); it++)		
+			registerForLucasKanade(*it);			
+				
+		performTracking();
+
+		for(auto it = begin(tracks); it != end(tracks); it++)
+		{
+			Rect predictedRect, kalmanRect;
+			bool lkSuccess = unregister(*it, predictedRect);
+			bool kalmanSuccess = predictKalman(*it, kalmanRect);
+			mergePredictions(lkSuccess, kalmanSuccess, *it, predictedRect, kalmanRect, grayFrameBuffer);
+		}
+			
+
 #pragma endregion
 
 		std::map<int, trackMatch> trMatches; 
@@ -468,10 +489,8 @@ void PTracker::run()
 			Helper::drawRect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
 		});
 
-
-
 		//imshow("xxx", currentForeground);
-		//cv::waitKey(100);
+		//cv::waitKey(50);
 
 		std::stringstream str;
 		str << carCount;			
@@ -488,3 +507,185 @@ void PTracker::run()
 		send(syncBuffer,1);			
 	}
 }
+
+void PTracker::beginTracking()
+{
+	allRegisteredPoints.clear();
+	registeredStatuses.clear();
+	registeredTracks.clear();
+	xmedianForTracks.clear();
+	ymedianForTracks.clear();
+	scaleForTracks.clear();
+	trackKey = 0;
+}
+
+int PTracker::registerForLucasKanade( track& tr )
+{
+	int id = trackKey++;
+	auto trackRect = tr.asRecti();
+	Mat currentForeground = foregroundBuffer[0];
+
+	if(trackRect.area() < 10 || !Tool::rectInside(trackRect, frameRect))
+	{
+		registeredStatuses[id] = false;
+		tr.lkId = id;
+		return id;
+	}
+		
+	Mat trackForeground = currentForeground(trackRect);
+
+	int xoffset = trackRect.width / XCount;
+	int yoffset = trackRect.height / YCount;
+	Point tl = trackRect.tl();
+
+	vector<Point2f> trackedPoints; 
+	for(int i = 0; i < XCount; i++)
+	{
+		for(int j = 0; j < YCount; j++)
+		{
+			int line = yoffset*j;
+			int col = xoffset*i;						
+			uchar value = trackForeground.at<uchar>(line,col);
+			if( value == 255)
+				trackedPoints.push_back(Point2f(tl.x, tl.y) + Point2f(col,line));			
+		}
+	}
+
+	if(trackedPoints.size() < minTrackedPoints)
+	{
+		registeredStatuses[id] = false;
+		tr.lkId = id;
+		return id;
+	}
+		
+	int begin = allRegisteredPoints.size();
+	allRegisteredPoints.insert(allRegisteredPoints.end(), trackedPoints.begin(), trackedPoints.end());
+	int end = allRegisteredPoints.size() - 1;
+	trackEntry entry = {begin, end, id};
+	registeredTracks[id] = entry;	
+	tr.lkId = id;
+	return id;
+}
+
+void PTracker::performTracking()
+{	
+	if(allRegisteredPoints.size() == 0)
+		return;
+
+	vector<Point2f> ftracked;
+	vector<Point2f> btracked;
+	vector<uchar> fstatus, bstatus;
+	vector<float> ferrors, berrors;
+
+	cv::calcOpticalFlowPyrLK(
+		grayFrameBuffer[0],			
+		grayFrameBuffer[1], 
+		allRegisteredPoints, 
+		ftracked,
+		fstatus,
+		ferrors	
+	);
+
+	cv::calcOpticalFlowPyrLK(
+		grayFrameBuffer[1],			
+		grayFrameBuffer[0],
+		ftracked,
+		btracked,
+		bstatus,
+		berrors
+	);
+
+
+	for(auto it = begin(registeredTracks); it != end(registeredTracks); ++it)
+	{
+		int begin = (*it).second.begin;
+		int end = (*it).second.end;
+		int id = (*it).second.id;				
+
+		int sz = end - begin + 1;
+		float* xdiffs = new float[sz];
+		float* ydiffs = new float[sz];
+		int successCount = 0;
+		
+		for(int i = begin; i <= end; i++)
+		{
+			if(fstatus[i] == 1 && bstatus[i] == 1)
+			{
+				auto vec = btracked[i] - allRegisteredPoints[i];
+				float dist = sqrt(vec.x * vec.x + vec.y * vec.y);		
+				if(dist < treshold)
+				{					
+					Point2f diff = ftracked[i] - allRegisteredPoints[i];					
+					xdiffs[successCount] = diff.x;
+					ydiffs[successCount] = diff.y;
+					successCount++;
+
+				}else
+				{
+					fstatus[i] = 0;			
+					bstatus[i] = 0;
+				}				
+			}
+		}
+	
+		if(successCount > minTrackedPoints)
+		{
+			float xmedian = Tool::median(xdiffs, successCount);
+			float ymedian = Tool::median(ydiffs, successCount);
+		
+			float *scales = new float[sz*(sz-1)/2];
+			int comparisons = 0;
+			for (int i = begin; i < end; i++) {
+				for (int j = i + 1; j <= end; j++) {
+					if (fstatus[i] == 1 && fstatus[j] == 1) {
+
+						float dxPrev = allRegisteredPoints[j].x - allRegisteredPoints[i].x;
+						float dyPrev = allRegisteredPoints[j].y - allRegisteredPoints[i].y;
+
+						float dxNext = ftracked[j].x - ftracked[i].x;
+						float dyNext = ftracked[j].y - ftracked[i].y;
+
+						float sPrev = sqrt(dxPrev * dxPrev + dyPrev * dyPrev);
+						float sNext = sqrt(dxNext * dxNext + dyNext * dyNext);
+
+						if (sPrev != 0 && sNext != 0) {					
+							scales[comparisons] = sNext / sPrev;
+							comparisons++;
+						}
+					}
+				}
+			}
+
+			float scale = Tool::median(scales, comparisons);
+
+			xmedianForTracks[id] = xmedian;
+			ymedianForTracks[id] = ymedian;
+			scaleForTracks[id] = scale;
+			registeredStatuses[id] = true;
+		}else
+		{
+			registeredStatuses[id] = false;
+		}	
+
+		delete[] xdiffs;
+		delete[] ydiffs;	
+	}
+}
+
+bool PTracker::unregister(track& tr, Rect& predictedRect )
+{
+	if(registeredStatuses.find(tr.lkId) == registeredStatuses.end())
+		assert(false, "this should not happen");
+
+	if(registeredStatuses[tr.lkId] == false)
+		return false;
+	
+	predictedRect = tr.asRecti();
+	Tool::moveRect(predictedRect, xmedianForTracks[tr.lkId], ymedianForTracks[tr.lkId]);
+	float scale = scaleForTracks[tr.lkId];
+	Tool::scaleRect(predictedRect, scale, scale);
+	predictedRect = frameRect & predictedRect;
+
+	return true;
+}
+

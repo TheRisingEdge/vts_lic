@@ -13,7 +13,12 @@ void PSubtractor::run()
 		}else
 		{			
 			Mat foregorund = _subtractor->segment(frame);	
-			SubFrame result = {frame, foregorund};
+			SubFrame result = {frame, foregorund.clone()};
+
+			//imshow("frame", frame);
+			//imshow("fg", foregorund);
+			//waitKey();
+
 			send(_target, result);			
 		}				
 	}

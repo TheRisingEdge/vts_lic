@@ -62,9 +62,6 @@ Mat AvgSubtractor::segment(const Mat& frame )
 		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),2);	
 	}
 
-#if BG_DRAW
-	imshow(BgSubtractorBase::windowName, foreground);	
-#endif
 	return foreground;
 }
 
