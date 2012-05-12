@@ -22,7 +22,7 @@ private:
 	int frameCount;
 		
 	TrackMatcher* matcher;
-	LbpMatcher* secMatcher;
+	TrackMatcher* secMatcher;
 
 	vector<track> tracks;	
 	std::map<int, shared_ptr<KalmanFilter2D> > kalmanFilters;

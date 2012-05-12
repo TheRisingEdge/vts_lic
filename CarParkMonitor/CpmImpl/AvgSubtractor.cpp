@@ -16,7 +16,6 @@ void AvgSubtractor::init( char* windowName )
 	);
 }
 
-
 AvgSubtractor::AvgSubtractor():BgSubtractorBase()
 {
 	init("avg-sub");
@@ -54,26 +53,18 @@ Mat AvgSubtractor::segment(const Mat& frame )
 	// accumulate background
 	cv::accumulateWeighted(grayFrame, background, learningRate, foreground);	//can also pass mask to ignore stationary cars
 
-
 	if (this->closeHolesCount > 0)
 	{
 		Mat temp_foreground_mask;
-
 		// close holes
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 2);
-		
-
-		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);
-		
-
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),2);
-	
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 2);	
+		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);		
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),2);	
 	}
 
 #if BG_DRAW
 	imshow(BgSubtractorBase::windowName, foreground);	
 #endif
-
 	return foreground;
 }
 

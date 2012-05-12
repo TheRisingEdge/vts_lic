@@ -6,10 +6,9 @@ using namespace cv;
 
 class Content
 {
-
 public:
-	Content(void);
-	~Content(void);
+	Content(){}
+	~Content(){}
 
 	static char* pathTo(char* pathReg, int index);
 	static char* pathTo(char* pathReg, char* fileName);

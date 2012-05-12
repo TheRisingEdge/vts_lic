@@ -64,8 +64,8 @@ float Tool::median( float* A, int length )
 void Tool::moveRect( Rect& r, float x, float y )
 {
 	auto tl = r.tl();
-	x = floor(x + 0.5);
-	y = floor(y + 0.5);
+	x = floor(x + 0.49);
+	y = floor(y + 0.49);
 	r = Rect(tl.x + x, tl.y + y, r.width, r.height);
 }
 

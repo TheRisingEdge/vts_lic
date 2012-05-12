@@ -6,8 +6,7 @@ using namespace cv;
 
 struct ClassifierParams
 {
-	Mat frame;
-	vector<blob> blobs;
+	Mat frame;	
 };
 
 struct detection

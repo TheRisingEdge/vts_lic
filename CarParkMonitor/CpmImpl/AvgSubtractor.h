@@ -3,7 +3,7 @@
 
 using namespace cv;
 
-#define BG_DRAW 1
+#define BG_DRAW 0
 
 class AvgSubtractor: public BgSubtractorBase
 {

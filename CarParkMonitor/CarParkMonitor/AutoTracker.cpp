@@ -6,7 +6,6 @@
 #include <agents.h>
 #include "MogSubtractor.h"
 #include "PSubtractor.h"
-#include "PDetector.h"
 #include "AvgSubtractor.h"
 #include "StableAvgSubtractor.h"
 #include "PClassifier.h"
@@ -36,8 +35,7 @@ void AutoTracker::start()
 	int trainingFrames = 100;
 	unbounded_buffer<int> syncBuffer;
 
-	BgSubtractorBase* subtractor = new MogSubtractor("mog");//new StableAvgSubtractor();	
-	BlobDetector* detector = new BlobDetector(15,20,"detector");
+	BgSubtractorBase* subtractor = new AvgSubtractor("avg");//new StableAvgSubtractor();		
 	ClassifierBase* hogClassifier = new HogClassifier();
 
 	unbounded_buffer<Mat> vidOut0;
@@ -50,10 +48,10 @@ void AutoTracker::start()
 	
 	unbounded_buffer<ClasifierFrame> classifierOut;
 	PClassifier parallelClassifier = PClassifier(hogClassifier, vidOut1, classifierOut, trainingFrames);
-
+	
 	PTracker tracker = PTracker(subtractorOut, classifierOut, new Matcher2D(), syncBuffer);
 
-	for(int i = 0; i < 120; i++)
+	for(int i = 0; i < 250; i++)
 		send(syncBuffer, 1);
 
 	vidthread.start();

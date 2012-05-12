@@ -78,14 +78,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AutoTracker.cpp" />
-    <ClCompile Include="DebugHelper.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="KalmanFilter2D.cpp" />
     <ClCompile Include="LbpMatcher.cpp" />
     <ClCompile Include="Matcher2D.cpp" />
     <ClCompile Include="NccMatcher.cpp" />
     <ClCompile Include="PClassifier.cpp" />
-    <ClCompile Include="PDetector.cpp" />
     <ClCompile Include="PSubtractor.cpp" />
     <ClCompile Include="PTracker.cpp" />
     <ClCompile Include="main.cpp" />
@@ -95,14 +93,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AutoTracker.h" />
-    <ClInclude Include="DebugHelper.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="KalmanFilter2D.h" />
     <ClInclude Include="LbpMatcher.h" />
     <ClInclude Include="Matcher2D.h" />
     <ClInclude Include="NccMatcher.h" />
     <ClInclude Include="PClassifier.h" />
-    <ClInclude Include="PDetector.h" />
     <ClInclude Include="PSubtractor.h" />
     <ClInclude Include="PTracker.h" />
     <ClInclude Include="PVideoReader.h" />

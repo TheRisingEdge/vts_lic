@@ -17,9 +17,9 @@ struct AutoTrackerParam
 
 class AutoTracker {
 private:
-   char             *videoPath;
-   BgSubtractorBase *foregroungSegmentator;
-   BlobDetector     *blobDetector;   
+   char* videoPath;
+   BgSubtractorBase* foregroungSegmentator;
+   BlobDetector* blobDetector;   
 
 public:	
    AutoTracker(AutoTrackerParam param);

@@ -12,10 +12,8 @@ void PVideoReader::run()
 	Mat frame;
 	while(vid.read(frame))
 	{
-		receive(_syncBuffer);
-		//imshow("frame", frame);
-		//cv::waitKey(frameDelay);
-		send(_outBuffer0, frame.clone());
-		send(_outBuffer1, frame.clone());
+		receive(_syncBuffer);		
+		send(_subtractorBuffer, frame.clone());
+		send(_classifierBuffer, frame.clone());
 	}
 }

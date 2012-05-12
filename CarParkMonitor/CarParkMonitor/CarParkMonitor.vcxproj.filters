@@ -39,9 +39,6 @@
     <ClCompile Include="PSubtractor.cpp">
       <Filter>Source Files\ParallelTracking</Filter>
     </ClCompile>
-    <ClCompile Include="PDetector.cpp">
-      <Filter>Source Files\ParallelTracking</Filter>
-    </ClCompile>
     <ClCompile Include="PClassifier.cpp">
       <Filter>Source Files\ParallelTracking</Filter>
     </ClCompile>
@@ -49,9 +46,6 @@
       <Filter>Source Files\Lib</Filter>
     </ClCompile>
     <ClCompile Include="Helper.cpp">
-      <Filter>Source Files\Lib</Filter>
-    </ClCompile>
-    <ClCompile Include="DebugHelper.cpp">
       <Filter>Source Files\Lib</Filter>
     </ClCompile>
     <ClCompile Include="AutoTracker.cpp">
@@ -86,9 +80,6 @@
     <ClInclude Include="PSubtractor.h">
       <Filter>Header Files\ParallelTracking</Filter>
     </ClInclude>
-    <ClInclude Include="PDetector.h">
-      <Filter>Header Files\ParallelTracking</Filter>
-    </ClInclude>
     <ClInclude Include="PClassifier.h">
       <Filter>Header Files\ParallelTracking</Filter>
     </ClInclude>
@@ -99,9 +90,6 @@
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
     <ClInclude Include="Helper.h">
-      <Filter>Header Files\Lib</Filter>
-    </ClInclude>
-    <ClInclude Include="DebugHelper.h">
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
     <ClInclude Include="AutoTracker.h">

@@ -23,23 +23,9 @@ cv::Mat MogSubtractor::segment( const Mat& frame )
 
 	Mat background;
 	bgModel.getBackgroundImage(background);
-	
 
 	cv::erode(foreground, foreground, smallCrossKernel, Point(-1,-1),2);
 	cv::dilate(foreground, foreground, crossKernel, Point(-1,-1),3);
-	//cv::dilate(foreground, foreground, elipseKernel, Point(-1,-1),1);
-
-	//cv::erode(foreground, foreground, crossKernel, Point(-1,-1),1);
-
-	//cv::dilate(foreground, foreground, elipseKernel, Point(-1,-1),1);
-	
-	//cv::dilate(foreground, foreground, elipseKernel, Point(-1,-1),1);	
-	//cv::erode(foreground, foreground, elipseKernel, Point(-1,-1),2);	
-
-	//imshow(foregroundWindowName, foreground);
-	
-	//if(!background.empty())
-	//	imshow(meanWindowName, background );
 
 	return foreground;
 }
@@ -55,8 +41,6 @@ void MogSubtractor::init( char* windowName )
 
 	foregroundWindowName = new char[50];
 	sprintf(foregroundWindowName,"mog-foreground-%d", instanceNr);
-
-
 	
 	int erosionSize = 2;
 	elipseKernel = getStructuringElement( 

@@ -1,14 +1,5 @@
 #include "Content.h"
 
-
-Content::Content(void)
-{
-}
-
-Content::~Content(void)
-{
-}
-
 char* Content::pathTo( char* pathReg, int index )
 {
 	char* fileName = new char[50];

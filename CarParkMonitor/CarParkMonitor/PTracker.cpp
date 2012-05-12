@@ -7,6 +7,8 @@
 #include "lbp.h"
 #include "histogram.h"
 
+#define PROCESS 1
+
 struct trackMatch
 {
 	int detectionId;
@@ -245,13 +247,15 @@ void PTracker::forwardKalman( track& tr )
 	if(kalmanFilters.find(tr.id) != kalmanFilters.end())
 	{
 		auto filter = kalmanFilters[tr.id];		
-		auto lastPrediction = filter->lastState;
+		auto lastState = filter->lastState;
 
-		int vx = floor(lastPrediction.vx);
-		int vy = floor(lastPrediction.vy);
+		int vx = floor(lastState.vx);
+		int vy = floor(lastState.vy);
 
-		auto lastRect = lastPrediction.asRect();
+		auto lastRect = lastState.asRect();
 		Rect fakeRect = lastRect;
+		Tool::moveRect(fakeRect, vx, vy);
+
 		KalmanInput2D fakeInput = {fakeRect};
 		auto fakeResult = filter->correct(fakeInput); 
 		
@@ -333,10 +337,12 @@ void PTracker::run()
 	{
 		SubFrame subResult = receive(subtractorBuffer);
 		ClasifierFrame classifierResult = receive(classifierBuffer);
-
+	
 		bool buffersFull = shiftBuffers(subResult, classifierResult);
 		if(!buffersFull)
 			continue;
+		
+#if PROCESS
 
 #pragma region setting data for time t
 		auto detections = detectionBuffer[1];
@@ -462,16 +468,23 @@ void PTracker::run()
 			Helper::drawRect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
 		});
 
+
+
+		//imshow("xxx", currentForeground);
+		//cv::waitKey(100);
+
 		std::stringstream str;
 		str << carCount;			
 		Helper::drawText(str.str(), Point(10,20), fclone, Scalar(255,255,0));
 
 		imshow("kalman", fclone);
+		
 		fclone.release();
 		lkoutput.release();
 #pragma endregion
+#endif
 
 		cv::waitKey(1.);
-		send(syncBuffer,1);
+		send(syncBuffer,1);			
 	}
 }

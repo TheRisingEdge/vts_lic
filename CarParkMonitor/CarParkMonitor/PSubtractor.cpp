@@ -12,7 +12,7 @@ void PSubtractor::run()
 			frameCount++;
 		}else
 		{			
-			Mat foregorund = _subtractor->segment(frame);		
+			Mat foregorund = _subtractor->segment(frame);	
 			SubFrame result = {frame, foregorund};
 			send(_target, result);			
 		}				

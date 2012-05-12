@@ -1,6 +1,5 @@
 #pragma once
 #include <agents.h>
-#include "PDetector.h"
 #include "ClassifierBase.h"
 
 using namespace Concurrency;
