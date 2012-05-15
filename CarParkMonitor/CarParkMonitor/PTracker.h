@@ -25,6 +25,7 @@ class PTracker: public agent
 {
 private:
 #pragma region fields
+	bool debugPrint;
 	long long carCount;
 	Rect frameRect;
 	int frameCount;
@@ -87,6 +88,7 @@ public:
 		matcher(mat),
 		syncBuffer(sync),
 		carCount(0),
+		debugPrint(false),
 		secMatcher(new LbpMatcher())
 	{}	
 
