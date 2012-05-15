@@ -3,11 +3,11 @@
 void AvgSubtractor::init( char* windowName )
 {
 	this->threshold = 20;
-	this->learningRate = 0.01;
+	this->learningRate = 0.1;
 
 	this->closeHolesCount = 0;
-	int erosionType = MORPH_CROSS;
-	int erosionSize = 4;
+	int erosionType = MORPH_OPEN;
+	int erosionSize = 3;
 
 	this->structuringElement = getStructuringElement( 
 		erosionType,
@@ -25,7 +25,6 @@ AvgSubtractor::AvgSubtractor( char* windowName ):BgSubtractorBase(windowName)
 {
 	init(windowName);
 }
-
 
 void AvgSubtractor::learn(const Mat& frame)
 {
@@ -56,10 +55,10 @@ Mat AvgSubtractor::segment(const Mat& frame )
 	if (this->closeHolesCount > 0)
 	{
 		Mat temp_foreground_mask;
-		// close holes
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 2);	
+		
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 10);	
 		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);		
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),2);	
+		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),5);	
 	}
 
 	return foreground;

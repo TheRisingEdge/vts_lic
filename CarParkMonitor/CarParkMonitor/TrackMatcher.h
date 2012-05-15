@@ -15,6 +15,7 @@ struct track
 	Rect_<float> rectf;	
 	model model;
 	int lkId;
+	bool markedForDeletion;
 
 	void assign(Rect rect)
 	{

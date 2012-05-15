@@ -8,6 +8,11 @@
 #include "histogram.h"
 
 #define PROCESS 1
+const int XCount = 9;
+const int YCount = 9;
+const int minTrackedPoints = 10;
+const float treshold = 0.3;
+static const int bufferSize = 3;
 
 struct trackMatch
 {
@@ -21,8 +26,6 @@ struct detectionMatch
 	int trackId;
 	float score;
 };
-
-static const int bufferSize = 3;
 
 bool PTracker::shiftBuffers( SubFrame subResult, ClasifierFrame classifierResult )
 {
@@ -67,17 +70,27 @@ track PTracker::createFromDetection( detection& d,IdGenerator& gen, Mat& frame)
 	return t;
 }
 
-#pragma region lucasKanade_Kalman_predictors
+track PTracker::createTrack( detection& det, IdGenerator& idGenerator, Mat& grayFrame)
+{
+	auto track = createFromDetection(det, idGenerator, grayFrame);
+	tracks.push_back(track);
 
-const int XCount = 9;
-const int YCount = 9;
-const int minTrackedPoints = 10;
-const float treshold = 0.3;
+	auto filter = shared_ptr<KalmanFilter2D>(new KalmanFilter2D());
+	KalmanInput2D input = {det.rect};
+	filter->init(input);
+	kalmanFilters[track.id] = filter;
+
+	Validator v = Validator();
+	validators[track.id] = v;
+	validators[track.id].tick(true);
+	return track;
+}
+
 bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect ,Mat& output )
 {	
 	auto trackRect = tr.asRecti();
 	Mat currentForeground = foregrounds[0];
-	
+
 	if(trackRect.area() < 10 || !Tool::rectInside(trackRect, Rect(0,0, currentForeground.cols, currentForeground.rows)))
 		return false;
 
@@ -116,7 +129,7 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 		ftracked,
 		fstatus,
 		ferrors	
-	);
+		);
 
 	cv::calcOpticalFlowPyrLK(
 		grayFrames[1],			
@@ -125,7 +138,7 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 		btracked,
 		bstatus,
 		berrors
-	);
+		);
 
 	int size = trackedPoints.size();
 	float* xdiffs = new float[size];
@@ -211,20 +224,23 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 	return true;
 }
 
-bool PTracker::predictKalman( track& tr, Rect& predictedRect)
+#pragma region kalman predictors
+
+bool PTracker::getKalmanPrediction( track& tr, Rect& predictedRect)
 {
 	if(kalmanFilters.find(tr.id) != kalmanFilters.end())
 	{
 		auto filter = kalmanFilters[tr.id];		
 		auto kalmanResult = filter->predict();
 		auto rect = kalmanResult.asRect();		
-		predictedRect = rect & frameRect;
-
+		predictedRect = rect;
+		predictedRect = frameRect & predictedRect;
 		tr.model.kalmanRect = rect;//to be removed		
 	}else
 		assert(false);
 
 	return true;
+	//return (Tool::rectInside(predictedRect, frameRect));	
 }
 
 void PTracker::correctKalman( track& tr )
@@ -265,22 +281,7 @@ void PTracker::forwardKalman( track& tr )
 }
 #pragma endregion
 
-track PTracker::initializeTrack( detection& det, IdGenerator& idGenerator, Mat& grayFrame)
-{
-	auto track = createFromDetection(det, idGenerator, grayFrame);
-	tracks.push_back(track);
-
-	auto filter = shared_ptr<KalmanFilter2D>(new KalmanFilter2D());
-	KalmanInput2D input = {det.rect};
-	filter->init(input);
-	kalmanFilters[track.id] = filter;
-
-	Validator v = Validator();
-	validators[track.id] = v;
-	validators[track.id].tick(true);
-	return track;
-}
-
+#pragma region obsolete
 void PTracker::deleteTrack( track& tr )
 {
 	auto it = tracks.begin();
@@ -297,17 +298,238 @@ void PTracker::deleteTrack( track& tr )
 	{
 		carCount++;		
 	}
-
 	validators.erase(tr.id);
 }
+#pragma endregion
 
-bool PTracker::trackHasExited( track& tr, Mat frame )
+#pragma region track deleting
+void PTracker::deleteExitedTracks()
 {
-	Rect frameRect = Rect(0,0, frame.cols, frame.rows);
-	return (!Tool::rectInside(tr.asRecti(), frameRect))||(validators[tr.id].isLost());
+	auto it = begin(tracks);	
+	while(it != end(tracks))
+	{		
+		if(trackHasExited(*it))
+		{		
+			if(!validators[it->id].isLost() && validators[it->id].score() > validators[it->id].minScore)		
+				carCount++;				
+			validators.erase(it->id);
+
+			kalmanFilters.erase(it->id);
+			it = tracks.erase(it);
+		}else
+			++it;		
+	}
 }
 
-void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, Rect& lkRect, Rect& kalmanRect, vector<Mat> grayBuffer )
+bool PTracker::trackHasExited( track& tr)
+{	
+	return (!Tool::rectInside(tr.asRecti(), frameRect))||(validators[tr.id].isLost());
+}
+#pragma endregion
+
+#pragma region unified lucas kanade tracking
+void PTracker::beginTracking()
+{
+	allRegisteredPoints.clear();
+	registeredStatuses.clear();
+	registeredTracks.clear();
+	xmedianForTracks.clear();
+	ymedianForTracks.clear();
+	scaleForTracks.clear();
+	trackKey = 0;
+}
+
+int PTracker::registerForTracking( track& tr )
+{
+	int id = trackKey++;
+	auto trackRect = tr.asRecti();
+	Mat currentForeground = foregroundBuffer[0];
+
+	if(trackRect.area() < 10 || !Tool::rectInside(trackRect, frameRect))
+	{
+		registeredStatuses[id] = false;
+		tr.lkId = id;
+		return id;
+	}
+
+	Mat trackForeground = currentForeground(trackRect);
+
+	int xoffset = trackRect.width / XCount;
+	int yoffset = trackRect.height / YCount;
+	Point tl = trackRect.tl();
+
+	vector<Point2f> trackedPoints; 
+	for(int i = 0; i < XCount; i++)
+	{
+		for(int j = 0; j < YCount; j++)
+		{
+			int line = yoffset*j;
+			int col = xoffset*i;						
+			uchar value = trackForeground.at<uchar>(line,col);
+			if( value == 255)
+				trackedPoints.push_back(Point2f(tl.x, tl.y) + Point2f(col,line));			
+		}
+	}
+
+	if(trackedPoints.size() < minTrackedPoints)
+	{
+		registeredStatuses[id] = false;
+		tr.lkId = id;
+		return id;
+	}
+
+	int begin = allRegisteredPoints.size();
+	allRegisteredPoints.insert(allRegisteredPoints.end(), trackedPoints.begin(), trackedPoints.end());
+	int end = allRegisteredPoints.size() - 1;
+	trackEntry entry = {begin, end, id};
+	registeredTracks[id] = entry;	
+	tr.lkId = id;
+	return id;
+}
+
+void PTracker::performTracking()
+{	
+	if(allRegisteredPoints.size() == 0)
+		return;
+
+	vector<Point2f> ftracked;
+	vector<Point2f> btracked;
+	vector<uchar> fstatus, bstatus;
+	vector<float> ferrors, berrors;
+
+	cv::calcOpticalFlowPyrLK(
+		grayFrameBuffer[0],			
+		grayFrameBuffer[1], 
+		allRegisteredPoints, 
+		ftracked,
+		fstatus,
+		ferrors	
+		);
+
+	cv::calcOpticalFlowPyrLK(
+		grayFrameBuffer[1],			
+		grayFrameBuffer[0],
+		ftracked,
+		btracked,
+		bstatus,
+		berrors
+		);
+
+
+	for(auto it = begin(registeredTracks); it != end(registeredTracks); ++it)
+	{
+		int begin = (*it).second.begin;
+		int end = (*it).second.end;
+		int id = (*it).second.id;				
+
+		int sz = end - begin + 1;
+		float* xdiffs = new float[sz];
+		float* ydiffs = new float[sz];
+		int successCount = 0;
+
+
+		vector<Point2f> inliers0, inliers1;
+		for(int i = begin; i <= end; i++)
+		{
+			if(fstatus[i] == 1 && bstatus[i] == 1)
+			{
+				auto vec = btracked[i] - allRegisteredPoints[i];
+				float dist = sqrt(vec.x * vec.x + vec.y * vec.y);		
+				if(dist < treshold)
+				{	
+					inliers0.push_back(allRegisteredPoints[i]);
+					inliers1.push_back(ftracked[i]);
+
+					Point2f diff = ftracked[i] - allRegisteredPoints[i];					
+					xdiffs[successCount] = diff.x;
+					ydiffs[successCount] = diff.y;
+					successCount++;
+
+				}else
+				{
+					fstatus[i] = 0;			
+					bstatus[i] = 0;
+				}				
+			}
+		}
+
+	/*	auto f0 = grayFrameBuffer[0].clone();
+		auto f1 = grayFrameBuffer[1].clone();
+		Helper::drawFPoints(inliers0, f0);
+		Helper::drawFPoints(inliers1, f1);
+		auto concat = Helper::concatImages(f0, f1);
+		auto concat1 = Helper::concatImages(foregroundBuffer[0], foregroundBuffer[1]);
+		imshow("inliers", concat);
+		imshow("foreground", concat1);
+		waitKey();
+		concat.release();
+		f0.release();
+		f1.release();*/
+
+		if(successCount > minTrackedPoints)
+		{
+			float xmedian = Tool::median(xdiffs, successCount);
+			float ymedian = Tool::median(ydiffs, successCount);
+
+			float *scales = new float[sz*(sz-1)/2];
+			int comparisons = 0;
+			for (int i = begin; i < end; i++) {
+				for (int j = i + 1; j <= end; j++) {
+					if (fstatus[i] == 1 && fstatus[j] == 1) {
+
+						float dxPrev = allRegisteredPoints[j].x - allRegisteredPoints[i].x;
+						float dyPrev = allRegisteredPoints[j].y - allRegisteredPoints[i].y;
+
+						float dxNext = ftracked[j].x - ftracked[i].x;
+						float dyNext = ftracked[j].y - ftracked[i].y;
+
+						float sPrev = sqrt(dxPrev * dxPrev + dyPrev * dyPrev);
+						float sNext = sqrt(dxNext * dxNext + dyNext * dyNext);
+
+						if (sPrev != 0 && sNext != 0) {					
+							scales[comparisons] = sNext / sPrev;
+							comparisons++;
+						}
+					}
+				}
+			}
+
+			float scale = Tool::median(scales, comparisons);
+
+			xmedianForTracks[id] = xmedian;
+			ymedianForTracks[id] = ymedian;
+			scaleForTracks[id] = scale;
+			registeredStatuses[id] = true;
+		}else
+		{
+			registeredStatuses[id] = false;
+		}	
+
+		delete[] xdiffs;
+		delete[] ydiffs;	
+	}
+}
+
+bool PTracker::getLucasKanadePrediction(track& tr, Rect& predictedRect )
+{
+	if(registeredStatuses.find(tr.lkId) == registeredStatuses.end())
+		assert(false, "this should not happen");
+
+	if(registeredStatuses[tr.lkId] == false)
+		return false;
+
+	predictedRect = tr.asRecti();
+	Tool::moveRect(predictedRect, xmedianForTracks[tr.lkId], ymedianForTracks[tr.lkId]);
+	float scale = scaleForTracks[tr.lkId];
+	Tool::scaleRect(predictedRect, scale, scale);	
+	predictedRect = frameRect & predictedRect;
+	return true;
+	//return Tool::rectInside(predictedRect, frameRect);
+}
+
+#pragma endregion
+
+Rect PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, Rect& lkRect, Rect& kalmanRect, vector<Mat> grayBuffer )
 {
 	auto grayFrame = grayBuffer[1];	
 	if(lkSuccess)//compare both
@@ -319,13 +541,13 @@ void PTracker::mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr, R
 		float dist1 = secMatcher->distance(tr, kalmanSrc);
 
 		if(dist0 <= dist1)		
-			tr.assign(lkRect);			
+			return lkRect;						
 		else		
-			tr.assign(kalmanRect);									
+			return kalmanRect;			
 	}		
 	else
 	{
-		tr.assign(kalmanRect);
+		return kalmanRect;
 	}		
 }
 
@@ -337,10 +559,6 @@ void PTracker::run()
 	{
 		SubFrame subResult = receive(subtractorBuffer);
 		ClasifierFrame classifierResult = receive(classifierBuffer);
-	
-		//imshow("frame", subResult.frame);
-		//imshow("fg", subResult.foreground);
-		//waitKey();
 
 		bool buffersFull = shiftBuffers(subResult, classifierResult);
 		if(!buffersFull)
@@ -356,57 +574,51 @@ void PTracker::run()
 		auto currentForeground = foregroundBuffer[1];			
 #pragma endregion 
 
-
 #pragma region init tracks from first detections
 		if(tracks.size() == 0 && detections.size() > 0)
 		{
 			tracks.clear();
 			tracks.reserve(detections.size());
 			for_each(begin(detections), end(detections), [&](detection& d){
-				initializeTrack(d, idGenerator, currentGrayFrame);
+				createTrack(d, idGenerator, currentGrayFrame);
 			});
 			continue;
 		}
 #pragma endregion
 
 #pragma region predict track positions for time t
-		vector<track> tracksToErase;
-		auto lkoutput = currentFrame.clone();
-
-		auto it = tracks.begin();
-		auto tend = tracks.end();
-		for(; it != tend; ++it)
-		{				
-			if(trackHasExited(*it, currentFrame))				
-			{
-				tracksToErase.push_back(*it);
-				continue;
-			}
-
-			//Rect lkRect, kalmanRect;
-			//bool lkSuccess = trackLucasKanade(*it, frameBuffer, grayFrameBuffer, foregroundBuffer,lkRect,lkoutput);				
-			//bool kalmanSuccess = predictKalman(*it, kalmanRect);
-			//mergePredictions(lkSuccess, kalmanSuccess ,*it, lkRect, kalmanRect, grayFrameBuffer);
-		}
-
-		for_each(begin(tracksToErase), end(tracksToErase), [&](track tr){
-			deleteTrack(tr);
-		});	
-
+		
+		auto lkoutput = currentFrame.clone();		
+		deleteExitedTracks();
 		beginTracking();
 		for(auto it = begin(tracks); it != end(tracks); it++)		
-			registerForLucasKanade(*it);			
+			registerForTracking(*it);			
 				
 		performTracking();
 
 		for(auto it = begin(tracks); it != end(tracks); it++)
-		{
-			Rect predictedRect, kalmanRect;
-			bool lkSuccess = unregister(*it, predictedRect);
-			bool kalmanSuccess = predictKalman(*it, kalmanRect);
-			mergePredictions(lkSuccess, kalmanSuccess, *it, predictedRect, kalmanRect, grayFrameBuffer);
-		}
+		{			
+			Rect kanadePrediction, kalmanPrediction;
+			bool lkSuccess = getLucasKanadePrediction(*it, kanadePrediction);
+			bool kalmanSuccess = getKalmanPrediction(*it, kalmanPrediction);
 			
+			/*if(!lkSuccess)
+			{
+			it->assign(kanadePrediction);
+			continue;
+			}
+
+			if(!kalmanSuccess)
+			{
+			it->assign(kalmanPrediction);
+			continue;
+			}*/
+
+			auto finalPrediction = mergePredictions(lkSuccess, kalmanSuccess, *it, kanadePrediction, kalmanPrediction, grayFrameBuffer);		
+			it->assign(finalPrediction);
+		}
+
+		
 
 #pragma endregion
 
@@ -472,7 +684,7 @@ void PTracker::run()
 		for_each(begin(detections), end(detections), [&](detection& mockdet){
 			auto it = detMatches.find(mockdet.id);
 			if(it == detMatches.end()){				
-				auto inited = initializeTrack(mockdet, idGenerator, currentGrayFrame);
+				auto inited = createTrack(mockdet, idGenerator, currentGrayFrame);
 				trackMatch m = {mockdet.id, 1, 1};
 				trMatches[inited.id] = m;					
 			}
@@ -507,185 +719,3 @@ void PTracker::run()
 		send(syncBuffer,1);			
 	}
 }
-
-void PTracker::beginTracking()
-{
-	allRegisteredPoints.clear();
-	registeredStatuses.clear();
-	registeredTracks.clear();
-	xmedianForTracks.clear();
-	ymedianForTracks.clear();
-	scaleForTracks.clear();
-	trackKey = 0;
-}
-
-int PTracker::registerForLucasKanade( track& tr )
-{
-	int id = trackKey++;
-	auto trackRect = tr.asRecti();
-	Mat currentForeground = foregroundBuffer[0];
-
-	if(trackRect.area() < 10 || !Tool::rectInside(trackRect, frameRect))
-	{
-		registeredStatuses[id] = false;
-		tr.lkId = id;
-		return id;
-	}
-		
-	Mat trackForeground = currentForeground(trackRect);
-
-	int xoffset = trackRect.width / XCount;
-	int yoffset = trackRect.height / YCount;
-	Point tl = trackRect.tl();
-
-	vector<Point2f> trackedPoints; 
-	for(int i = 0; i < XCount; i++)
-	{
-		for(int j = 0; j < YCount; j++)
-		{
-			int line = yoffset*j;
-			int col = xoffset*i;						
-			uchar value = trackForeground.at<uchar>(line,col);
-			if( value == 255)
-				trackedPoints.push_back(Point2f(tl.x, tl.y) + Point2f(col,line));			
-		}
-	}
-
-	if(trackedPoints.size() < minTrackedPoints)
-	{
-		registeredStatuses[id] = false;
-		tr.lkId = id;
-		return id;
-	}
-		
-	int begin = allRegisteredPoints.size();
-	allRegisteredPoints.insert(allRegisteredPoints.end(), trackedPoints.begin(), trackedPoints.end());
-	int end = allRegisteredPoints.size() - 1;
-	trackEntry entry = {begin, end, id};
-	registeredTracks[id] = entry;	
-	tr.lkId = id;
-	return id;
-}
-
-void PTracker::performTracking()
-{	
-	if(allRegisteredPoints.size() == 0)
-		return;
-
-	vector<Point2f> ftracked;
-	vector<Point2f> btracked;
-	vector<uchar> fstatus, bstatus;
-	vector<float> ferrors, berrors;
-
-	cv::calcOpticalFlowPyrLK(
-		grayFrameBuffer[0],			
-		grayFrameBuffer[1], 
-		allRegisteredPoints, 
-		ftracked,
-		fstatus,
-		ferrors	
-	);
-
-	cv::calcOpticalFlowPyrLK(
-		grayFrameBuffer[1],			
-		grayFrameBuffer[0],
-		ftracked,
-		btracked,
-		bstatus,
-		berrors
-	);
-
-
-	for(auto it = begin(registeredTracks); it != end(registeredTracks); ++it)
-	{
-		int begin = (*it).second.begin;
-		int end = (*it).second.end;
-		int id = (*it).second.id;				
-
-		int sz = end - begin + 1;
-		float* xdiffs = new float[sz];
-		float* ydiffs = new float[sz];
-		int successCount = 0;
-		
-		for(int i = begin; i <= end; i++)
-		{
-			if(fstatus[i] == 1 && bstatus[i] == 1)
-			{
-				auto vec = btracked[i] - allRegisteredPoints[i];
-				float dist = sqrt(vec.x * vec.x + vec.y * vec.y);		
-				if(dist < treshold)
-				{					
-					Point2f diff = ftracked[i] - allRegisteredPoints[i];					
-					xdiffs[successCount] = diff.x;
-					ydiffs[successCount] = diff.y;
-					successCount++;
-
-				}else
-				{
-					fstatus[i] = 0;			
-					bstatus[i] = 0;
-				}				
-			}
-		}
-	
-		if(successCount > minTrackedPoints)
-		{
-			float xmedian = Tool::median(xdiffs, successCount);
-			float ymedian = Tool::median(ydiffs, successCount);
-		
-			float *scales = new float[sz*(sz-1)/2];
-			int comparisons = 0;
-			for (int i = begin; i < end; i++) {
-				for (int j = i + 1; j <= end; j++) {
-					if (fstatus[i] == 1 && fstatus[j] == 1) {
-
-						float dxPrev = allRegisteredPoints[j].x - allRegisteredPoints[i].x;
-						float dyPrev = allRegisteredPoints[j].y - allRegisteredPoints[i].y;
-
-						float dxNext = ftracked[j].x - ftracked[i].x;
-						float dyNext = ftracked[j].y - ftracked[i].y;
-
-						float sPrev = sqrt(dxPrev * dxPrev + dyPrev * dyPrev);
-						float sNext = sqrt(dxNext * dxNext + dyNext * dyNext);
-
-						if (sPrev != 0 && sNext != 0) {					
-							scales[comparisons] = sNext / sPrev;
-							comparisons++;
-						}
-					}
-				}
-			}
-
-			float scale = Tool::median(scales, comparisons);
-
-			xmedianForTracks[id] = xmedian;
-			ymedianForTracks[id] = ymedian;
-			scaleForTracks[id] = scale;
-			registeredStatuses[id] = true;
-		}else
-		{
-			registeredStatuses[id] = false;
-		}	
-
-		delete[] xdiffs;
-		delete[] ydiffs;	
-	}
-}
-
-bool PTracker::unregister(track& tr, Rect& predictedRect )
-{
-	if(registeredStatuses.find(tr.lkId) == registeredStatuses.end())
-		assert(false, "this should not happen");
-
-	if(registeredStatuses[tr.lkId] == false)
-		return false;
-	
-	predictedRect = tr.asRecti();
-	Tool::moveRect(predictedRect, xmedianForTracks[tr.lkId], ymedianForTracks[tr.lkId]);
-	float scale = scaleForTracks[tr.lkId];
-	Tool::scaleRect(predictedRect, scale, scale);
-	predictedRect = frameRect & predictedRect;
-
-	return true;
-}
-

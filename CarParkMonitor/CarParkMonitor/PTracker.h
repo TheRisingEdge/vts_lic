@@ -48,16 +48,17 @@ private:
 	
 #pragma region methods
 	track createFromDetection(detection& d,IdGenerator& gen, Mat& frame);
-	track initializeTrack(detection& det, IdGenerator& idGenerator, Mat& grayFrame);
+	track createTrack(detection& det, IdGenerator& idGenerator, Mat& grayFrame);
 	void deleteTrack(track& tr);
+	void deleteExitedTracks();
 
 	bool trackLucasKanade(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect, Mat& output);		
-	bool predictKalman(track& tr, Rect& predictedRect);
+	bool getKalmanPrediction(track& tr, Rect& predictedRect);
 	void forwardKalman(track& tr);
-	void mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr,Rect& lkRect,Rect& kalmanRect,vector<Mat> frameBuffer);
+	Rect mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr,Rect& lkRect,Rect& kalmanRect,vector<Mat> frameBuffer);
 
 	void correctKalman(track& tr);
-	bool trackHasExited(track& tr, Mat frame);
+	bool trackHasExited(track& tr);
 	
 	vector<Point2f> allRegisteredPoints;
 	map<int, trackEntry> registeredTracks;
@@ -68,9 +69,9 @@ private:
 	int trackKey;
 	
 	void beginTracking();
-	int registerForLucasKanade(track& tr);
+	int registerForTracking(track& tr);
 	void performTracking();
-	bool unregister(track& tr, Rect& newRect);
+	bool getLucasKanadePrediction(track& tr, Rect& newRect);
 
 #pragma endregion
 
