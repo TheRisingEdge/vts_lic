@@ -17,7 +17,7 @@ public:
 		successiveGoodFrames(0),
 		totalScore(0),
 		consideredLost(false),
-		minScore(300)		
+		minScore(150)		
 	{};
 	~Validator(){};
 		

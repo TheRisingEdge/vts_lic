@@ -99,3 +99,11 @@ void Tool::toCenterf(const Point2f& center, Rect_<float>& r)
 	r = Rect(tl.x, tl.y, width, height);	
 }
 
+int Tool::rectArea( Rect r )
+{		
+	if(r.width < 0 || r.height < 0)
+		return 0;
+
+	return r.width*r.height;
+}
+

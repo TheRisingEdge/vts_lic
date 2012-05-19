@@ -233,14 +233,12 @@ bool PTracker::getKalmanPrediction( track& tr, Rect& predictedRect)
 		auto filter = kalmanFilters[tr.id];		
 		auto kalmanResult = filter->predict();
 		auto rect = kalmanResult.asRect();		
-		predictedRect = rect;
-		//predictedRect = frameRect & predictedRect;
+		predictedRect = rect;		
 		tr.model.kalmanRect = rect;
 	}else
 		assert(false);
 
-	return true;
-	//return (Tool::rectInside(predictedRect, frameRect));	
+	return true;	
 }
 
 void PTracker::correctKalman( track& tr )
@@ -262,19 +260,11 @@ void PTracker::forwardKalman( track& tr )
 {
 	if(kalmanFilters.find(tr.id) != kalmanFilters.end())
 	{
-		auto filter = kalmanFilters[tr.id];		
-		auto lastState = filter->lastState;
+		auto filter = kalmanFilters[tr.id];	
+		auto nextPrediction = filter->predict();
 
-		int vx = floor(lastState.vx);
-		int vy = floor(lastState.vy);
-
-		auto lastRect = lastState.asRect();
-		Rect fakeRect = lastRect;
-		Tool::moveRect(fakeRect, vx, vy);
-
-		KalmanInput2D fakeInput = {fakeRect};
-		auto fakeResult = filter->correct(fakeInput); 
-		
+		KalmanInput2D fakeInput = {nextPrediction.asRect()};		
+		auto fakeResult = filter->correct(fakeInput); 		
 		tr.model.kalmanRect = fakeResult.asRect();
 	}else	
 		assert(false);	
@@ -345,13 +335,14 @@ int PTracker::registerForTracking( track& tr )
 	auto trackRect = tr.asRecti();
 	Mat currentForeground = foregroundBuffer[0];
 
-	if(trackRect.area() < 10 || !Tool::rectInside(trackRect, frameRect))
+	if(Tool::rectArea(trackRect) < 10 || !Tool::rectInside(trackRect, frameRect))
 	{
 		registeredStatuses[id] = false;
 		tr.lkId = id;
 		return id;
 	}
-
+	
+	trackRect = trackRect & Rect(0,0, currentForeground.cols, currentForeground.rows);
 	Mat trackForeground = currentForeground(trackRect);
 
 	int xoffset = trackRect.width / XCount;
@@ -528,27 +519,36 @@ bool PTracker::getLucasKanadePrediction(track& tr, Rect& predictedRect )
 }
 #pragma endregion
 
-Rect PTracker::mergePredictions(bool lucasSuccess, bool kalmanSuccess, track& tr, Rect& rectLucas, Rect& rectKalman, vector<Mat> grayBuffer )
+Rect PTracker::mergePredictions(bool lucasSuccess, bool kalmanSuccess, track& tr, Rect& rectLucas, Rect& rectKalman, vector<Mat> grayBuffer , float& bestMatchDist)
 {
 	auto grayFrame = grayBuffer[1];	
 	auto lucasRect = rectLucas & frameRect;
 	auto kalmanRect = rectKalman & frameRect;
 
-	if(lucasSuccess)
-	{
-		Mat lkSrc = grayFrame(lucasRect);
-		Mat kalmanSrc = grayFrame(kalmanRect);				
+	Mat lkSrc = grayFrame(lucasRect);
+	Mat kalmanSrc = grayFrame(kalmanRect);				
 
+	if(lucasSuccess)
+	{	
 		float dist0 = secMatcher->distance(tr, lkSrc);
 		float dist1 = secMatcher->distance(tr, kalmanSrc);
 
-		if(dist0 <= dist1)		
-			return rectLucas;						
-		else		
+		if(dist0 <= dist1)
+		{
+			bestMatchDist = dist0;
+			return rectLucas;
+		}			
+		else{
+			bestMatchDist = dist1;
 			return rectKalman;			
+		}
+			
 	}		
-	else	
+	else
+	{
+		bestMatchDist = secMatcher->distance(tr, kalmanSrc);
 		return rectKalman;	
+	}		
 }
 
 void PTracker::run()
@@ -602,9 +602,11 @@ void PTracker::run()
 			Rect kanadePrediction, kalmanPrediction;
 			bool lucasSuccess = getLucasKanadePrediction(*it, kanadePrediction);
 			bool kalmanSuccess = getKalmanPrediction(*it, kalmanPrediction);
-		
-			auto finalPrediction = mergePredictions(lucasSuccess, kalmanSuccess, *it, kanadePrediction, kalmanPrediction, grayFrameBuffer);		
+			
+			float minDist = 999999;
+			auto finalPrediction = mergePredictions(lucasSuccess, kalmanSuccess, *it, kanadePrediction, kalmanPrediction, grayFrameBuffer, minDist);		
 			it->assign(finalPrediction);		
+			it->predictionDist = minDist;
 		}			
 
 #pragma endregion
@@ -662,7 +664,13 @@ void PTracker::run()
 				correctKalman(tr);					
 			}else
 			{//detection not found for track
-				validators[tr.id].tick(false);
+				float max = secMatcher->maxSimilarityDist;
+				float dist = tr.predictionDist;
+				if(dist < max) 
+					validators[tr.id].tick(true);
+				else
+					validators[tr.id].tick(false);
+
 				forwardKalman(tr);
 			}
 		});
@@ -690,8 +698,7 @@ void PTracker::run()
 					printf("track %d : detection %d\n", it->id, trMatches[it->id].detectionId);
 			}
 			cv::waitKey();
-		}
-		
+		}		
 
 		auto fclone = currentFrame.clone();								
 		Helper::drawDetections(detections, fclone);			

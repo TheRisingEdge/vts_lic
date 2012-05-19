@@ -78,7 +78,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AutoTracker.cpp" />
-    <ClCompile Include="Dbg.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="KalmanFilter2D.cpp" />
     <ClCompile Include="LbpMatcher.cpp" />
@@ -94,7 +93,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AutoTracker.h" />
-    <ClInclude Include="Dbg.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="KalmanFilter2D.h" />
     <ClInclude Include="LbpMatcher.h" />

@@ -72,9 +72,6 @@
     <ClCompile Include="PVideoReader.cpp">
       <Filter>Source Files\ParallelTracking</Filter>
     </ClCompile>
-    <ClCompile Include="Dbg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -118,9 +115,6 @@
     </ClInclude>
     <ClInclude Include="PVideoReader.h">
       <Filter>Header Files\ParallelTracking</Filter>
-    </ClInclude>
-    <ClInclude Include="Dbg.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

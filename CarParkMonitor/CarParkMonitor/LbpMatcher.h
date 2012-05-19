@@ -13,7 +13,11 @@ private:
 	bool lbpHist(Mat& src, Mat& hist);
 
 public:
-	LbpMatcher(){ TrackMatcher::goodMaxDist = 5000/*2500*/;}
+	LbpMatcher()
+	{ 
+		TrackMatcher::goodMaxDist = 4000/*2500*/;
+		TrackMatcher::maxSimilarityDist = 1000;
+	}
 	~LbpMatcher(){}
 
 	void begin() { detectionHists.clear(); }

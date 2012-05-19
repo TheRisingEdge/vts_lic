@@ -56,7 +56,7 @@ private:
 	bool trackLucasKanade(track& tr, vector<Mat> frames, vector<Mat> grayFrames, vector<Mat> foregrounds,Rect& predictedRect, Mat& output);		
 	bool getKalmanPrediction(track& tr, Rect& predictedRect);
 	void forwardKalman(track& tr);
-	Rect mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr,Rect& lkRect,Rect& kalmanRect,vector<Mat> frameBuffer);
+	Rect mergePredictions(bool lkSuccess, bool kalmanSuccess, track& tr,Rect& lkRect,Rect& kalmanRect,vector<Mat> frameBuffer, float& bestMatchDist);
 
 	void correctKalman(track& tr);
 	bool trackHasExited(track& tr);

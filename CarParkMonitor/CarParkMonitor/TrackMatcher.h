@@ -16,6 +16,7 @@ struct track
 	model model;
 	int lkId;
 	bool markedForDeletion;
+	float predictionDist;
 
 	void assign(Rect rect)
 	{
@@ -36,6 +37,7 @@ public:
 	~TrackMatcher(){};
 
 	float goodMaxDist;
+	float maxSimilarityDist;
 	virtual void begin(){};	
 	virtual float match(track& tr, detection& dt, Mat& frame) = 0;
 	virtual float distance(track& tr, Mat& region) { return 0; };
