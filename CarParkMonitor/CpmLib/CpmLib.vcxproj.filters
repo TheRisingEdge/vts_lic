@@ -16,80 +16,98 @@
     <Filter Include="Header Files\Lib">
       <UniqueIdentifier>{e058920c-106b-47cb-bea5-512f45182882}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Lib">
+      <UniqueIdentifier>{7a8c10b5-a0fa-46cd-8fb4-c9bd5f809d93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lbp">
+      <UniqueIdentifier>{ea77abea-39b1-4681-8514-93d6c246c0d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lbp">
+      <UniqueIdentifier>{62df769b-de45-49a4-8753-8de260fcf34d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Video">
+      <UniqueIdentifier>{49b41808-760b-4714-a89c-e44cecb9c720}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Video">
+      <UniqueIdentifier>{2a4a3370-5f78-4c67-847a-09804b5fd8c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Content.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BgSubtractorBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameProcessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoProcessor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BlobDetector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Blob.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClassifierBase.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tool.h">
-      <Filter>Header Files\Lib</Filter>
-    </ClInclude>
     <ClInclude Include="DisjSets.h">
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
     <ClInclude Include="Draw.h">
       <Filter>Header Files\Lib</Filter>
     </ClInclude>
-    <ClInclude Include="histogram.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="RectTool.h">
+      <Filter>Header Files\Lib</Filter>
     </ClInclude>
     <ClInclude Include="lbp.h">
+      <Filter>Header Files\Lbp</Filter>
+    </ClInclude>
+    <ClInclude Include="histogram.h">
+      <Filter>Header Files\Lbp</Filter>
+    </ClInclude>
+    <ClInclude Include="BgSubtractorBase.h">
+      <Filter>Header Files\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameProcessor.h">
+      <Filter>Header Files\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoProcessor.h">
+      <Filter>Header Files\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="Content.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Loader.h">
+      <Filter>Header Files\Lib</Filter>
+    </ClInclude>
+    <ClInclude Include="Blob.h">
+      <Filter>Header Files\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="BlobDetector.h">
+      <Filter>Header Files\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="ClassifierBase.h">
+      <Filter>Header Files\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="PngSaver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Content.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameProcessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoProcessor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BlobDetector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Draw.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Lib</Filter>
     </ClCompile>
-    <ClCompile Include="Tool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BgSubtractorBase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Loader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="histogram.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="RectTool.cpp">
+      <Filter>Source Files\Lib</Filter>
     </ClCompile>
     <ClCompile Include="lbp.cpp">
+      <Filter>Source Files\Lbp</Filter>
+    </ClCompile>
+    <ClCompile Include="histogram.cpp">
+      <Filter>Source Files\Lbp</Filter>
+    </ClCompile>
+    <ClCompile Include="BgSubtractorBase.cpp">
+      <Filter>Source Files\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="BlobDetector.cpp">
+      <Filter>Source Files\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Content.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoProcessor.cpp">
+      <Filter>Source Files\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameProcessor.cpp">
+      <Filter>Source Files\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="Loader.cpp">
+      <Filter>Source Files\Lib</Filter>
+    </ClCompile>
+    <ClCompile Include="PngSaver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

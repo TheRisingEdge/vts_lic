@@ -5,8 +5,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VehicleTrackingMonitor", "C
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Testing", "Testing\Testing.vcxproj", "{998D34B7-B52C-4974-9591-D9178369EC56}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kalman", "Kalman\Kalman.vcxproj", "{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VtLib", "CpmLib\CpmLib.vcxproj", "{6DDA55AC-1688-4045-9169-C7188BFCEDDB}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DatasetExtraction", "HogTraining\HogTraining.vcxproj", "{DE0BBE34-E795-491D-9630-5D183DD0A65C}"
@@ -45,15 +43,6 @@ Global
 		{998D34B7-B52C-4974-9591-D9178369EC56}.Release|Win32.ActiveCfg = Release|x64
 		{998D34B7-B52C-4974-9591-D9178369EC56}.Release|x64.ActiveCfg = Release|x64
 		{998D34B7-B52C-4974-9591-D9178369EC56}.Release|x64.Build.0 = Release|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|Win32.ActiveCfg = Debug|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Debug|x64.ActiveCfg = Debug|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|Mixed Platforms.Build.0 = Release|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|Win32.ActiveCfg = Release|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|x64.ActiveCfg = Release|x64
-		{F77921F0-D3BE-45ED-AA6A-37EAB730AFA9}.Release|x64.Build.0 = Release|x64
 		{6DDA55AC-1688-4045-9169-C7188BFCEDDB}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{6DDA55AC-1688-4045-9169-C7188BFCEDDB}.Debug|Mixed Platforms.Build.0 = Debug|x64
 		{6DDA55AC-1688-4045-9169-C7188BFCEDDB}.Debug|Win32.ActiveCfg = Debug|x64

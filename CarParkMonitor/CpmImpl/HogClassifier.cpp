@@ -1,20 +1,21 @@
 #include "HogClassifier.h"
-#include "Tool.h"
+#include "RectTool.h"
+#include "PngSaver.h"
 
 static const int width = 64;//80;
 static const int height = 64;
 
-cv::Mat HogClassifier::readHPlane()
+cv::Mat HogClassifier::readHPlane(char* path)
 {
-	auto f = FileStorage("./Content/Assets/hogsvm.yml", FileStorage::READ);	
+	auto f = FileStorage(path, FileStorage::READ);	
 	Mat hplane;
 	f["hplane"] >> hplane;
-
 	return hplane;
 }
 
 void HogClassifier::load()
 {
+	
 	hogGpu = cv::gpu::HOGDescriptor(
 		Size(width, height),//images size
 		Size(16,16),//block size
@@ -43,6 +44,17 @@ vector<detection> HogClassifier::detect( ClassifierParams& params )
 	hogGpu.detectMultiScale(gpuMat,rectDetections);
 	gpuMat.release();
 	grayClone.release();
+
+	/*auto cl = frame.clone();
+	for_each(begin(rectDetections), end(rectDetections), [&](Rect b)
+	{
+		Rect rect = b;
+		Scalar color = Scalar( 0,255,0 );
+		rectangle( cl, rect.tl(), rect.br(), color);
+	});
+	PngSaver::save("falseDetections", cl);
+	PngSaver::incrementCount();
+	cl.release();*/
 
 	int size = rectDetections.size();
 	int* status = new int[size]; 	

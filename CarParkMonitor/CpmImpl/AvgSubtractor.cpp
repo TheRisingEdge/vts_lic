@@ -1,12 +1,13 @@
 #include "AvgSubtractor.h"
+#include "PngSaver.h"
 
 void AvgSubtractor::init( char* windowName )
 {
 	this->threshold = 20;
-	this->learningRate = 0.1;
+	this->learningRate = 0.4;
 
-	this->closeHolesCount = 0;
-	int erosionType = MORPH_OPEN;
+	this->closeHolesCount = 1;
+	int erosionType = MORPH_CROSS;
 	int erosionSize = 3;
 
 	this->structuringElement = getStructuringElement( 
@@ -52,16 +53,23 @@ Mat AvgSubtractor::segment(const Mat& frame )
 	// accumulate background
 	cv::accumulateWeighted(grayFrame, background, learningRate, foreground);	//can also pass mask to ignore stationary cars
 
+	/*PngSaver::save("before", foreground);
 	if (this->closeHolesCount > 0)
 	{
-		Mat temp_foreground_mask;
-		
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 10);	
-		cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);		
-		cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),5);	
-	}
+	Mat temp_foreground_mask;
 
+	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1), 1);	
+	cv::dilate(temp_foreground_mask, foreground, structuringElement, Point(-1,-1),2);		
+	cv::erode(foreground, temp_foreground_mask, structuringElement, Point(-1,-1),2);	
+	}
+	PngSaver::save("after", foreground);*/
+	
 	return foreground;
+}
+
+cv::Mat AvgSubtractor::getBackground()
+{
+	return this->background;
 }
 
 

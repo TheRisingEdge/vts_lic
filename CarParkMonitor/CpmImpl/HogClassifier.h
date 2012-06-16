@@ -1,13 +1,13 @@
 #pragma once
 #include "ClassifierBase.h"
 #include <opencv2\gpu\gpu.hpp>
-
+#include "PngSaver.h"
 using namespace cv::gpu;
 
 class HogClassifier: public ClassifierBase
 {
 private:
-	Mat readHPlane();
+	Mat readHPlane(char* path = "./Content/Assets/hogsvm.yml");
 	void load();
 	gpu::GpuMat gpuMat;
 	gpu::HOGDescriptor hogGpu;
@@ -15,6 +15,7 @@ private:
 public:
 	HogClassifier(){
 		load();
+		//PngSaver::setBasePath("./Content/Images");
 	};
 
 	~HogClassifier(){};

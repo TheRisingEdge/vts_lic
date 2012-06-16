@@ -27,11 +27,11 @@ void on_mouse(int event, int x, int y, int flags, void* param) {
 }
 
 // plot points
-#define drawCross( rectCenter, color, d )                                 \
-	line( img, Point( rectCenter.x - d, rectCenter.y - d ),                \
-	Point( rectCenter.x + d, rectCenter.y + d ), color, 2, CV_AA, 0); \
-	line( img, Point( rectCenter.x + d, rectCenter.y - d ),                \
-	Point( rectCenter.x- d, rectCenter.y + d ), color, 2, CV_AA, 0 )
+#define drawCross( center, color, d )                                 \
+	line( img, Point( center.x - d, center.y - d ),                \
+	Point( center.x + d, center.y + d ), color, 2, CV_AA, 0); \
+	line( img, Point( center.x + d, center.y - d ),                \
+	Point( center.x- d, center.y + d ), color, 2, CV_AA, 0 )
 
 
 int main (int argc, char * const argv[]) {

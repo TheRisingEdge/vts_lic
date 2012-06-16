@@ -4,7 +4,7 @@
 
 using namespace cv;
 
-#define BLOB_DRAW 1
+#define BLOB_DRAW 0
 
 struct DetectorParams
 {
@@ -18,7 +18,7 @@ class BlobDetector
 protected:
 	char* windowName;
 	static int instanceNr;
-	void init(int minWidth, int minHeight, char* windowName);
+	virtual void init(int minWidth, int minHeight, char* windowName);
 
 private:	
 	int minArea;

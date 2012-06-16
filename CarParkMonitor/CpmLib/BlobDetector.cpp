@@ -1,7 +1,7 @@
 #include "BlobDetector.h"
 #include "opencv2/opencv.hpp"
 #include <memory>
-#include "Tool.h"
+#include "RectTool.h"
 
 using namespace cv;
 static const int MARGIN = 3;

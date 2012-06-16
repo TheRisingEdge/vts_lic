@@ -1,8 +1,8 @@
 #include "PTracker.h"
 #include "Draw.h"
-#include "Helper.h"
+#include "DrawExtensions.h"
 #include <algorithm>
-#include "Tool.h"
+#include "RectTool.h"
 #include "BlobDetector.h"
 #include "lbp.h"
 #include "histogram.h"
@@ -91,7 +91,7 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 	auto trackRect = tr.asRecti();
 	Mat currentForeground = foregrounds[0];
 
-	if(trackRect.area() < 10 || !Tool::rectInside(trackRect, Rect(0,0, currentForeground.cols, currentForeground.rows)))
+	if( RectTool::area(trackRect) < 400 || !RectTool::isContained(trackRect, Rect(0,0, currentForeground.cols, currentForeground.rows)))
 		return false;
 
 	Mat trackForeground = currentForeground(trackRect);
@@ -169,8 +169,8 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 	if(inliers.size() < minTrackedPoints)
 		return false;
 
-	float xmedian = Tool::median(xdiffs, successCount);
-	float ymedian = Tool::median(ydiffs, successCount);
+	float xmedian = RectTool::median(xdiffs, successCount);
+	float ymedian = RectTool::median(ydiffs, successCount);
 	delete[] xdiffs;
 	delete[] ydiffs;
 
@@ -197,7 +197,7 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 		}
 	}
 
-	float scale = Tool::median(scales, comparisons);
+	float scale = RectTool::median(scales, comparisons);
 	//assert(scale > 0.0001);
 
 	//auto fclone = currentFrame.clone();
@@ -218,8 +218,8 @@ bool PTracker::trackLucasKanade( track& tr, vector<Mat> frames, vector<Mat> gray
 	//fclone.release();
 
 	predictedRect = tr.asRecti();
-	Tool::moveRect(predictedRect, xmedian, ymedian);
-	Tool::scaleRect(predictedRect, scale, scale);
+	RectTool::move(predictedRect, xmedian, ymedian);
+	RectTool::scale(predictedRect, scale, scale);
 	predictedRect = frameRect & predictedRect;
 	return true;
 }
@@ -313,7 +313,7 @@ void PTracker::deleteExitedTracks()
 
 bool PTracker::trackHasExited( track& tr)
 {	
-	return (!Tool::rectInside(tr.asRecti(), frameRect))||(validators[tr.id].isLost());
+	return (!RectTool::isContained(tr.asRecti(), frameRect))||(validators[tr.id].isLost());
 }
 #pragma endregion
 
@@ -335,7 +335,7 @@ int PTracker::registerForTracking( track& tr )
 	auto trackRect = tr.asRecti();
 	Mat currentForeground = foregroundBuffer[0];
 
-	if(Tool::rectArea(trackRect) < 10 || !Tool::rectInside(trackRect, frameRect))
+	if(RectTool::area(trackRect) < 400 || !RectTool::isContained(trackRect, frameRect))
 	{
 		registeredStatuses[id] = false;
 		tr.lkId = id;
@@ -459,8 +459,8 @@ void PTracker::performTracking()
 
 		if(successCount > minTrackedPoints)
 		{
-			float xmedian = Tool::median(xdiffs, successCount);
-			float ymedian = Tool::median(ydiffs, successCount);
+			float xmedian = RectTool::median(xdiffs, successCount);
+			float ymedian = RectTool::median(ydiffs, successCount);
 
 			float *scales = new float[sz*(sz-1)/2];
 			int comparisons = 0;
@@ -485,7 +485,7 @@ void PTracker::performTracking()
 				}
 			}
 
-			float scale = Tool::median(scales, comparisons);
+			float scale = RectTool::median(scales, comparisons);
 
 			xmedianForTracks[id] = xmedian;
 			ymedianForTracks[id] = ymedian;
@@ -510,9 +510,9 @@ bool PTracker::getLucasKanadePrediction(track& tr, Rect& predictedRect )
 		return false;
 
 	predictedRect = tr.asRecti();
-	Tool::moveRect(predictedRect, xmedianForTracks[tr.lkId], ymedianForTracks[tr.lkId]);
+	RectTool::move(predictedRect, xmedianForTracks[tr.lkId], ymedianForTracks[tr.lkId]);
 	float scale = scaleForTracks[tr.lkId];
-	Tool::scaleRect(predictedRect, scale, scale);	
+	RectTool::scale(predictedRect, scale, scale);	
 	//predictedRect = predictedRect & frameRect;
 	return true;
 	//return Tool::rectInside(predictedRect, frameRect);
@@ -541,8 +541,7 @@ Rect PTracker::mergePredictions(bool lucasSuccess, bool kalmanSuccess, track& tr
 		else{
 			bestMatchDist = dist1;
 			return rectKalman;			
-		}
-			
+		}			
 	}		
 	else
 	{
@@ -701,12 +700,12 @@ void PTracker::run()
 		}		
 
 		auto fclone = currentFrame.clone();								
-		Helper::drawDetections(detections, fclone);			
+		DrawExtensions::drawDetections(detections, fclone);			
 
-		Helper::drawTracks(tracks, fclone, Scalar(255,0,0));
+		DrawExtensions::drawTracks(tracks, fclone, Scalar(255,0,0));
 
 		for_each(begin(tracks), end(tracks), [&](track& tr){
-			Helper::drawRect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
+			Draw::rect(tr.model.kalmanRect, fclone, Scalar(0,0,255));
 		});
 
 		//imshow("xxx", currentForeground);
@@ -714,7 +713,7 @@ void PTracker::run()
 
 		std::stringstream str;
 		str << carCount;			
-		Helper::drawText(str.str(), Point(10,20), fclone, Scalar(255,255,0));
+		Draw::text(str.str(), Point(10,20), fclone, Scalar(255,255,0));
 
 		imshow("kalman", fclone);
 		

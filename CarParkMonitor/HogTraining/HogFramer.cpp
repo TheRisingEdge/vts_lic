@@ -1,7 +1,7 @@
 #include "HogFramer.h"
 #include "Content.h"
 #include "Draw.h"
-#include "Tool.h"
+#include "RectTool.h"
 #include <math.h>
 #include <array>
 #include <ppl.h>
@@ -10,6 +10,7 @@
 #include "MogSubtractor.h"
 #include "StableAvgSubtractor.h"
 #include "StableMog.h"
+#include "PngSaver.h"
 
 using namespace Concurrency;
 
@@ -35,7 +36,7 @@ bool isNonCircular(const blob& b)
 	if(b.contour.size() < 20) 
 		return true;
 
-	return Tool::isMostlyCircular(b.contour);
+	return RectTool::isMostlyCircular(b.contour);
 }
 
 HogFramer::HogFramer( HogFramerParams params ):FrameProcessor("Hog Extractor")
@@ -44,6 +45,7 @@ HogFramer::HogFramer( HogFramerParams params ):FrameProcessor("Hog Extractor")
 	this->blobDetector = new BlobDetector(30, 30, "detector");
 
 	HogFramer::drawingControl.drawing = false;
+	PngSaver::setBasePath("./../CarParkMonitor/Content/Images");
 
 	frameCount = 0;
 	trainingFrames = 100;
@@ -105,13 +107,35 @@ void HogFramer::process( const Mat& frame )
 			{
 				Mat foreground = ext.bgSubtractor->segment(roi);
 				Mat background = ext.bgSubtractor->getBackground();
-
+				
 				DetectorParams detParam;
 				detParam.foreground = foreground;
 				detParam.frame = roi;				
 				vector<blob> blobs =  ext.detector->detect(detParam);
 				
 				std::remove_if(begin(blobs), end(blobs),isNonCircular);				
+
+				//if('s' == waitKey(1))
+				//{
+				//	PngSaver::save("roi", roi);
+				//	PngSaver::save("background", background);
+				//	PngSaver::save("foreground", foreground);
+
+				//	Mat cl = roi.clone();
+				//	RNG rng(12345);
+				//	for_each(begin(blobs), end(blobs), [&](blob& b)
+				//	{
+				//		Rect rect = b.rect;
+				//		Scalar color = Scalar( rng.uniform(0, 255), rng.uniform(0,255), rng.uniform(0,255) );
+				//		rectangle( cl, rect.tl(), rect.br(), color);
+				//	});
+				//	PngSaver::save("detections", cl);
+				//	cl.release();
+
+				//	PngSaver::incrementCount();
+				//}
+
+
 				savePositiveAndNegatives(blobs,ext.rect, roi, background, frame, ext.id);
 			}
 		});
@@ -128,29 +152,26 @@ void HogFramer::savePositiveAndNegatives( vector<blob> blobs,const Rect& crop,co
 		
 		Point cropTopLeft = crop.tl();
 		Rect blobRect = b.rect;
-		Point centerOnCrop = Tool::rectCenter(blobRect);
+		Point centerOnCrop = RectTool::center(blobRect);
 		Point centerOnFrame = cropTopLeft + centerOnCrop;
 
 		Rect cropRect = Rect(0,0, width, height);
-		Tool::toCenter(centerOnFrame, cropRect);
+		RectTool::toCenter(centerOnFrame, cropRect);
 
-		if(Tool::rectInside(cropRect, crop))
+		if(RectTool::isContained(cropRect, crop))
 		{
-			Point centerOnRoi = Tool::rectCenter(blobRect);
+			Point centerOnRoi = RectTool::center(blobRect);
 			Rect rectOnRoi = Rect(0, 0, width, height);
-			Tool::toCenter(centerOnRoi, rectOnRoi);
+			RectTool::toCenter(centerOnRoi, rectOnRoi);
 
 			Mat regionOnRoi = roi(rectOnRoi);
-			//Mat regionOnBackground = roiBackground(rectOnRoi);
-
-			//savePositive(regionOnRoi, regionOnBackground);
+		
 			savePositive(regionOnRoi, Mat(), regId);
 
 			//imshow("saving", regionOnRoi);
 			//imshow("bb", regionOnBackground);
 
-			//generating negative samples centered in the corners of the car detection
-			generateNegativeSamples(cropRect, frame);		
+			//generateNegativeSamples(cropRect, frame);		
 		}					
 	});
 }
@@ -160,23 +181,23 @@ void HogFramer::generateNegativeSamples( const Rect& r, const Mat& frame, int re
 	static Rect frameRect(0,0, frame.cols, frame.rows);
 
 	Rect topLeft = Rect(0,0,width, height);
-	Tool::toCenter(r.tl(), topLeft);
+	RectTool::toCenter(r.tl(), topLeft);
 
 	Rect topRight(0,0, width, height);
 	Point p = r.tl() + Point(width, 0);
-	Tool::toCenter(p, topRight);
+	RectTool::toCenter(p, topRight);
 	
 
 	Rect bottomLeft = Rect(0,0, width, height);
 	p = r.tl() - Point(0, height);
-	Tool::toCenter(p, bottomLeft);
+	RectTool::toCenter(p, bottomLeft);
 
 	Rect bottomRight = Rect(0,0, width, height);
 	p = r.br();
-	Tool::toCenter(p, bottomRight);
+	RectTool::toCenter(p, bottomRight);
 
 	unique_ptr<char> path;
-	if(Tool::rectInside(topLeft,frameRect))
+	if(RectTool::isContained(topLeft,frameRect))
 	{
 		path = nextNegPath(regId);
 		imwrite(path.get(), frame(topLeft));		
@@ -194,7 +215,7 @@ void HogFramer::generateNegativeSamples( const Rect& r, const Mat& frame, int re
 	imwrite(path.get(), frame(bottomLeft));
 	}*/
 	
-	if(Tool::rectInside(bottomRight, frameRect))
+	if(RectTool::isContained(bottomRight, frameRect))
 	{
 		path = nextNegPath(regId);
 		imwrite(path.get(), frame(bottomRight));

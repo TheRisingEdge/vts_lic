@@ -1,5 +1,5 @@
 #include "KalmanFilter2D.h"
-#include "Tool.h"
+#include "RectTool.h"
 /*======================= KALMAN FILTER =========================*/
 /* State vector is (x,y,w,h,dx,dy,dw,dh). */
 /* Measurement is (x,y,w,h). */
@@ -55,7 +55,7 @@ inline void mapMatToResult(const Mat& m, KalmanResult2D& result)
 void KalmanFilter2D::init( KalmanInput2D& input )
 {
 	auto size = input.rect.size();
-	auto center = Tool::rectCenter(input.rect);
+	auto center = RectTool::center(input.rect);
 
 	filter.statePost.at<float>(0) = center.x;
 	filter.statePost.at<float>(1) = center.y;
@@ -79,7 +79,7 @@ KalmanResult2D KalmanFilter2D::predict()
 KalmanResult2D KalmanFilter2D::correct( KalmanInput2D& input )
 {	
 	auto size = input.rect.size();
-	auto center = Tool::rectCenter(input.rect);
+	auto center = RectTool::center(input.rect);
 
 	measurement(0) = center.x;
 	measurement(1) = center.y;

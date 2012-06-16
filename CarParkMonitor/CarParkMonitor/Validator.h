@@ -11,7 +11,7 @@ private:
 public:
 	int minScore;
 
-	Validator(long maxBadFrames = 500)
+	Validator(long maxBadFrames = 50)
 		:maxBadFrames(maxBadFrames),
 		succesiveBadFrames(0),
 		successiveGoodFrames(0),

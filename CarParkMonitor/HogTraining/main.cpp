@@ -3,7 +3,7 @@
 #include "VideoProcessor.h"
 #include "HogFramer.h"
 #include "AvgSubtractor.h"
-#include "Tool.h"
+#include "RectTool.h"
 #include "MogSubtractor.h"
 
 using namespace cv;
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 	HogFramerParams params;
 	params.cropFrame = Rect(0, 0, width, height);
-	Tool::toCenter(Point(x,y), params.cropFrame);
+	RectTool::toCenter(Point(x,y), params.cropFrame);
 
 	auto hogTrainer = new HogFramer(params);
 	processor->run(hogTrainer, 10.0);

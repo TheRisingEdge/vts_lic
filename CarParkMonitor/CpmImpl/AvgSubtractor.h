@@ -30,5 +30,6 @@ public:
 
 	void learn(const Mat& frame);
 	Mat segment(const Mat& frame);
+	Mat getBackground();
 };
 
