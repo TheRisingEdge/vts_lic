@@ -20,7 +20,7 @@ vector<Rect> HogFramer::monitoredRegions;
 static const double pi = 3.1416;	
 const char* frameWindowName = "frame";
 
-static const int width = 64;
+static const int width = 64;//80;
 static const int height = 64;
 static const int cropHeight = 80;
 
@@ -171,7 +171,7 @@ void HogFramer::savePositiveAndNegatives( vector<blob> blobs,const Rect& crop,co
 			//imshow("saving", regionOnRoi);
 			//imshow("bb", regionOnBackground);
 
-			//generateNegativeSamples(cropRect, frame);		
+			generateNegativeSamples(cropRect, frame);		
 		}					
 	});
 }

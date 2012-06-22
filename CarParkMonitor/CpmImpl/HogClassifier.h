@@ -4,21 +4,21 @@
 #include "PngSaver.h"
 using namespace cv::gpu;
 
-class HogClassifier: public ClassifierBase
+class HogDetector: public ClassifierBase
 {
 private:
-	Mat readHPlane(char* path = "./Content/Assets/hogsvm.yml");
+	Mat readHPlane(char* path = "./Content/Assets/hogsvm0.yml");
 	void load();
 	gpu::GpuMat gpuMat;
-	gpu::HOGDescriptor hogGpu;
+	gpu::HOGDescriptor hogGpuDetector;
 	
 public:
-	HogClassifier(){
+	HogDetector(){
 		load();
 		//PngSaver::setBasePath("./Content/Images");
 	};
 
-	~HogClassifier(){};
+	~HogDetector(){};
 
 	vector<detection> detect(ClassifierParams& params);
 };

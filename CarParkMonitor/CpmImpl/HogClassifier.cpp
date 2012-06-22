@@ -2,10 +2,10 @@
 #include "RectTool.h"
 #include "PngSaver.h"
 
-static const int width = 64;//80;
+static const int width =  64;
 static const int height = 64;
 
-cv::Mat HogClassifier::readHPlane(char* path)
+cv::Mat HogDetector::readHPlane(char* path)
 {
 	auto f = FileStorage(path, FileStorage::READ);	
 	Mat hplane;
@@ -13,10 +13,9 @@ cv::Mat HogClassifier::readHPlane(char* path)
 	return hplane;
 }
 
-void HogClassifier::load()
+void HogDetector::load()
 {
-	
-	hogGpu = cv::gpu::HOGDescriptor(
+	hogGpuDetector = cv::gpu::HOGDescriptor(
 		Size(width, height),//images size
 		Size(16,16),//block size
 		Size(8,8),//block stride
@@ -25,13 +24,13 @@ void HogClassifier::load()
 	);
 	
 	Mat hplane = readHPlane();
-	hogGpu.setSVMDetector(hplane);	
+	hogGpuDetector.setSVMDetector(hplane);	
 }
 
 static const int KEEP = 0;
 static const int DISCARD = 1;
 
-vector<detection> HogClassifier::detect( ClassifierParams& params )
+vector<detection> HogDetector::detect( ClassifierParams& params )
 {
 	Mat frame = params.frame;
 	vector<Rect> rectDetections;
@@ -41,7 +40,7 @@ vector<detection> HogClassifier::detect( ClassifierParams& params )
 	Mat grayClone;
 	cv::cvtColor(frame, grayClone, CV_BGR2GRAY);
 	gpuMat.upload(grayClone);
-	hogGpu.detectMultiScale(gpuMat,rectDetections);
+	hogGpuDetector.detectMultiScale(gpuMat,rectDetections);
 	gpuMat.release();
 	grayClone.release();
 

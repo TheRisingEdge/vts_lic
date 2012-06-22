@@ -21,6 +21,7 @@ private:
 	static vector<Mat> negativeSamples;
 	static void loadPositiveSamples();
 	static void loadNegativeSamples();
+	static int baseNegative;
 	
 public:
 	Loader(void){}

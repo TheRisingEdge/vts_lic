@@ -501,7 +501,7 @@ void PTracker::performTracking()
 	}
 }
 
-bool PTracker::getLucasKanadePrediction(track& tr, Rect& predictedRect )
+bool PTracker::getMedianFlowPrediction(track& tr, Rect& predictedRect )
 {
 	if(registeredStatuses.find(tr.lkId) == registeredStatuses.end())
 		assert(false, "this should not happen");
@@ -557,9 +557,9 @@ void PTracker::run()
 	while(true)
 	{
 		SubFrame subResult = receive(subtractorBuffer);
-		ClasifierFrame classifierResult = receive(classifierBuffer);
+		ClasifierFrame detectionResult = receive(classifierBuffer);
 
-		bool buffersFull = shiftBuffers(subResult, classifierResult);
+		bool buffersFull = shiftBuffers(subResult, detectionResult);
 		if(!buffersFull)
 			continue;
 		
@@ -599,13 +599,15 @@ void PTracker::run()
 		for(auto it = begin(tracks); it != end(tracks); it++)
 		{			
 			Rect kanadePrediction, kalmanPrediction;
-			bool lucasSuccess = getLucasKanadePrediction(*it, kanadePrediction);
+			bool lucasSuccess = getMedianFlowPrediction(*it, kanadePrediction);
 			bool kalmanSuccess = getKalmanPrediction(*it, kalmanPrediction);
 			
 			float minDist = 999999;
 			auto finalPrediction = mergePredictions(lucasSuccess, kalmanSuccess, *it, kanadePrediction, kalmanPrediction, grayFrameBuffer, minDist);		
 			it->assign(finalPrediction);		
 			it->predictionDist = minDist;
+			int a;
+			a = 34;
 		}			
 
 #pragma endregion

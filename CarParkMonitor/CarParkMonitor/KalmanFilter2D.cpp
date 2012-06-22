@@ -100,5 +100,3 @@ KalmanResult2D KalmanFilter2D::update( KalmanInput2D& input )
 	lastState = estimation;
 	return estimation;
 }
-
-

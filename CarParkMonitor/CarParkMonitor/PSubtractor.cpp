@@ -17,10 +17,10 @@ void PSubtractor::run()
 			Mat foregorund = _subtractor->segment(frame);	
 			SubFrame result = {frame, foregorund.clone()};
 
-			PngSaver::save("sub-frame", frame);
+			//PngSaver::save("sub-frame", frame);
 			//PngSaver::save("sub-foreground", foregorund);
 			//PngSaver::save("sub-bg_model", _subtractor->getBackground());
-			PngSaver::incrementCount();
+			//PngSaver::incrementCount();
 			//imshow("frame", frame);
 			//imshow("fg", foregorund);
 			//waitKey();

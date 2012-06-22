@@ -36,7 +36,7 @@ void AutoTracker::start()
 	unbounded_buffer<int> syncBuffer;
 
 	BgSubtractorBase* subtractor = new AvgSubtractor("avg");//new StableAvgSubtractor();		
-	ClassifierBase* hogClassifier = new HogClassifier();
+	ClassifierBase* hogClassifier = new HogDetector();
 
 	unbounded_buffer<Mat> vidOut0;
 	unbounded_buffer<Mat> vidOut1;

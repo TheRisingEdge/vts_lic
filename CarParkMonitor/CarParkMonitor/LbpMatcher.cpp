@@ -1,6 +1,7 @@
 #include "LbpMatcher.h"
 #include "histogram.h"
 #include "lbp.h"
+#include "PngSaver.h"
 
 static const float INFINITE = 999999;
 bool LbpMatcher::lbpHist( Mat& src , Mat& hist)
@@ -9,6 +10,7 @@ bool LbpMatcher::lbpHist( Mat& src , Mat& hist)
 		return false;
 
 	auto processed = lbp::ELBP(src,8,8);
+	//PngSaver::save("lbp", processed);
 	hist = lbp::spatial_histogram(processed, 256, 3, 3);
 	return true;
 }

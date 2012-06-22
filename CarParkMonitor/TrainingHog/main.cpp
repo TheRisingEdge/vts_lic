@@ -45,11 +45,11 @@ int main(int argc, char** argv)
 		9
 	);
 
-	Loader::setPosPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext1", 1000);
-	Loader::setNegPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext1",1000);
+	Loader::setPosPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext2", 1001);
+	Loader::setNegPathAndCount("./../CarParkMonitor/Content/DatasetExtractions/ext1",600);
 
 	ofstream train;
-	train.open("./../CarParkMonitor/Content/Assets/evo1_80x64.txt");		
+	train.open("./../CarParkMonitor/Content/Assets/to_test_positive.txt");		
 	train.clear();
 
 	vector<float> descriptor;
@@ -71,21 +71,21 @@ int main(int argc, char** argv)
 		train << endl;
 	});
 
-	auto negatives = Loader::getNegativeSamples();
+	/*auto negatives = Loader::getNegativeSamples();
 	for_each(begin(negatives), end(negatives), [&](const Mat& image){
-		descriptor.clear();
+	descriptor.clear();
 
-		hog.compute(image, descriptor);
+	hog.compute(image, descriptor);
 
-		train << "-1";
-		int size = descriptor.size();
-		for(int i = 0; i < size; i++)
-		{
-			int findex = i+1;
-			train <<" "<< findex <<":"<<descriptor[i];
-		}
-		train << endl;
-	});
+	train << "-1";
+	int size = descriptor.size();
+	for(int i = 0; i < size; i++)
+	{
+	int findex = i+1;
+	train <<" "<< findex <<":"<<descriptor[i];
+	}
+	train << endl;
+	});*/
 
 	train.close();			
 	return 0;

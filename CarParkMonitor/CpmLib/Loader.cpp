@@ -11,6 +11,7 @@ int Loader::negativesCount;
 
 char* Loader::positivesPath;
 char* Loader::negativesPath;
+int Loader::baseNegative = 0;
 
 void Loader::loadPositiveSamples()
 {
@@ -44,7 +45,7 @@ void Loader::loadNegativeSamples()
 
 	char* path = new char[100];
 
-	for(int i = 1; i < size; i++)
+	for(int i = baseNegative; i < baseNegative+size; i++)
 	{
 		sprintf(path, "%s/neg-%d.png", negativesPath, i);
 		Mat image = imread(path);
@@ -72,3 +73,5 @@ vector<Mat> Loader::getNegativeSamples()
 
 	return negativeSamples;
 }
+
+

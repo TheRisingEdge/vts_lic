@@ -20,7 +20,6 @@ struct trackEntry
 	int id;
 };
 
-
 class PTracker: public agent
 {
 private:
@@ -72,7 +71,7 @@ private:
 	void beginTracking();
 	int registerForTracking(track& tr);
 	void performTracking();
-	bool getLucasKanadePrediction(track& tr, Rect& newRect);
+	bool getMedianFlowPrediction(track& tr, Rect& newRect);
 
 #pragma endregion
 
@@ -89,8 +88,8 @@ public:
 		syncBuffer(sync),
 		carCount(0),
 		debugPrint(false),
-		secMatcher(new LbpMatcher())
-	{}	
+		secMatcher(new NccMatcher())
+	{}
 
 	void run();
 };
