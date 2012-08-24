@@ -88,7 +88,7 @@ public:
 		syncBuffer(sync),
 		carCount(0),
 		debugPrint(false),
-		secMatcher(new NccMatcher())
+		secMatcher(new LbpMatcher())
 	{}
 
 	void run();

@@ -39,7 +39,9 @@ class KalmanFilter2D
 private:
 	KalmanFilter filter;
 	cv::Mat_<float> measurement;
-
+	int width;
+	int height;
+	void mapMatToResult(const Mat& m, KalmanResult2D& result);
 public:
 	KalmanFilter2D();
 	~KalmanFilter2D(){}

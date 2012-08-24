@@ -6,6 +6,7 @@
 #include "BlobDetector.h"
 #include "lbp.h"
 #include "histogram.h"
+#include "PngSaver.h"
 
 #define PROCESS 1
 const int XCount = 9;
@@ -606,8 +607,6 @@ void PTracker::run()
 			auto finalPrediction = mergePredictions(lucasSuccess, kalmanSuccess, *it, kanadePrediction, kalmanPrediction, grayFrameBuffer, minDist);		
 			it->assign(finalPrediction);		
 			it->predictionDist = minDist;
-			int a;
-			a = 34;
 		}			
 
 #pragma endregion
@@ -719,18 +718,25 @@ void PTracker::run()
 
 		imshow("kalman", fclone);
 		
+		if(cv::waitKey(1) == 'p')
+		{
+			PngSaver::setBasePath("./Content/Images");
+			PngSaver::save("frame", currentFrame);
+			PngSaver::incrementCount();
+		}
+
 		fclone.release();
 		lkoutput.release();
 #pragma endregion
 
 #endif
 
-		char key;
-		key = cv::waitKey(1.);
-		if(key == 's')
-			debugPrint = true;
-		else if(key == 'f')
-			debugPrint = false;
+		//char key;
+		//key = cv::waitKey(1.);
+		//if(key == 's')
+		//	debugPrint = true;
+		//else if(key == 'f')
+		//	debugPrint = false;
 	
 		send(syncBuffer,1);			
 	}

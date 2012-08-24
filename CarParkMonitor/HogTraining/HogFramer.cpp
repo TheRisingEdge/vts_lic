@@ -39,9 +39,8 @@ bool isNonCircular(const blob& b)
 	return RectTool::isMostlyCircular(b.contour);
 }
 
-HogFramer::HogFramer( HogFramerParams params ):FrameProcessor("Hog Extractor")
+HogFramer::HogFramer():FrameProcessor("Hog Extractor")
 {
-	this->params = params;
 	this->blobDetector = new BlobDetector(30, 30, "detector");
 
 	HogFramer::drawingControl.drawing = false;

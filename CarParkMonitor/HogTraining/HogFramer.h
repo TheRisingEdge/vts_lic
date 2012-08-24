@@ -33,8 +33,6 @@ struct RegionExtractor
 class HogFramer:public FrameProcessor
 {
 private:
-	HogFramerParams params;
-
 	BgSubtractorBase* bgSubtractor;
 	BlobDetector* blobDetector;
 	int trainingFrames;
@@ -64,7 +62,7 @@ public:
 	static DrawingControl drawingControl;
 	static vector<Rect> monitoredRegions;
 
-	HogFramer(HogFramerParams params);
+	HogFramer();
 	~HogFramer(void){}
 	
 	void process(const Mat& in);	

@@ -40,12 +40,12 @@ KalmanFilter2D::KalmanFilter2D()
 	measurement = Mat_<float>(4,1);
 }
 
-inline void mapMatToResult(const Mat& m, KalmanResult2D& result)
+void KalmanFilter2D::mapMatToResult(const Mat& m, KalmanResult2D& result)
 {
 	result.centerX = m.at<float>(0);
 	result.centerY = m.at<float>(1);
-	result.width   = m.at<float>(2);
-	result.height  = m.at<float>(3);	
+	result.width   = this->width;//m.at<float>(2);
+	result.height  = this->height;//m.at<float>(3);	
 	result.vx	   = m.at<float>(4);
 	result.vy	   = m.at<float>(5);
 	result.wx	   = m.at<float>(6);
@@ -56,6 +56,9 @@ void KalmanFilter2D::init( KalmanInput2D& input )
 {
 	auto size = input.rect.size();
 	auto center = RectTool::center(input.rect);
+
+	this->width = size.width;
+	this->height = size.height;
 
 	filter.statePost.at<float>(0) = center.x;
 	filter.statePost.at<float>(1) = center.y;
@@ -80,6 +83,9 @@ KalmanResult2D KalmanFilter2D::correct( KalmanInput2D& input )
 {	
 	auto size = input.rect.size();
 	auto center = RectTool::center(input.rect);
+
+	this->width = size.width;
+	this->height = size.height;
 
 	measurement(0) = center.x;
 	measurement(1) = center.y;
